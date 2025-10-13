@@ -7,7 +7,7 @@ function PageNav() {
       <Logo />
       <ul>
         <li>
-          <NavLink to="/o-nas">o-nas</NavLink>
+          <NavLink to="/o-nas">O nas</NavLink>
         </li>
         <li>
           <NavLink to="/rejestracja">Rejestracja</NavLink>

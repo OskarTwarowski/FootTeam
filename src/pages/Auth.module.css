@@ -34,3 +34,54 @@
   padding: 7rem 3rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
+.errmsg {
+  background-color: lightpink;
+  color: firebrick;
+  font-weight: bold;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.instructions {
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  background: #000;
+  color: #fff;
+  padding: 0.25rem;
+  position: relative;
+  bottom: -10px;
+}
+
+.instructions > svg {
+  margin-right: 0.25rem;
+}
+.hide {
+  display: none;
+}
+
+.valid {
+  color: limegreen;
+  margin-left: 0.25rem;
+}
+
+.invalid {
+  color: red;
+  margin-left: 0.25rem;
+}
+.noDots {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.alrRegistered {
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+}
+.backLogin:link,
+.backLogin:visited {
+  font-size: 1rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: peachpuff;
+  font-size: 1.6rem;
+}
