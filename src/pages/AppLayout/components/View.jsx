@@ -1,5 +1,5 @@
-import Team from "./Team";
-import styles from "./View.module.css";
+import Team from "../components/Team";
+import styles from "../components/View.module.css";
 
 function View() {
   return (

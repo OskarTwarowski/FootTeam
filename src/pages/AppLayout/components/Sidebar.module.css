@@ -1,0 +1,37 @@
+.sidebar {
+  flex-basis: 56rem;
+  background-color: var(--color-dark--1);
+  padding: 2.5rem 5rem 2.5rem 5rem;
+}
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar li:hover {
+  background-color: #34495e;
+}
+
+.active {
+  background-color: #1abc9c;
+}
+
+.footer {
+  margin-top: auto;
+}
+
+.copyright {
+  font-size: 1.2rem;
+  color: var(--color-light--1);
+}
+.main {
+  flex: 1;
+  padding: 2rem;
+}

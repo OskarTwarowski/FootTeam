@@ -9,11 +9,10 @@
   background-color: var(--color-dark--2);
   border-radius: 7px;
   padding: 2rem 3rem;
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  width: 48rem;
+  max-width: 48rem;
   margin: 8rem auto;
 }
 
@@ -43,13 +42,13 @@
 }
 
 .instructions {
-  font-size: 1rem;
+  font-size: 0.95rem;
   border-radius: 0.5rem;
-  background: #000;
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
-  padding: 0.25rem;
-  position: relative;
-  bottom: -10px;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  line-height: 1.4;
 }
 
 .instructions > svg {
@@ -62,26 +61,38 @@
 .valid {
   color: limegreen;
   margin-left: 0.25rem;
+  transition: opacity 0.2s ease;
+  transform: scale(0.9);
+  vertical-align: middle;
 }
 
 .invalid {
   color: red;
   margin-left: 0.25rem;
+  transition: opacity 0.2s ease;
+  transform: scale(0.9);
+  vertical-align: middle;
 }
 .noDots {
   list-style: none;
-  padding: 0;
-  margin: 0;
+  padding-left: 0.75rem;
+  margin: 0.25rem 0 0 0;
 }
+
 .alrRegistered {
   margin-top: 0.5rem;
   font-size: 1.2rem;
 }
 .backLogin:link,
 .backLogin:visited {
-  font-size: 1rem;
+  font-size: 1.2rem;
   text-decoration: none;
   text-transform: uppercase;
   color: peachpuff;
-  font-size: 1.6rem;
+  transition: color 0.2s ease;
+}
+
+.backLogin:hover,
+.backLogin:active {
+  color: #ffd9b3;
 }
