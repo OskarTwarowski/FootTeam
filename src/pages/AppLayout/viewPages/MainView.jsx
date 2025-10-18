@@ -1,8 +1,8 @@
 import TeamView from "../viewPages/TeamView";
-import CalendarView from "../pages/CalendarView";
-import PaymentsView from "../pages/PaymentsView";
-import NotificationsView from "../pages/NotificationsView";
-import SettingsView from "../pages/SettingsView";
+import CalendarView from "../viewPages/CalendarView";
+import PaymentsView from "../viewPages/PaymentsView";
+import NotificationView from "../viewPages/NotificationView";
+import SettingsView from "../viewPages/SettingsView";
 
 function MainView({ activeTab }) {
   switch (activeTab) {
@@ -13,7 +13,7 @@ function MainView({ activeTab }) {
     case "platnosci":
       return <PaymentsView />;
     case "powiadomienia":
-      return <NotificationsView />;
+      return <NotificationView />;
     case "ustawienia":
       return <SettingsView />;
     default:

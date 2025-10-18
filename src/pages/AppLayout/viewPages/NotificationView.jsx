@@ -1,5 +1,5 @@
 function NotificationView() {
-  return <div></div>;
+  return <div>powiadomienia</div>;
 }
 
 export default NotificationView;

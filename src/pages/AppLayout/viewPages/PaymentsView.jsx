@@ -1,5 +1,5 @@
 function PaymentsView() {
-  return <div></div>;
+  return <div>Płatności</div>;
 }
 
 export default PaymentsView;

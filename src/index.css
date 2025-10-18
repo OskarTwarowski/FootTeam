@@ -1,11 +1,15 @@
 /* Globalne kolory css module */
 :root {
-  --color-brand--1: #ffb545;
+  --color-brand--1: #00ad83;
   --color-brand--2: #00c46a;
+  --color-brand--3: #00948e;
+  --color-brand--4: #007a89;
+  --color-brand--5: #006076;
 
   --color-dark--0: #242a2e;
   --color-dark--1: #2d3439;
   --color-dark--2: #42484d;
+  --color-dark--3: #76818a;
   --color-light--1: #aaa;
   --color-light--2: #ececec;
   --color-light--3: #d6dee0;

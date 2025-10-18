@@ -1,5 +1,5 @@
 function SettingsView() {
-  return <div></div>;
+  return <div>Ustawienia</div>;
 }
 
 export default SettingsView;
