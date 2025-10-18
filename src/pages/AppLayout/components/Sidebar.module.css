@@ -2,17 +2,26 @@
   flex-basis: 56rem;
   background-color: var(--color-dark--1);
   padding: 2.5rem 5rem 2.5rem 5rem;
+  display: flex;
+  flex-direction: column;
 }
 .sidebar ul {
   list-style: none;
   padding: 0;
+  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .sidebar li {
-  padding: 0.75rem 1rem;
+  padding: 1.5rem 2rem;
   cursor: pointer;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  font-size: 1.8rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: background-color 0.2s ease;
 }
 
 .sidebar li:hover {
@@ -25,11 +34,15 @@
 
 .footer {
   margin-top: auto;
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .copyright {
-  font-size: 1.2rem;
-  color: var(--color-light--1);
+  font-size: 1.4rem;
+  color: var(--color-light--3);
+  opacity: 0.7;
 }
 .main {
   flex: 1;

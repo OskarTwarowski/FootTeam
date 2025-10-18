@@ -1,0 +1,32 @@
+.profile {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+
+  display: flex;
+  flex-direction: column; /* <-- ustawia imię nad rolą */
+  align-items: center;
+
+  background-color: var(--color-dark--1);
+  border: 2px solid var(--color-light--2);
+  border-radius: 10px;
+
+  padding: 1rem 2rem;
+  min-width: 14rem;
+  text-align: center;
+
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.username {
+  color: var(--color-brand--2);
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.role {
+  color: var(--color-light--2);
+  font-size: 1.2rem;
+  font-weight: 400;
+}
