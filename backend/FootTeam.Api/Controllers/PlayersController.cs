@@ -29,6 +29,16 @@ public sealed class PlayersController(IPlayerService playerService) : Controller
         return Ok(PlayerResponse.FromDomain(player));
     }
 
+    [HttpGet("user/{userId}")]
+    [ProducesResponseType(typeof(PlayerResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetByUserIdAsync(int userId, CancellationToken ct)
+    {
+        var player = await _playerService.GetByUserIdAsync(userId, ct);
+        if (player is null) return NotFound();
+        return Ok(PlayerResponse.FromDomain(player));
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(PlayerResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -51,11 +61,32 @@ public sealed class PlayersController(IPlayerService playerService) : Controller
         return Ok(PlayerResponse.FromDomain(updated));
     }
 
+    [HttpPut("user/{userId}")]
+    [ProducesResponseType(typeof(PlayerResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateByUserIdAsync(int userId, [FromBody] UpdatePlayerRequest request, CancellationToken ct)
+    {
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        var updated = await _playerService.UpdateByUserIdAsync(userId, request.FirstName, request.LastName, request.BirthDate, request.Position, request.Team, ct);
+        if (updated is null) return NotFound();
+        return Ok(PlayerResponse.FromDomain(updated));
+    }
+
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteAsync(int id, CancellationToken ct)
     {
         await _playerService.DeleteAsync(id, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("user/{userId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteByUserIdAsync(int userId, CancellationToken ct)
+    {
+        var deleted = await _playerService.DeleteByUserIdAsync(userId, ct);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 }

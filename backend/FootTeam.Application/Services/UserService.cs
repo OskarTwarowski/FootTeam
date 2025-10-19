@@ -4,9 +4,10 @@ using FootTeam.Domain.Repositories;
 
 namespace FootTeam.Application.Services;
 
-public sealed class UserService(IUserRepository repository) : IUserService
+public sealed class UserService(IUserRepository repository, IPlayerRepository playerRepository) : IUserService
 {
     private readonly IUserRepository _repository = repository;
+    private readonly IPlayerRepository _players = playerRepository;
 
     public Task<IReadOnlyList<User>> ListAsync(CancellationToken ct = default)
         => _repository.ListAsync(ct);
@@ -27,7 +28,23 @@ public sealed class UserService(IUserRepository repository) : IUserService
             Role = role,
             CreatedAt = createdAt
         };
-        return await _repository.CreateAsync(u, ct);
+        var created = await _repository.CreateAsync(u, ct);
+
+        if (string.Equals(created.Role, "Player", StringComparison.OrdinalIgnoreCase))
+        {
+            var p = new Player
+            {
+                FirstName = created.Username, // placeholder, can be updated later
+                LastName = string.Empty,
+                BirthDate = null,
+                Position = null,
+                Team = null,
+                UserID = created.UserID
+            };
+            await _players.CreateAsync(p, ct);
+        }
+
+        return created;
     }
 
     public async Task<User?> UpdateAsync(int id, string? username, string? email, string? passwordHash, string? role, DateTime? createdAt, CancellationToken ct = default)

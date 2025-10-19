@@ -1,6 +1,7 @@
 using FootTeam.Application.Abstractions;
 using FootTeam.Domain.Entities;
 using FootTeam.Domain.Repositories;
+using System.Linq;
 
 namespace FootTeam.Application.Services;
 
@@ -43,4 +44,34 @@ public sealed class PlayerService(IPlayerRepository repository) : IPlayerService
 
     public Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         => _repository.DeleteAsync(id, ct);
+
+    public async Task<Player?> GetByUserIdAsync(int userId, CancellationToken ct = default)
+    {
+        var players = await _repository.ListAsync(ct: ct);
+        return players.FirstOrDefault(p => p.UserID == userId);
+    }
+
+    public async Task<Player?> UpdateByUserIdAsync(int userId, string? firstName, string? lastName, DateTime? birthDate, string? position, string? team, CancellationToken ct = default)
+    {
+        var players = await _repository.ListAsync(ct: ct);
+        var player = players.FirstOrDefault(p => p.UserID == userId);
+        if (player is null) return null;
+
+        if (!string.IsNullOrWhiteSpace(firstName)) player.FirstName = firstName.Trim();
+        if (!string.IsNullOrWhiteSpace(lastName)) player.LastName = lastName.Trim();
+        if (birthDate.HasValue) player.BirthDate = birthDate;
+        if (!string.IsNullOrWhiteSpace(position)) player.Position = position.Trim();
+        if (!string.IsNullOrWhiteSpace(team)) player.Team = team.Trim();
+
+        return await _repository.UpdateAsync(player, ct);
+    }
+
+    public async Task<bool> DeleteByUserIdAsync(int userId, CancellationToken ct = default)
+    {
+        var players = await _repository.ListAsync(ct: ct);
+        var player = players.FirstOrDefault(p => p.UserID == userId);
+        if (player is null) return false;
+
+        return await _repository.DeleteAsync(player.PlayerID, ct);
+    }
 }
