@@ -61,4 +61,20 @@ public sealed class InMemoryUserRepository : IUserRepository
             return Task.FromResult(_users.Remove(id));
         }
     }
+
+    public Task<User?> GetByEmailAsync(string email, CancellationToken ct = default)
+    {
+        lock (_lock)
+        {
+            return Task.FromResult(_users.Values.FirstOrDefault(u => u.Email == email));
+        }
+    }
+
+    public Task<User?> GetByUsernameAsync(string username, CancellationToken ct = default)
+    {
+        lock (_lock)
+        {
+            return Task.FromResult(_users.Values.FirstOrDefault(u => u.Username == username));
+        }
+    }
 }

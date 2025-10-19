@@ -64,3 +64,28 @@ Content-Type: application/json
   "eventDate": "2025-10-25T10:00:00",
   "location": "Stadion"
 }
+
+### Auth - Register (JWT)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "coach1",
+  "email": "coach1@example.com",
+  "password": "Passw0rd!",
+  "role": "Coach"
+}
+
+### Auth - Login (returns JWT token)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "coach1@example.com",
+  "password": "Passw0rd!"
+}
+
+### Example protected request with Bearer token
+# @token = paste_token_here
+GET {{baseUrl}}/api/players
+Authorization: Bearer {{token}}

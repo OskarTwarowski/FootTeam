@@ -43,4 +43,10 @@ public sealed class EfUserRepository(AppDbContext db) : IUserRepository
         await _db.SaveChangesAsync(ct);
         return true;
     }
+
+    public Task<User?> GetByEmailAsync(string email, CancellationToken ct = default)
+        => _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email, ct);
+
+    public Task<User?> GetByUsernameAsync(string username, CancellationToken ct = default)
+        => _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Username == username, ct);
 }
