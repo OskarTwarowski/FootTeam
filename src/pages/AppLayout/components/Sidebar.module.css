@@ -1,10 +1,11 @@
 .sidebar {
   flex-basis: 56rem;
   background-color: var(--color-dark--1);
-  padding: 2.5rem 5rem 2.5rem 5rem;
+  padding: 2.5rem 5rem;
   display: flex;
   flex-direction: column;
 }
+
 .sidebar ul {
   list-style: none;
   padding: 0;
@@ -14,24 +15,36 @@
   gap: 0.5rem;
 }
 
+/* pojedynczy element listy */
 .sidebar li {
-  padding: 1.5rem 2rem;
-  cursor: pointer;
   border-radius: 8px;
   font-size: 1.8rem;
   font-weight: 500;
   letter-spacing: 0.3px;
+}
+
+/* link w środku */
+.sidebar li a {
+  display: block;
+  padding: 1.5rem 2rem;
+  color: var(--color-light--3);
+  text-decoration: none;
+  border-radius: 8px;
   transition: background-color 0.2s ease;
 }
 
-.sidebar li:hover {
+/* hover efekt */
+.sidebar li a:hover {
   background-color: #34495e;
 }
 
-.active {
+/* aktywny link z NavLink */
+.sidebar li a.active {
   background-color: #1abc9c;
+  color: #fff;
 }
 
+/* footer */
 .footer {
   margin-top: auto;
   text-align: center;
@@ -44,6 +57,7 @@
   color: var(--color-light--3);
   opacity: 0.7;
 }
+
 .main {
   flex: 1;
   padding: 2rem;
