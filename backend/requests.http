@@ -70,7 +70,6 @@ POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
 {
-  "username": "coach1",
   "email": "coach1@example.com",
   "password": "Passw0rd!",
   "role": "Coach"

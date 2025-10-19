@@ -29,11 +29,11 @@ public sealed class AuthController(IUserService users, IUserRepository userRepo,
         // Hash plain password
         var hash = BCrypt.Net.BCrypt.HashPassword(req.Password);
 
-        var created = await _users.CreateAsync(req.Username, req.Email, hash, req.Role, DateTime.UtcNow, ct);
+        // Use email as the username internally for registration
+        var created = await _users.CreateAsync(req.Email, req.Email, hash, req.Role, DateTime.UtcNow, ct);
         var resp = new AuthUserResponse
         {
             UserID = created.UserID,
-            Username = created.Username,
             Email = created.Email,
             Role = created.Role
         };
@@ -47,18 +47,15 @@ public sealed class AuthController(IUserService users, IUserRepository userRepo,
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
-        var user = !string.IsNullOrWhiteSpace(req.Email)
-            ? await _userRepo.GetByEmailAsync(req.Email.Trim(), ct)
-            : (!string.IsNullOrWhiteSpace(req.Username)
-                ? await _userRepo.GetByUsernameAsync(req.Username.Trim(), ct)
-                : null);
+        if (string.IsNullOrWhiteSpace(req.Email)) return Unauthorized();
+        var user = await _userRepo.GetByEmailAsync(req.Email.Trim(), ct);
 
         if (user is null) return Unauthorized();
 
         var ok = BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash);
         if (!ok) return Unauthorized();
 
-        var token = GenerateJwt(user.UserID.ToString(), user.Username, user.Email, user.Role);
+        var token = GenerateJwt(user.UserID.ToString(), user.Email, user.Email, user.Role);
         return Ok(new LoginResponse { Token = token });
     }
 
@@ -95,9 +92,6 @@ public sealed class AuthController(IUserService users, IUserRepository userRepo,
 public sealed class RegisterRequest
 {
     [Required]
-    [StringLength(50)]
-    public string Username { get; set; } = string.Empty;
-    [Required]
     [StringLength(100)]
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
@@ -114,8 +108,6 @@ public sealed class LoginRequest
     [StringLength(100)]
     [EmailAddress]
     public string? Email { get; set; }
-    [StringLength(50)]
-    public string? Username { get; set; }
     [Required]
     [StringLength(100)]
     public string Password { get; set; } = string.Empty;
@@ -129,7 +121,6 @@ public sealed class LoginResponse
 public sealed class AuthUserResponse
 {
     public int UserID { get; set; }
-    public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
 }
