@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FootTeam.Api</name>
+    </assembly>
+    <members>
+        <member name="M:FootTeam.Api.Controllers.EventsController.ListAsync(System.Threading.CancellationToken)">
+            <summary>
+            List events.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.EventsController.GetAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Get event by id.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.EventsController.CreateAsync(FootTeam.Api.Controllers.CreateEventRequest,System.Threading.CancellationToken)">
+            <summary>
+            Create event.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.EventsController.UpdateAsync(System.Int32,FootTeam.Api.Controllers.UpdateEventRequest,System.Threading.CancellationToken)">
+            <summary>
+            Update event.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.EventsController.DeleteAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Delete event.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.TrainingsController.ListAsync(System.Threading.CancellationToken)">
+            <summary>
+            List trainings.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.TrainingsController.GetAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Get training by id.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.TrainingsController.CreateAsync(FootTeam.Api.Controllers.CreateTrainingRequest,System.Threading.CancellationToken)">
+            <summary>
+            Create training.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.TrainingsController.UpdateAsync(System.Int32,FootTeam.Api.Controllers.UpdateTrainingRequest,System.Threading.CancellationToken)">
+            <summary>
+            Update training.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.TrainingsController.DeleteAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Delete training.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.TrainingsController.ListParticipantsAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            List participants for a training.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.TrainingsController.AddParticipantAsync(System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Add a participant to training.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.TrainingsController.RemoveParticipantAsync(System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Remove a participant from training.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.UsersController.ListAsync(System.Threading.CancellationToken)">
+            <summary>
+            List all users.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.UsersController.GetAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Get user by id.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.UsersController.CreateAsync(FootTeam.Api.Controllers.CreateUserRequest,System.Threading.CancellationToken)">
+            <summary>
+            Create a new user.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.UsersController.UpdateAsync(System.Int32,FootTeam.Api.Controllers.UpdateUserRequest,System.Threading.CancellationToken)">
+            <summary>
+            Update user.
+            </summary>
+        </member>
+        <member name="M:FootTeam.Api.Controllers.UsersController.DeleteAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Delete user.
+            </summary>
+        </member>
+    </members>
+</doc>

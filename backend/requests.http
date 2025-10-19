@@ -1,0 +1,66 @@
+@baseUrl = http://localhost:5100
+
+### Health
+GET {{baseUrl}}/api/health
+
+### List players
+GET {{baseUrl}}/api/players
+
+### Create player
+POST {{baseUrl}}/api/players
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "birthDate": "2005-05-14",
+  "position": "Forward",
+  "team": "U18",
+  "userID": 1
+}
+
+### Users
+GET {{baseUrl}}/api/users
+
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "username": "coach1",
+  "email": "coach1@example.com",
+  "passwordHash": "hash",
+  "role": "Coach"
+}
+
+### Trainings
+GET {{baseUrl}}/api/trainings
+
+POST {{baseUrl}}/api/trainings
+Content-Type: application/json
+
+{
+  "title": "Trening poniedziałek",
+  "description": "Strzały i kondycja",
+  "location": "Boisko A",
+  "startTime": "2025-10-20T17:00:00",
+  "endTime": "2025-10-20T18:30:00"
+}
+
+### Participants for training (replace 1)
+GET {{baseUrl}}/api/trainings/1/participants
+
+POST {{baseUrl}}/api/trainings/1/participants/1
+
+DELETE {{baseUrl}}/api/trainings/1/participants/1
+
+### Events
+GET {{baseUrl}}/api/events
+
+POST {{baseUrl}}/api/events
+Content-Type: application/json
+
+{
+  "title": "Sparring",
+  "eventDate": "2025-10-25T10:00:00",
+  "location": "Stadion"
+}

@@ -1,0 +1,15 @@
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\FootTeam.Application.csproj.AssemblyReference.cache
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\FootTeam.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\FootTeam.Application.AssemblyInfoInputs.cache
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\FootTeam.Application.AssemblyInfo.cs
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\FootTeam.Application.csproj.CoreCompileInputs.cache
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\bin\Debug\net8.0\FootTeam.Application.deps.json
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\bin\Debug\net8.0\FootTeam.Application.dll
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\bin\Debug\net8.0\FootTeam.Application.pdb
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\bin\Debug\net8.0\FootTeam.Domain.dll
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\bin\Debug\net8.0\FootTeam.Domain.pdb
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\FootTeam.601BF34A.Up2Date
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\FootTeam.Application.dll
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\refint\FootTeam.Application.dll
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\FootTeam.Application.pdb
+C:\Users\kam59\Downloads\FootTeam-main (1)\FootTeam-main\backend\FootTeam.Application\obj\Debug\net8.0\ref\FootTeam.Application.dll
