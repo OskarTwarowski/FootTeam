@@ -1,7 +1,7 @@
 
 -- Tworzenie bazy danych
-CREATE DATABASE IF NOT EXISTS SportClubDB;
-USE SportClubDB;
+CREATE DATABASE IF NOT EXISTS FootTeamDB;
+USE FootTeamDB;
 
 -- Tabela użytkowników (rejestracja i logowanie)
 CREATE TABLE Users (
