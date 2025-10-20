@@ -5,6 +5,7 @@
   --color-brand--3: #00948e;
   --color-brand--4: #007a89;
   --color-brand--5: #006076;
+  --sidebar-1: #34495e;
 
   --color-dark--0: #242a2e;
   --color-dark--1: #2d3439;
@@ -15,6 +16,24 @@
   --color-light--3: #d6dee0;
 }
 
+.light-mode {
+  --color-brand--1: #006076;
+  --color-brand--2: #00c46a;
+  --color-brand--3: #00948e;
+  --color-brand--4: #00c46a;
+  --color-brand--5: #00ad83;
+  --sidebar-1: #709fce;
+
+  --color-dark--0: #d0d3d6; /* główne tło – jasny szary */
+  --color-dark--1: #c3c7cb; /* sidebar / karty */
+  --color-dark--2: #adb3b8; /* przyciski */
+  --color-dark--3: #5b636a; /* ciemniejsze akcenty */
+  --color-light--1: #2b2f33; /* tekst główny */
+  --color-light--2: #1f2225; /* tytuły */
+  --color-light--3: #3a3f44; /* subtelne linie, ramki */
+  background-color: var(--color-dark--0);
+  color: var(--color-light--2);
+}
 * {
   margin: 0;
   padding: 0;

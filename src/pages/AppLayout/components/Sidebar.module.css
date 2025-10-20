@@ -35,7 +35,7 @@
 
 /* hover efekt */
 .sidebar li a:hover {
-  background-color: #34495e;
+  background-color: var(--sidebar-1);
 }
 
 /* aktywny link z NavLink */
