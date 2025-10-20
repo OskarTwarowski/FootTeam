@@ -9,7 +9,7 @@ CREATE TABLE Users (
     Username VARCHAR(50) NOT NULL UNIQUE,
     Email VARCHAR(100) NOT NULL UNIQUE,
     PasswordHash VARCHAR(255) NOT NULL,
-    Role ENUM('Admin', 'Coach', 'Player', 'Parent') NOT NULL,
+    Role ENUM('Admin', 'Coach', 'Parent') NOT NULL,
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE Trainings (
     TrainingID INT AUTO_INCREMENT PRIMARY KEY,
     Title VARCHAR(100),
     Description TEXT,
-    Location VARCHAR(100),
+    --Location VARCHAR(100),
     StartTime DATETIME,
     EndTime DATETIME,
     CoachID INT,
