@@ -10,6 +10,7 @@ import CalendarView from "./pages/AppLayout/viewPages/CalendarView";
 import PaymentsView from "./pages/AppLayout/viewPages/PaymentsView";
 import NotificationView from "./pages/AppLayout/viewPages/NotificationView";
 import SettingsView from "./pages/AppLayout/viewPages/SettingsView";
+import ProfileView from "./pages/AppLayout/viewPages/ProfileView";
 
 function App() {
   return (
@@ -21,7 +22,8 @@ function App() {
         <Route path="rejestracja" element={<Register />} />
         <Route path="*" element={<PageNotFound />} />
         <Route path="app" element={<AppLayout />}>
-          <Route index element={<TeamView />} />
+          <Route index element={<ProfileView />} />
+          <Route path="profil" element={<ProfileView />} />
           <Route path="druzyna" element={<TeamView />} />
           <Route path="kalendarz" element={<CalendarView />} />
           <Route path="platnosci" element={<PaymentsView />} />

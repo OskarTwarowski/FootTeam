@@ -1,13 +1,11 @@
 import * as yup from "yup";
 
 export const registerSchema = yup.object().shape({
-  username: yup
+  email: yup
     .string()
-    .matches(
-      /^[A-Za-z][A-Za-z0-9-_]{3,23}$/,
-      "Nazwa użytkownika musi zaczynać się literą i mieć 4–24 znaki"
-    )
-    .required("Nazwa użytkownika jest wymagana"),
+    .email("Niepoprawny adres e-mail")
+    .required("Adres e-mail jest wymagany"),
+
   password: yup
     .string()
     .matches(
@@ -21,10 +19,10 @@ export const registerSchema = yup.object().shape({
     .required("Powtórz hasło"),
 });
 export const loginSchema = yup.object({
-  username: yup
+  email: yup
     .string()
-    .required("Nazwa użytkownika jest wymagana")
-    .min(4, "Minimum 4 znaki"),
+    .email("Niepoprawny adres e-mail")
+    .required("Adres e-mail jest wymagany"),
   password: yup
     .string()
     .required("Hasło jest wymagane")

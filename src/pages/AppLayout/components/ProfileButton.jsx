@@ -1,6 +1,6 @@
-import styles from "./Profile.module.css";
+import styles from "./ProfileButton.module.css";
 
-function Profile() {
+function ProfileButton() {
   return (
     <div className={styles.profile}>
       <h2 className={styles.username}>Cristiano Ronaldo</h2>
@@ -9,4 +9,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default ProfileButton;

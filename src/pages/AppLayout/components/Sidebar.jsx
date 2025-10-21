@@ -11,6 +11,14 @@ function Sidebar() {
         <ul>
           <li>
             <NavLink
+              to="profil"
+              className={({ isActive }) => (isActive ? styles.active : " ")}
+            >
+              Profil
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
               to="druzyna"
               className={({ isActive }) => (isActive ? styles.active : " ")}
             >

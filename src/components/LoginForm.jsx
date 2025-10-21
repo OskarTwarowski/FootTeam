@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FAKE_USERS } from "../mockData";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -13,7 +14,6 @@ export default function LoginForm() {
   const {
     register,
     handleSubmit,
-    watch,
     setError,
     formState: { errors, isValid },
   } = useForm({
@@ -21,14 +21,12 @@ export default function LoginForm() {
     mode: "onChange",
   });
 
-  // sztuczny user do demonstracji
-  const FAKE_USER = { username: "admin", password: "ass123" };
-
   const onSubmit = (data) => {
-    if (
-      data.username === FAKE_USER.username &&
-      data.password === FAKE_USER.password
-    ) {
+    const foundUser = FAKE_USERS.find(
+      (u) => u.Username === data.username && u.PasswordHash === data.password
+    );
+    if (foundUser) {
+      console.log("Zalogowano jako:", foundUser.Role);
       navigate("/app", { replace: true });
     } else {
       setError("username", {

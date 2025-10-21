@@ -33,15 +33,15 @@ export default function RegisterForm() {
     >
       <h1>Zarejestruj się</h1>
 
-      {/* nazwa uzytkownika */}
+      {/* EMAIL uzytkownika */}
       <div className={styles.row}>
-        <label htmlFor="username">
-          Nazwa użytkownika:
-          {!errors.username && watch("username") ? (
+        <label htmlFor="email">
+          Adres e-mail:
+          {!errors.email && watch("email") ? (
             <span className={styles.valid}>
               <FontAwesomeIcon icon={faCheck} />
             </span>
-          ) : errors.username && watch("username") ? (
+          ) : errors.email && watch("email") ? (
             <span className={styles.invalid}>
               <FontAwesomeIcon icon={faTimes} />
             </span>
@@ -49,16 +49,16 @@ export default function RegisterForm() {
         </label>
 
         <input
-          type="text"
-          id="username"
-          placeholder="Nazwa użytkownika"
+          type="email"
+          id="email"
+          placeholder="example@email.com"
           autoComplete="off"
-          {...register("username")}
+          {...register("email")}
         />
 
-        {errors.username && (
+        {errors.email && (
           <p className={styles.instructions}>
-            <FontAwesomeIcon icon={faInfoCircle} /> {errors.username.message}
+            <FontAwesomeIcon icon={faInfoCircle} /> {errors.email.message}
           </p>
         )}
       </div>
