@@ -20,14 +20,15 @@ export default function LoginForm() {
     resolver: yupResolver(loginSchema),
     mode: "onChange",
   });
-
+  //-----------------------------------------------------------------------------------
   const onSubmit = (data) => {
     const foundUser = FAKE_USERS.find(
-      (u) => u.Username === data.username && u.PasswordHash === data.password
+      (u) => u.Email === data.email && u.PasswordHash === data.password
     );
     if (foundUser) {
       console.log("Zalogowano jako:", foundUser.Role);
       navigate("/app", { replace: true });
+      localStorage.setItem("loggedUser", JSON.stringify(foundUser));
     } else {
       setError("username", {
         type: "manual",
@@ -35,7 +36,7 @@ export default function LoginForm() {
       });
     }
   };
-
+  //-----------------------------------------------------------------------------------
   return (
     <form
       className={`${styles.form} ${styles.box}`}
@@ -45,12 +46,12 @@ export default function LoginForm() {
 
       {/* === USERNAME === */}
       <div className={styles.row}>
-        <label htmlFor="username">Nazwa użytkownika:</label>
+        <label htmlFor="email">Email użytkownika:</label>
         <input
-          type="text"
-          id="username"
-          placeholder="Nazwa użytkownika"
-          {...register("username")}
+          type="email"
+          id="email"
+          placeholder="adres@email.com"
+          {...register("email")}
         />
         {errors.username && (
           <p className={styles.instructions}>

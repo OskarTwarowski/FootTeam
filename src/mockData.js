@@ -15,7 +15,7 @@ export const FAKE_USERS = [
     Username: "trener1",
     Email: "coach@example.com",
     PasswordHash: "coach123",
-    Role: "Coach",
+    Role: "Trener",
     CreatedAt: "2025-02-10T09:30:00Z",
   },
   {
