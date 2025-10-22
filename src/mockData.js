@@ -1,6 +1,6 @@
 // src/mockData.js
 
-// 🧍‍♂️ FAKE USERS (odwzorowanie tabeli Users z bazy)
+//  FAKE USERS
 export const FAKE_USERS = [
   {
     UserID: 1,
@@ -27,4 +27,26 @@ export const FAKE_USERS = [
     CreatedAt: "2025-03-15T17:45:00Z",
   },
 ];
+export const FAKE_PROFILES = [
+  {
+    UserID: 2, // coach1
+    PlayerID: 1,
+    FirstName: "Krzysztof",
+    LastName: "Pudzianowski",
+    Phone: "987654321",
+    TeamCode: "TEAM001",
+  },
+  {
+    UserID: 3, // parent1
+    PlayerID: 2,
+    FirstName: "Maria",
+    LastName: "Mostowiak",
+    Phone: "555333222",
+    TeamCode: "TEAM002",
+  },
+];
+export const USERS_WITH_PROFILES = FAKE_USERS.map((u) => ({
+  ...u,
+  profile: FAKE_PROFILES.find((p) => p.UserID === u.id),
+}));
 export const DEFAULT_USER = FAKE_USERS[0];

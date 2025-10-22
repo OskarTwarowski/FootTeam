@@ -78,7 +78,7 @@ export default function LoginForm() {
 
       {/* === SUBMIT BUTTON === */}
       <div>
-        <Button type="primary" disabled={!isValid}>
+        <Button type="primary" disablessssssssd={!isValid}>
           Zaloguj się
         </Button>
       </div>

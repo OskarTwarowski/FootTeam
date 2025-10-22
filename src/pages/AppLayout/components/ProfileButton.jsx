@@ -13,11 +13,12 @@ function ProfileButton() {
       setUser(JSON.parse(storedUser));
     }
   }, []);
-  if (!user) return <p>Brak danych użytkownika — zaloguj się ponownie.</p>;
+
   //-------------------------------------------------------------
 
   return (
     <div className={styles.profile}>
+      {!user && <p>Brak danych Profilu.</p>}
       <h2 className={styles.username}>{user.Username}</h2>
       <p className={styles.role}>{user.Role}</p>
     </div>
