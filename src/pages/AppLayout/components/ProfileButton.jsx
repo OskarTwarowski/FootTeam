@@ -3,24 +3,16 @@ import { FAKE_USERS } from "../../../mockData";
 import { useEffect, useState } from "react";
 
 function ProfileButton() {
-  // do usunięcie
-
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("loggedUser");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  //-------------------------------------------------------------
-
+  const [user] = useState(() => {
+    const raw = localStorage.getItem("loggedUser");
+    return raw ? JSON.parse(raw) : null;
+  });
+  console.log(user);
   return (
     <div className={styles.profile}>
       {!user && <p>Brak danych Profilu.</p>}
-      <h2 className={styles.username}>{user.Username}</h2>
-      <p className={styles.role}>{user.Role}</p>
+      <h2 className={styles.username}>{user?.Username ?? "—"}</h2>
+      <p className={styles.role}>{user?.Role ?? "—"}</p>
     </div>
   );
 }
