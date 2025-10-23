@@ -14,6 +14,17 @@
   --color-light--1: #aaa;
   --color-light--2: #ececec;
   --color-light--3: #d6dee0;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  label {
+    color: #fff !important; /* przywraca Twój kolor */
+    font-weight: normal; /* jeśli Bootstrap zrobił pogrubienie */
+  }
 }
 
 .light-mode {

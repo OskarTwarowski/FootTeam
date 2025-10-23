@@ -1,0 +1,26 @@
+/* (--color-dark--3) */
+.profileBox {
+  display: grid;
+  grid-template-rows: 1fr auto; /* górna lista + dolny pasek */
+  background: #76818a;
+  color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 75%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border: 1px solid #2c2c3f;
+  gap: 1.5rem; /* odstęp między listą a przyciskami */
+}
+
+.profileList {
+  overflow-y: auto; /* jeśli lista będzie długa */
+}
+
+.profileButtons {
+  display: flex;
+  justify-content: space-between; /* przyciski na krańcach */
+  border-top: 1px solid #2c2c3f;
+  padding-top: 1rem;
+}

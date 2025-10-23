@@ -35,6 +35,7 @@ export const FAKE_PROFILES = [
     LastName: "Pudzianowski",
     Phone: "987654321",
     TeamCode: "TEAM001",
+    teamID: 1,
   },
   {
     UserID: 3, // parent1
@@ -43,8 +44,25 @@ export const FAKE_PROFILES = [
     LastName: "Mostowiak",
     Phone: "555333222",
     TeamCode: "TEAM002",
+    teamID: 2,
   },
 ];
+
+export const FAKE_TEAMS = [
+  {
+    TeamID: 1,
+    Name: "FC Warszawa",
+    CoachID: FAKE_USERS.find((user) => user.Role === "Trener")?.UserID || null,
+    TeamCode: "TEAM001",
+  },
+  {
+    TeamID: 2,
+    Name: "UKS Kraków",
+    CoachID: 3, // rodzic1 jako coach tymczasowo
+    TeamCode: "TEAM002",
+  },
+];
+
 export const USERS_WITH_PROFILES = FAKE_USERS.map((u) => ({
   ...u,
   profile: FAKE_PROFILES.find((p) => p.UserID === u.id),

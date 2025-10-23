@@ -6,7 +6,7 @@ import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FAKE_USERS } from "../mockData";
+import { FAKE_PROFILES, FAKE_USERS } from "../mockData";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -26,9 +26,26 @@ export default function LoginForm() {
       (u) => u.Email === data.email && u.PasswordHash === data.password
     );
     if (foundUser) {
+      const foundProfiles = FAKE_PROFILES.filter(
+        (p) => p.UserID === foundUser.UserID
+      );
+
       console.log("Zalogowano jako:", foundUser.Role);
-      navigate("/app", { replace: true });
+      navigate("/app/profil", { replace: true });
       localStorage.setItem("loggedUser", JSON.stringify(foundUser));
+      if (foundProfiles) {
+        const existingProfiles =
+          JSON.parse(localStorage.getItem("Profiles")) || [];
+
+        const profileExists = existingProfiles.some(
+          (p) => p.UserID === foundProfiles.UserID
+        );
+
+        if (!profileExists) {
+          existingProfiles.push(foundProfiles);
+          localStorage.setItem("Profiles", JSON.stringify(existingProfiles));
+        }
+      }
     } else {
       setError("username", {
         type: "manual",

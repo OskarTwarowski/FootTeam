@@ -35,8 +35,15 @@ input {
   border-radius: 8px;
   outline: none;
 }
-
-.saveBtn {
+input:focus {
+  background-color: var(--color-light--3);
+}
+.error {
+  color: darkred;
+  font-size: 1.2rem;
+  margin-top: 4px;
+}
+.cancelButton {
   background: #3b82f6;
   color: white;
   border: none;
@@ -45,17 +52,4 @@ input {
   cursor: pointer;
   font-weight: bold;
   transition: background 0.2s;
-}
-
-.saveBtn:hover {
-  background: #2563eb;
-}
-.hide {
-  display: none;
-}
-
-.error {
-  color: darkred;
-  font-size: 1.2rem;
-  margin-top: 4px;
 }
