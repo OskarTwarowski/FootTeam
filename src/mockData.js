@@ -29,11 +29,29 @@ export const FAKE_USERS = [
 ];
 export const FAKE_PROFILES = [
   {
-    UserID: 2, // coach1
+    UserID: 2,
     PlayerID: 1,
     FirstName: "Krzysztof",
     LastName: "Pudzianowski",
     Phone: "987654321",
+    TeamCode: "TEAM001",
+    teamID: 1,
+  },
+  {
+    UserID: 2,
+    PlayerID: 3,
+    FirstName: "Robert",
+    LastName: "Lewandowski",
+    Phone: "123123123",
+    TeamCode: "TEAM001",
+    teamID: 1,
+  },
+  {
+    UserID: 2,
+    PlayerID: 4,
+    FirstName: "Piotr",
+    LastName: "Nowak",
+    Phone: "999888777",
     TeamCode: "TEAM001",
     teamID: 1,
   },

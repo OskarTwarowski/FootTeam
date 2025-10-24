@@ -1,7 +1,7 @@
 /* (--color-dark--3) */
 .profileBox {
   display: grid;
-  grid-template-rows: 1fr auto; /* górna lista + dolny pasek */
+  grid-template-rows: auto 1fr auto; /* górna lista + dolny pasek */
   background: #76818a;
   color: #fff;
   padding: 2rem;
@@ -23,4 +23,11 @@
   justify-content: space-between; /* przyciski na krańcach */
   border-top: 1px solid #2c2c3f;
   padding-top: 1rem;
+}
+.header {
+  font-size: 2rem;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid #2c2c3f;
+  gap: 1.5rem;
 }

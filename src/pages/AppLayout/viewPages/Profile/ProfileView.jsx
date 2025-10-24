@@ -1,11 +1,13 @@
 import ProfileModalButton from "../Profile/ProfileModalButton";
 import styles from "./ProfileView.module.css";
+import ProfileList from "../Profile/ProfileList";
 
 export default function ProfileView() {
   return (
     <div className={styles.profileBox}>
+      <h1 className={styles.header}>Lista profili</h1>
       <div className={styles.profileList}>
-        <p>Lista profili</p>
+        <ProfileList />
       </div>
       <div className={styles.profileButtons}>
         <ProfileModalButton />

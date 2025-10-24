@@ -12,6 +12,7 @@ import NotificationView from "./pages/AppLayout/viewPages/NotificationView";
 import SettingsView from "./pages/AppLayout/viewPages/SettingsView";
 import ProfileView from "./pages/AppLayout/viewPages/Profile/ProfileView";
 import ProfileCreateForm from "./pages/AppLayout/viewPages/Profile/ProfileCreateForm";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (

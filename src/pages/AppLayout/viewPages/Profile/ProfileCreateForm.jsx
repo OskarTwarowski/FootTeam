@@ -5,6 +5,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CreateProfileSchema } from "../../../../Hooks/validators";
 import { Modal } from "react-bootstrap";
 
+//
+import { addProfile } from "../../../../services/ProfileService";
+
 function ProfileCreateForm({ show, onClose }) {
   const {
     register,
@@ -19,6 +22,8 @@ function ProfileCreateForm({ show, onClose }) {
     const existingProfiles = JSON.parse(localStorage.getItem("Profiles"));
     existingProfiles.push(data);
     localStorage.setItem("Profiles", JSON.stringify(existingProfiles));
+    window.dispatchEvent(new Event("storage"));
+
     onClose();
   };
 
@@ -31,46 +36,46 @@ function ProfileCreateForm({ show, onClose }) {
       <Modal.Body>
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           <div className={styles.row}>
-            <label htmlFor="firstName">Imię:</label>
+            <label htmlFor="FirstName">Imię:</label>
             <input
-              id="firstName"
-              {...register("firstName")}
+              id="FirstName"
+              {...register("FirstName")}
               placeholder="Jan"
             />
-            {errors.firstName && (
-              <p className={styles.error}>{errors.firstName.message}</p>
+            {errors.FirstName && (
+              <p className={styles.error}>{errors.FirstName.message}</p>
             )}
           </div>
 
           <div className={styles.row}>
-            <label htmlFor="lastName">Nazwisko:</label>
+            <label htmlFor="LastName">Nazwisko:</label>
             <input
-              id="lastName"
-              {...register("lastName")}
+              id="LastName"
+              {...register("LastName")}
               placeholder="Kowalski"
             />
-            {errors.lastName && (
-              <p className={styles.error}>{errors.lastName.message}</p>
+            {errors.LastName && (
+              <p className={styles.error}>{errors.LastName.message}</p>
             )}
           </div>
 
           <div className={styles.row}>
-            <label htmlFor="phone">Numer telefonu:</label>
-            <input id="phone" {...register("phone")} placeholder="123456789" />
-            {errors.phone && (
-              <p className={styles.error}>{errors.phone.message}</p>
+            <label htmlFor="Phone">Numer telefonu:</label>
+            <input id="Phone" {...register("Phone")} placeholder="123456789" />
+            {errors.Phone && (
+              <p className={styles.error}>{errors.Phone.message}</p>
             )}
           </div>
 
           <div className={styles.row}>
-            <label htmlFor="teamCode">Kod drużyny:</label>
+            <label htmlFor="TeamCode">Kod drużyny:</label>
             <input
-              id="teamCode"
-              {...register("teamCode")}
+              id="TeamCode"
+              {...register("TeamCode")}
               placeholder="np. ABC123"
             />
-            {errors.teamCode && (
-              <p className={styles.error}>{errors.teamCode.message}</p>
+            {errors.TeamCode && (
+              <p className={styles.error}>{errors.TeamCode.message}</p>
             )}
           </div>
 

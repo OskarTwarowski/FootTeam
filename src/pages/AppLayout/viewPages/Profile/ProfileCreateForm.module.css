@@ -39,7 +39,7 @@ input:focus {
   background-color: var(--color-light--3);
 }
 .error {
-  color: darkred;
+  color: darkred !important;
   font-size: 1.2rem;
   margin-top: 4px;
 }

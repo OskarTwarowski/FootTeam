@@ -14,7 +14,8 @@
   --color-light--1: #aaa;
   --color-light--2: #ececec;
   --color-light--3: #d6dee0;
-  h1,
+}
+/*   h1,
   h2,
   h3,
   h4,
@@ -22,11 +23,9 @@
   h6,
   p,
   label {
-    color: #fff !important; /* przywraca Twój kolor */
-    font-weight: normal; /* jeśli Bootstrap zrobił pogrubienie */
-  }
-}
-
+    color: #fff !important; 
+    font-weight: normal; 
+*/
 .light-mode {
   --color-brand--1: #006076;
   --color-brand--2: #00c46a;
@@ -57,10 +56,10 @@ html {
 }
 
 body {
-  font-family: "Manrope", sans-serif;
-  color: var(--color-light--2);
-  font-weight: 400;
-  line-height: 1.6;
+  font-family: "Manrope", sans-serif !important;
+  color: var(--color-light--2) !important;
+  font-weight: 400 !important;
+  line-height: 1.6 !important;
 }
 
 label {

@@ -30,17 +30,17 @@ export const loginSchema = yup.object({
 });
 
 export const CreateProfileSchema = yup.object().shape({
-  firstName: yup
+  FirstName: yup
     .string()
     .required("Imię jest wymagane")
     .min(3, "Imię musi Posiadać co najmniej 3 znaki"),
-  lastName: yup
+  LastName: yup
     .string()
     .required("Nazwisko jest wymagane")
     .min(3, "Nazwisko musi posiadać conajmniej 3 znaki"),
-  phone: yup
+  Phone: yup
     .string()
     .required("Numer Telefonu jest wymagany")
     .matches(/^[0-9]{9}$/, "Numer telefonu musi mieć 9 cyfr"),
-  teamCode: yup.string().required("Kod drużyny jest wymagany"),
+  TeamCode: yup.string().required("Kod drużyny jest wymagany"),
 });
