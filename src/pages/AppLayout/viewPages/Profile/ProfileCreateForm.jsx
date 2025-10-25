@@ -6,7 +6,7 @@ import { CreateProfileSchema } from "../../../../Hooks/validators";
 import { Modal } from "react-bootstrap";
 
 //
-import { addProfile } from "../../../../services/ProfileService";
+import { addProfile, removeProfile } from "../../../../services/ProfileService";
 
 function ProfileCreateForm({ show, onClose }) {
   const {
@@ -17,13 +17,20 @@ function ProfileCreateForm({ show, onClose }) {
     resolver: yupResolver(CreateProfileSchema),
     mode: "onChange",
   });
+  const generatePlayerId = () =>
+    Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36);
 
   const onSubmit = (data) => {
-    const existingProfiles = JSON.parse(localStorage.getItem("Profiles"));
-    existingProfiles.push(data);
-    localStorage.setItem("Profiles", JSON.stringify(existingProfiles));
-    window.dispatchEvent(new Event("storage"));
+    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!loggedUser) return alert("Musisz być zalogowany");
 
+    const newProfile = {
+      UserID: loggedUser.UserID,
+      PlayerID: generatePlayerId(),
+      ...data,
+    };
+
+    addProfile(newProfile);
     onClose();
   };
 

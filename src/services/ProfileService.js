@@ -10,19 +10,22 @@ export function getProfiles() {
 
 export function saveProfiles(profiles) {
   localStorage.setItem("Profiles", JSON.stringify(profiles));
+  window.dispatchEvent(new Event("storage"));
 }
 
 export function addProfile(profile) {
   const profiles = getProfiles();
   profiles.push(profile);
   saveProfiles(profiles);
-
-  // powiadom inne komponenty, że localStorage się zmienił
+  // powiadom inne komponent, że localStorage się zmienił
   window.dispatchEvent(new Event("storage"));
 }
 
-export function removeProfile(userID) {
-  const profiles = getProfiles().filter((p) => p.UserID !== userID);
-  saveProfiles(profiles);
+export function removeProfile(profileToRemove) {
+  const profiles = getProfiles();
+  const updated = profiles.filter(
+    (p) => p.PlayerID !== profileToRemove.PlayerID
+  );
+  localStorage.setItem("Profiles", JSON.stringify(updated));
   window.dispatchEvent(new Event("storage"));
 }
