@@ -24,7 +24,13 @@
   transition: background 0.2s, transform 0.1s, border-color 0.2s;
   cursor: pointer;
 }
-
+.active {
+  background: #6161e4;
+  border-color: #8080ff;
+  box-shadow: 0 0 10px rgba(128, 128, 255, 0.6);
+  font-size: 1.1rem;
+  color: #e6e6ff;
+}
 .itemButton:hover {
   background: #3a3a5f;
   border-color: #5a5a9f;

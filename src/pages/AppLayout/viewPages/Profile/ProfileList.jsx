@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./ProfileList.module.css";
 import {
   getProfiles,
   removeProfile,
 } from "../../../../services/ProfileService";
 import ConfirmModal from "../../../../components/ConfirmModal";
+import { setActiveProfile } from "../../../../store/features/activeProfileSlice";
 
 function ProfileList() {
-  const [profile, setProfile] = useState([]);
-  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [profiles, setProfiles] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const loadProfiles = () => {
-    setProfile(getProfiles());
-  };
+  const [selectedProfileToDelete, setSelectedProfileToDelete] = useState(null);
+
+  const dispatch = useDispatch();
+  const activeProfile = useSelector((state) => state.activeProfile.profile);
+
+  const loadProfiles = () => setProfiles(getProfiles());
+
   useEffect(() => {
     loadProfiles();
     const handleStorageChange = (e) => {
@@ -22,27 +27,43 @@ function ProfileList() {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
+  // modal usuwania
   const handleDeleteClick = (profile, e) => {
     e.stopPropagation();
-    setSelectedProfile(profile);
+    setSelectedProfileToDelete(profile);
     setShowModal(true);
   };
+
   const confirmDelete = () => {
-    if (selectedProfile) {
-      removeProfile(selectedProfile);
+    if (selectedProfileToDelete) {
+      removeProfile(selectedProfileToDelete);
       setShowModal(false);
-      setSelectedProfile(null);
+      setSelectedProfileToDelete(null);
     }
   };
-  if (profile.length === 0) {
+
+  // wybieranie profilu
+  const handleProfileClick = (profile) => {
+    dispatch(setActiveProfile(profile));
+  };
+
+  if (profiles.length === 0) {
     return <p>Brak zapisanych profili</p>;
   }
+
   return (
     <div>
       <ul className={styles.list}>
-        {profile.map((profile, index) => (
+        {profiles.map((profile, index) => (
           <li key={index} className={styles.item}>
-            <button className={styles.itemButton}>
+            <button
+              className={`${styles.itemButton} ${
+                activeProfile?.PlayerID === profile.PlayerID
+                  ? styles.active
+                  : ""
+              }`}
+              onClick={() => handleProfileClick(profile)}
+            >
               <span className={styles.name}>
                 {profile.FirstName} {profile.LastName}
               </span>
@@ -66,7 +87,8 @@ function ProfileList() {
         <p>
           Czy na pewno chcesz usunąć profil{" "}
           <strong>
-            {selectedProfile?.FirstName} {selectedProfile?.LastName}
+            {selectedProfileToDelete?.FirstName}{" "}
+            {selectedProfileToDelete?.LastName}
           </strong>
           ?
         </p>
