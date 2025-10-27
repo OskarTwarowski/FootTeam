@@ -1,31 +1,25 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./ProfileList.module.css";
-import {
-  getProfiles,
-  removeProfile,
-} from "../../../../services/ProfileService";
+import { removeProfile } from "../../../../services/ProfileService";
 import ConfirmModal from "../../../../components/ConfirmModal";
 import { setActiveProfile } from "../../../../store/features/activeProfileSlice";
+import {
+  fetchProfiles,
+  addProfile,
+} from "../../../../store/features/profileSlice";
 
 function ProfileList() {
-  const [profiles, setProfiles] = useState([]);
+  const dispatch = useDispatch();
+  const profiles = useSelector((state) => state.profiles.list);
+  const activeProfile = useSelector((state) => state.activeProfile.profile);
+
   const [showModal, setShowModal] = useState(false);
   const [selectedProfileToDelete, setSelectedProfileToDelete] = useState(null);
 
-  const dispatch = useDispatch();
-  const activeProfile = useSelector((state) => state.activeProfile.profile);
-
-  const loadProfiles = () => setProfiles(getProfiles());
-
   useEffect(() => {
-    loadProfiles();
-    const handleStorageChange = (e) => {
-      if (e.key === "Profiles" || !e.key) loadProfiles();
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+    dispatch(fetchProfiles());
+  }, [dispatch]);
 
   // modal usuwania
   const handleDeleteClick = (profile, e) => {
@@ -37,6 +31,7 @@ function ProfileList() {
   const confirmDelete = () => {
     if (selectedProfileToDelete) {
       removeProfile(selectedProfileToDelete);
+      dispatch(fetchProfiles);
       setShowModal(false);
       setSelectedProfileToDelete(null);
     }
@@ -78,6 +73,7 @@ function ProfileList() {
           </li>
         ))}
       </ul>
+
       <ConfirmModal
         show={showModal}
         onClose={() => setShowModal(false)}

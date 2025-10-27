@@ -1,10 +1,9 @@
+// src/store/features/activeProfileSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const activeProfileSlice = createSlice({
   name: "activeProfile",
-  initialState: {
-    profile: JSON.parse(localStorage.getItem("activeProfile")) || null,
-  },
+  initialState: { profile: null },
   reducers: {
     setActiveProfile: (state, action) => {
       state.profile = action.payload;
@@ -16,6 +15,7 @@ const activeProfileSlice = createSlice({
     },
   },
 });
+
 export const { setActiveProfile, clearActiveProfile } =
   activeProfileSlice.actions;
 export default activeProfileSlice.reducer;

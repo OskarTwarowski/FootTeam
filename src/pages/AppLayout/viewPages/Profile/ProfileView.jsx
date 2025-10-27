@@ -1,6 +1,7 @@
 import ProfileModalButton from "../Profile/ProfileModalButton";
 import styles from "./ProfileView.module.css";
 import ProfileList from "../Profile/ProfileList";
+import ProfileEditButton from "./ProfileEditButton";
 
 export default function ProfileView() {
   return (
@@ -11,7 +12,7 @@ export default function ProfileView() {
       </div>
       <div className={styles.profileButtons}>
         <ProfileModalButton />
-        <button>usuń profil</button>
+        <ProfileEditButton />
       </div>
     </div>
   );

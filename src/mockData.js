@@ -23,7 +23,7 @@ export const FAKE_USERS = [
     Username: "rodzic1",
     Email: "parent@example.com",
     PasswordHash: "parent123",
-    Role: "Parent",
+    Role: "Rodzic",
     CreatedAt: "2025-03-15T17:45:00Z",
   },
 ];
@@ -36,6 +36,7 @@ export const FAKE_PROFILES = [
     Phone: "987654321",
     TeamCode: "TEAM001",
     teamID: 1,
+    Role: "Trener",
   },
   {
     UserID: 2,

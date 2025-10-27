@@ -20,6 +20,19 @@ export function addProfile(profile) {
   // powiadom inne komponent, że localStorage się zmienił
   window.dispatchEvent(new Event("storage"));
 }
+export function updateProfile(updatedProfile) {
+  const profiles = getProfiles();
+  const index = profiles.findIndex(
+    (p) => p.PlayerID === updatedProfile.PlayerID
+  );
+
+  if (index === -1) return null;
+
+  profiles[index] = updatedProfile;
+  saveProfiles(profiles);
+  window.dispatchEvent(new Event("storage"));
+  return updatedProfile;
+}
 
 export function removeProfile(profileToRemove) {
   const profiles = getProfiles();
