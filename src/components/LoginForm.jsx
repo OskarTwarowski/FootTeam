@@ -30,7 +30,6 @@ export default function LoginForm() {
         (p) => p.UserID === foundUser.UserID
       );
 
-      console.log("Zalogowano jako:", foundUser.Role);
       navigate("/app/profil", { replace: true });
       localStorage.setItem("loggedUser", JSON.stringify(foundUser));
       if (foundProfiles) {

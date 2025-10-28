@@ -5,9 +5,13 @@ function TeamView() {
   const activeProfile = useSelector((state) => state.activeProfile.profile);
   const profiles = useSelector((state) => state.profiles?.list ?? " ");
   if (!activeProfile) {
-    return <p>Prosze wybrać Profil by połączyć sie z druzyną</p>;
+    return (
+      <div className={styles.emptyProfileBox}>
+        <h2>Brak aktywnego profilu</h2>
+        <p>Wybierz profil, aby połączyć się z drużyną.</p>
+      </div>
+    );
   }
-
   const teamPlayers = profiles.filter(
     (p) => p.TeamCode === activeProfile.TeamCode
   );

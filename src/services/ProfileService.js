@@ -1,4 +1,3 @@
-// src/data/profileService.js
 export function getProfiles() {
   const stored = JSON.parse(localStorage.getItem("Profiles")) || [];
 
