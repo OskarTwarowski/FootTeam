@@ -1,13 +1,14 @@
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTrainings } from "../../../store/features/trainingSlice";
 import format from "date-fns/format";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
 import pl from "date-fns/locale/pl";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
 import styles from "./CalendarView.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const locales = { pl: pl };
 //custom pl dodany ponieważ localny pobrany PL ma błędne końcówki miesięcy
@@ -41,20 +42,21 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 // sztuczne eventy
-const myEventsList = [
-  {
-    title: "Trening A",
-    start: new Date(2025, 9, 20, 17, 0),
-    end: new Date(2025, 9, 20, 18, 0),
-  },
-  {
-    title: "Mecz B",
-    start: new Date(2025, 9, 22, 19, 0),
-    end: new Date(2025, 9, 22, 20, 30),
-  },
-];
+
 function CalendarView() {
+  const dispatch = useDispatch();
+  const { list: trainings, status } = useSelector((state) => state.training);
   const [date, setDate] = useState(new Date());
+  useEffect(() => {
+    dispatch(fetchTrainings());
+  }, [dispatch]);
+  console.log("trainings:", trainings);
+  const events = trainings.map((t) => ({
+    title: t.title || t.Title || "Bez nazwy",
+    start: new Date(t.start || t.StartTime),
+    end: new Date(t.end || t.EndTime),
+    color: t.color || "#007bff",
+  }));
 
   const CustomHeader = ({ label, onNavigate }) => (
     <div className={styles.header}>
@@ -63,11 +65,12 @@ function CalendarView() {
       <button onClick={() => onNavigate("NEXT")}>Następny</button>
     </div>
   );
+  if (status === "loading") return <p>Ładowanie treningów...</p>;
   return (
     <div className={styles.container}>
       <Calendar
         localizer={localizer}
-        events={myEventsList}
+        events={events}
         startAccessor="start"
         endAccessor="end"
         style={{ height: "70vh" }}

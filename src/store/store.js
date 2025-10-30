@@ -3,12 +3,14 @@ import settingsReducer from "../store/features/settingsSlice";
 import activeProfileReducer from "../store/features/activeProfileSlice";
 import profileReducers from "../store/features/profileSlice";
 import registerReducers from "../store/features/RegisterSlice";
+import trainingReducer from "../store/features/trainingSlice";
 
 export const store = configureStore({
   reducer: {
     settings: settingsReducer,
     activeProfile: activeProfileReducer,
     profiles: profileReducers,
-    regiser: registerReducers,
+    register: registerReducers,
+    training: trainingReducer,
   },
 });
