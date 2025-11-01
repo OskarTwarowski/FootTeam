@@ -1,9 +1,12 @@
 import { useSelector } from "react-redux";
 import styles from "./TeamView.module.css";
+import { getTeams } from "../../../services/TeamService";
 
 function TeamView() {
   const activeProfile = useSelector((state) => state.activeProfile.profile);
-  const profiles = useSelector((state) => state.profiles?.list ?? " ");
+  const profiles = useSelector((state) => state.profiles?.list ?? []);
+  const teams = getTeams();
+
   if (!activeProfile) {
     return (
       <div className={styles.emptyProfileBox}>
@@ -12,26 +15,29 @@ function TeamView() {
       </div>
     );
   }
-  const teamPlayers = profiles.filter(
-    (p) => p.TeamCode === activeProfile.TeamCode
+
+  const currentTeam = teams.find(
+    (team) => team.TeamID === activeProfile.TeamID
   );
+
+  const teamPlayers = profiles.filter((p) => p.TeamID === activeProfile.TeamID);
 
   if (teamPlayers.length === 0) {
     return <p>Brak graczy w tej drużynie.</p>;
   }
 
-  // Trener na początku listy
   const sortedPlayers = [
     ...teamPlayers.filter((p) => p.Role === "Trener"),
     ...teamPlayers.filter((p) => p.Role !== "Trener"),
   ];
 
-  const teamName = teamPlayers[0]?.TeamName || "Nieznana Drużyna";
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1>{teamName}</h1>
-        <p className={styles.teamCode}>Kod drużyny: {activeProfile.TeamCode}</p>
+        <h1>{currentTeam?.Name || "Nieznana Drużyna"}</h1>
+        <p className={styles.teamCode}>
+          Kod drużyny: {currentTeam?.TeamCode || "Brak kodu"}
+        </p>
       </header>
 
       <ul className={styles.playerList}>

@@ -20,8 +20,9 @@ export const fetchProfiles = createAsyncThunk(
 export const addProfile = createAsyncThunk(
   "profiles/addProfile",
   async (profile) => {
-    const added = await addProfileService(profile);
-    return added;
+    await addProfileService(profile);
+    const profiles = getProfiles();
+    return profiles;
   }
 );
 export const updateProfile = createAsyncThunk(
@@ -35,7 +36,8 @@ export const removeProfile = createAsyncThunk(
   "profiles/removeProfile",
   async (profile) => {
     await removeProfileService(profile);
-    return profile;
+    const profiles = getProfiles();
+    return profiles;
   }
 );
 const profileSlice = createSlice({
@@ -60,8 +62,9 @@ const profileSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(addProfile.fulfilled, (state, action) => {
-        state.list.push(action.payload);
+        state.list = action.payload;
       })
+
       .addCase(updateProfile.fulfilled, (state, action) => {
         const updated = action.payload;
         if (!updated) return;
@@ -73,8 +76,7 @@ const profileSlice = createSlice({
         }
       })
       .addCase(removeProfile.fulfilled, (state, action) => {
-        const removed = action.payload;
-        state.list = state.list.filter((p) => p.PlayerID !== removed.PlayerID);
+        state.list = action.payload;
       });
   },
 });

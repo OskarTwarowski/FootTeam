@@ -1,6 +1,6 @@
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTrainings } from "../../../store/features/trainingSlice";
+import { fetchTrainings } from "../../../../store/features/trainingSlice";
 import format from "date-fns/format";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
@@ -8,10 +8,11 @@ import getDay from "date-fns/getDay";
 import pl from "date-fns/locale/pl";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import styles from "./CalendarView.module.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import AddTrainingModal from "../Calendar/AddTrainingModal";
 
 const locales = { pl: pl };
-//custom pl dodany ponieważ localny pobrany PL ma błędne końcówki miesięcy
+
 const customPl = {
   ...pl,
   localize: {
@@ -33,6 +34,7 @@ const customPl = {
       ][n],
   },
 };
+
 const localizer = dateFnsLocalizer({
   format: (date, formatStr, options) =>
     format(date, formatStr, { ...options, locale: customPl }),
@@ -41,20 +43,33 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
-// sztuczne eventy
 
 function CalendarView() {
   const dispatch = useDispatch();
   const { list: trainings, status } = useSelector((state) => state.training);
+  const activeProfile = useSelector((state) => state.activeProfile.profile);
   const [date, setDate] = useState(new Date());
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+
   useEffect(() => {
     dispatch(fetchTrainings());
-  }, [dispatch]);
-  console.log("trainings:", trainings);
-  const events = trainings.map((t) => ({
-    title: t.title || t.Title || "Bez nazwy",
-    start: new Date(t.start || t.StartTime),
-    end: new Date(t.end || t.EndTime),
+  }, [dispatch, activeProfile]);
+
+  const filteredTrainings = useMemo(() => {
+    if (!activeProfile || !activeProfile.TeamID) return [];
+    return trainings.filter(
+      (t) => (t.TeamID || t.teamID) === activeProfile.TeamID
+    );
+  }, [trainings, activeProfile]);
+
+  const events = filteredTrainings.map((t) => ({
+    title: t.Title || "Bez nazwy",
+    start: new Date(t.StartTime),
+    end: new Date(t.EndTime),
+    description: t.Description,
     color: t.color || "#007bff",
   }));
 
@@ -65,10 +80,21 @@ function CalendarView() {
       <button onClick={() => onNavigate("NEXT")}>Następny</button>
     </div>
   );
+
+  // 👇 Kliknięcie w pustą datę
+  const handleSelectSlot = (slotInfo) => {
+    if (loggedUser?.Role === "Trener" || loggedUser?.Role === "Admin") {
+      setSelectedDate(slotInfo.start); // zapisujemy klikniętą datę
+      setShowAddModal(true);
+    }
+  };
+
   if (status === "loading") return <p>Ładowanie treningów...</p>;
+
   return (
     <div className={styles.container}>
       <Calendar
+        selectable
         localizer={localizer}
         events={events}
         startAccessor="start"
@@ -87,6 +113,14 @@ function CalendarView() {
         components={{
           toolbar: CustomHeader,
         }}
+        onSelectSlot={handleSelectSlot}
+      />
+
+      {/* Modal dodawania treningu */}
+      <AddTrainingModal
+        show={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        preselectedDate={selectedDate}
       />
     </div>
   );

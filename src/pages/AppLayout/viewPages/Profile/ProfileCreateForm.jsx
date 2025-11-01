@@ -6,7 +6,10 @@ import { CreateProfileSchema } from "../../../../Hooks/validators";
 import { Modal } from "react-bootstrap";
 
 //
-import { addProfile, removeProfile } from "../../../../services/ProfileService";
+import { addProfile } from "../../../../store/features/profileSlice";
+import { fetchProfiles } from "../../../../store/features/profileSlice";
+import { useDispatch } from "react-redux";
+import { findTeamByCode } from "../../../../services/TeamService";
 
 function ProfileCreateForm({ show, onClose }) {
   const {
@@ -20,17 +23,26 @@ function ProfileCreateForm({ show, onClose }) {
   const generatePlayerId = () =>
     Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36);
 
+  const dispatch = useDispatch();
   const onSubmit = (data) => {
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
     if (!loggedUser) return alert("Musisz być zalogowany");
+    const team = findTeamByCode(data.TeamCode);
+    if (!team) {
+      alert("nie znaleziono drużyny o takim kodzie");
+      return;
+    }
 
     const newProfile = {
       UserID: loggedUser.UserID,
       PlayerID: generatePlayerId(),
+      TeamID: team.TeamID,
       ...data,
     };
 
-    addProfile(newProfile);
+    dispatch(addProfile(newProfile))
+      .unwrap()
+      .then(() => dispatch(fetchProfiles())); //
     onClose();
   };
 

@@ -31,7 +31,7 @@ function ProfileList() {
   const confirmDelete = () => {
     if (selectedProfileToDelete) {
       removeProfile(selectedProfileToDelete);
-      dispatch(fetchProfiles);
+      dispatch(fetchProfiles());
       setShowModal(false);
       setSelectedProfileToDelete(null);
     }

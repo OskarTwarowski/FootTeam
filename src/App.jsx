@@ -6,7 +6,7 @@ import Register from "./pages/Register";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./pages/AppLayout/AppLayout";
 import TeamView from "./pages/AppLayout/viewPages/TeamView";
-import CalendarView from "./pages/AppLayout/viewPages/CalendarView";
+import CalendarView from "./pages/AppLayout/viewPages/Calendar/CalendarView";
 import PaymentsView from "./pages/AppLayout/viewPages/PaymentsView";
 import NotificationView from "./pages/AppLayout/viewPages/NotificationView";
 import SettingsView from "./pages/AppLayout/viewPages/SettingsView";

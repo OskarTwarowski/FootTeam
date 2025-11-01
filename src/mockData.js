@@ -35,7 +35,7 @@ export const FAKE_PROFILES = [
     LastName: "Pudzianowski",
     Phone: "987654321",
     TeamCode: "TEAM001",
-    teamID: 1,
+    TeamID: 1,
     Role: "Trener",
   },
   {
@@ -45,7 +45,7 @@ export const FAKE_PROFILES = [
     LastName: "Lewandowski",
     Phone: "123123123",
     TeamCode: "TEAM001",
-    teamID: 1,
+    TeamID: 1,
   },
   {
     UserID: 2,
@@ -54,7 +54,7 @@ export const FAKE_PROFILES = [
     LastName: "Nowak",
     Phone: "999888777",
     TeamCode: "TEAM001",
-    teamID: 1,
+    TeamID: 1,
   },
   {
     UserID: 3, // parent1
@@ -63,7 +63,7 @@ export const FAKE_PROFILES = [
     LastName: "Mostowiak",
     Phone: "555333222",
     TeamCode: "TEAM002",
-    teamID: 2,
+    TeamID: 2,
   },
 ];
 
@@ -89,27 +89,27 @@ export const FAKE_EVENTS = [
     TrainingID: 1,
     Title: "Trening techniczny - drużyna A",
     Description: "Ćwiczenie podań i dryblingu na hali.",
-    StartTime: "2025-10-20T17:00:00",
-    EndTime: "2025-10-20T18:30:00",
+    StartTime: "2025-11-20T17:00:00",
+    EndTime: "2025-11-20T18:30:00",
     CoachID: "user-coach-001",
-    TeamID: "TEAM100",
+    TeamID: 1,
   },
   {
     TrainingID: 2,
     Title: "Mecz sparingowy z drużyną B",
     Description: "Zbiórka o 18:30, mecz o 19:00.",
-    StartTime: "2025-10-22T19:00:00",
-    EndTime: "2025-10-22T20:30:00",
+    StartTime: "2025-11-22T19:00:00",
+    EndTime: "2025-11-22T20:30:00",
     CoachID: "user-coach-001",
-    TeamID: "TEAM001",
+    TeamID: 1,
   },
   {
     TrainingID: 3,
     Title: "Trening kondycyjny - drużyna B",
     Description: "Biegi interwałowe i rozciąganie.",
-    StartTime: "2025-10-23T18:00:00",
-    EndTime: "2025-10-23T19:15:00",
+    StartTime: "2025-11-23T18:00:00",
+    EndTime: "2025-11-23T19:15:00",
     CoachID: "user-coach-002",
-    TeamID: "team01",
+    TeamID: 2,
   },
 ];
