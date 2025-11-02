@@ -10,6 +10,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import styles from "./CalendarView.module.css";
 import { useState, useEffect, useMemo } from "react";
 import AddTrainingModal from "../Calendar/AddTrainingModal";
+import EventModal from "../Calendar/EventModal";
 
 const locales = { pl: pl };
 
@@ -51,6 +52,7 @@ function CalendarView() {
   const [date, setDate] = useState(new Date());
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
@@ -69,7 +71,7 @@ function CalendarView() {
     title: t.Title || "Bez nazwy",
     start: new Date(t.StartTime),
     end: new Date(t.EndTime),
-    description: t.Description,
+    Description: t.Description,
     color: t.color || "#007bff",
   }));
 
@@ -90,7 +92,9 @@ function CalendarView() {
   };
 
   if (status === "loading") return <p>Ładowanie treningów...</p>;
-
+  const handleSelectEvent = (event) => {
+    setSelectedEvent(event);
+  };
   return (
     <div className={styles.container}>
       <Calendar
@@ -114,6 +118,7 @@ function CalendarView() {
           toolbar: CustomHeader,
         }}
         onSelectSlot={handleSelectSlot}
+        onSelectEvent={handleSelectEvent}
       />
 
       {/* Modal dodawania treningu */}
@@ -122,6 +127,12 @@ function CalendarView() {
         onClose={() => setShowAddModal(false)}
         preselectedDate={selectedDate}
       />
+      {selectedEvent && (
+        <EventModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
     </div>
   );
 }

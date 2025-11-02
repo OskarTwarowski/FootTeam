@@ -64,6 +64,6 @@
 .delete:hover {
   color: #ff4444;
 }
-span {
-  color: aliceblue;
+.textColor {
+  color: aliceblue !important;
 }

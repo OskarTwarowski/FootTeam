@@ -59,12 +59,14 @@ function ProfileList() {
               }`}
               onClick={() => handleProfileClick(profile)}
             >
-              <span className={styles.name}>
+              <span className={`${styles.name} ${styles.textColor}`}>
                 {profile.FirstName} {profile.LastName}
               </span>
-              <span className={styles.phone}>{profile.Phone}</span>
+              <span className={`${styles.phone} ${styles.textColor}`}>
+                {profile.Phone}
+              </span>
               <span
-                className={styles.delete}
+                className={`${styles.delete} ${styles.textColor}`}
                 onClick={(e) => handleDeleteClick(profile, e)}
               >
                 ✖

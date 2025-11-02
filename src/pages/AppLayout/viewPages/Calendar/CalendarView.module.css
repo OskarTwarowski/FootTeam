@@ -74,7 +74,7 @@ button:hover {
   color: #000000;
 }
 span {
-  color: #181818;
+  color: #181818 !important;
 }
 :global(.rbc-event-content) {
   background-color: #0369a1;
