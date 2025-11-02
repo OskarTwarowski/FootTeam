@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerSchema } from "../Hooks/validators";
 import styles from "../pages/Auth.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import {
   faCheck,
@@ -11,7 +11,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { getUsers, saveUsers } from "../services/AuthService";
+
 export default function RegisterForm() {
+  // do usuniecia
+  const generateUserId = () =>
+    Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -23,7 +30,27 @@ export default function RegisterForm() {
   });
   // tutaj trzeba dodanie do backednu zrobić
   const onSubmit = (data) => {
-    console.log("✅ Dane formularza:", data);
+    const users = getUsers();
+    const userExists = users.some((u) => u.Email === data.email);
+    if (userExists) {
+      alert("Użytkownik o tym adresie e-mail już istnieje.");
+      return;
+    }
+    const newUser = {
+      Email: data.email,
+      PasswordHash: data.password,
+      Role: "Rodzic",
+      CreatedAt: new Date().toISOString(),
+      UserID: generateUserId(),
+    };
+    const updatedUsers = [...users, newUser];
+    saveUsers(updatedUsers);
+
+    localStorage.setItem("loggedUser", JSON.stringify(newUser));
+
+    const profiles = JSON.parse(localStorage.getItem("Profiles")) || [];
+    localStorage.setItem("Profiles", JSON.stringify(profiles));
+    navigate("/app/profil", { replace: true });
   };
 
   return (
@@ -33,15 +60,15 @@ export default function RegisterForm() {
     >
       <h1>Zarejestruj się</h1>
 
-      {/* nazwa uzytkownika */}
+      {/* EMAIL uzytkownika */}
       <div className={styles.row}>
-        <label htmlFor="username">
-          Nazwa użytkownika:
-          {!errors.username && watch("username") ? (
+        <label htmlFor="email">
+          Adres e-mail:
+          {!errors.email && watch("email") ? (
             <span className={styles.valid}>
               <FontAwesomeIcon icon={faCheck} />
             </span>
-          ) : errors.username && watch("username") ? (
+          ) : errors.email && watch("email") ? (
             <span className={styles.invalid}>
               <FontAwesomeIcon icon={faTimes} />
             </span>
@@ -49,16 +76,16 @@ export default function RegisterForm() {
         </label>
 
         <input
-          type="text"
-          id="username"
-          placeholder="Nazwa użytkownika"
+          type="email"
+          id="email"
+          placeholder="example@email.com"
           autoComplete="off"
-          {...register("username")}
+          {...register("email")}
         />
 
-        {errors.username && (
+        {errors.email && (
           <p className={styles.instructions}>
-            <FontAwesomeIcon icon={faInfoCircle} /> {errors.username.message}
+            <FontAwesomeIcon icon={faInfoCircle} /> {errors.email.message}
           </p>
         )}
       </div>

@@ -6,10 +6,14 @@ import Register from "./pages/Register";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./pages/AppLayout/AppLayout";
 import TeamView from "./pages/AppLayout/viewPages/TeamView";
-import CalendarView from "./pages/AppLayout/viewPages/CalendarView";
+import CalendarView from "./pages/AppLayout/viewPages/Calendar/CalendarView";
 import PaymentsView from "./pages/AppLayout/viewPages/PaymentsView";
 import NotificationView from "./pages/AppLayout/viewPages/NotificationView";
 import SettingsView from "./pages/AppLayout/viewPages/SettingsView";
+import ProfileView from "./pages/AppLayout/viewPages/Profile/ProfileView";
+import ProfileCreateForm from "./pages/AppLayout/viewPages/Profile/ProfileCreateForm";
+import "bootstrap/dist/css/bootstrap.min.css";
+import ProfileEditButton from "./pages/AppLayout/viewPages/Profile/ProfileEditButton";
 
 function App() {
   return (
@@ -21,7 +25,11 @@ function App() {
         <Route path="rejestracja" element={<Register />} />
         <Route path="*" element={<PageNotFound />} />
         <Route path="app" element={<AppLayout />}>
-          <Route index element={<TeamView />} />
+          <Route index element={<ProfileView />} />
+          <Route path="profil" element={<ProfileView />}>
+            <Route path="dodaj-profil" element={<ProfileCreateForm />} />
+            <Route path="edytuj-profil" element={<ProfileEditButton />} />
+          </Route>
           <Route path="druzyna" element={<TeamView />} />
           <Route path="kalendarz" element={<CalendarView />} />
           <Route path="platnosci" element={<PaymentsView />} />

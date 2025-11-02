@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   lightMode: false,
-  fontSize: false,
 };
 
 const settingsSlice = createSlice({
@@ -12,11 +11,8 @@ const settingsSlice = createSlice({
     toggleLightMode(state) {
       state.lightMode = !state.lightMode;
     },
-    setFontSize(state) {
-      state.fontSize = !state.fontSize;
-    },
   },
 });
 
-export const { toggleLightMode, setFontSize } = settingsSlice.actions;
+export const { toggleLightMode } = settingsSlice.actions;
 export default settingsSlice.reducer;

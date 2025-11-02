@@ -1,13 +1,11 @@
 import * as yup from "yup";
 
 export const registerSchema = yup.object().shape({
-  username: yup
+  email: yup
     .string()
-    .matches(
-      /^[A-Za-z][A-Za-z0-9-_]{3,23}$/,
-      "Nazwa użytkownika musi zaczynać się literą i mieć 4–24 znaki"
-    )
-    .required("Nazwa użytkownika jest wymagana"),
+    .email("Niepoprawny adres e-mail")
+    .required("Adres e-mail jest wymagany"),
+
   password: yup
     .string()
     .matches(
@@ -21,12 +19,28 @@ export const registerSchema = yup.object().shape({
     .required("Powtórz hasło"),
 });
 export const loginSchema = yup.object({
-  username: yup
+  email: yup
     .string()
-    .required("Nazwa użytkownika jest wymagana")
-    .min(4, "Minimum 4 znaki"),
+    .email("Niepoprawny adres e-mail")
+    .required("Adres e-mail jest wymagany"),
   password: yup
     .string()
     .required("Hasło jest wymagane")
     .min(6, "Minimum 6 znaków"),
+});
+
+export const CreateProfileSchema = yup.object().shape({
+  FirstName: yup
+    .string()
+    .required("Imię jest wymagane")
+    .min(3, "Imię musi Posiadać co najmniej 3 znaki"),
+  LastName: yup
+    .string()
+    .required("Nazwisko jest wymagane")
+    .min(3, "Nazwisko musi posiadać conajmniej 3 znaki"),
+  Phone: yup
+    .string()
+    .required("Numer Telefonu jest wymagany")
+    .matches(/^[0-9]{9}$/, "Numer telefonu musi mieć 9 cyfr"),
+  TeamCode: yup.string().required("Kod drużyny jest wymagany"),
 });

@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FAKE_PROFILES, FAKE_USERS } from "../mockData";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -13,23 +14,37 @@ export default function LoginForm() {
   const {
     register,
     handleSubmit,
-    watch,
     setError,
     formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(loginSchema),
     mode: "onChange",
   });
-
-  // sztuczny user do demonstracji
-  const FAKE_USER = { username: "admin", password: "ass123" };
-
+  //-----------------------------------------------------------------------------------
   const onSubmit = (data) => {
-    if (
-      data.username === FAKE_USER.username &&
-      data.password === FAKE_USER.password
-    ) {
-      navigate("/app", { replace: true });
+    const foundUser = FAKE_USERS.find(
+      (u) => u.Email === data.email && u.PasswordHash === data.password
+    );
+    if (foundUser) {
+      const foundProfiles = FAKE_PROFILES.filter(
+        (p) => p.UserID === foundUser.UserID
+      );
+
+      navigate("/app/profil", { replace: true });
+      localStorage.setItem("loggedUser", JSON.stringify(foundUser));
+      if (foundProfiles) {
+        const existingProfiles =
+          JSON.parse(localStorage.getItem("Profiles")) || [];
+
+        const profileExists = existingProfiles.some(
+          (p) => p.UserID === foundProfiles.UserID
+        );
+
+        if (!profileExists) {
+          existingProfiles.push(foundProfiles);
+          localStorage.setItem("Profiles", JSON.stringify(existingProfiles));
+        }
+      }
     } else {
       setError("username", {
         type: "manual",
@@ -37,7 +52,7 @@ export default function LoginForm() {
       });
     }
   };
-
+  //-----------------------------------------------------------------------------------
   return (
     <form
       className={`${styles.form} ${styles.box}`}
@@ -47,12 +62,12 @@ export default function LoginForm() {
 
       {/* === USERNAME === */}
       <div className={styles.row}>
-        <label htmlFor="username">Nazwa użytkownika:</label>
+        <label htmlFor="email">Email użytkownika:</label>
         <input
-          type="text"
-          id="username"
-          placeholder="Nazwa użytkownika"
-          {...register("username")}
+          type="email"
+          id="email"
+          placeholder="adres@email.com"
+          {...register("email")}
         />
         {errors.username && (
           <p className={styles.instructions}>

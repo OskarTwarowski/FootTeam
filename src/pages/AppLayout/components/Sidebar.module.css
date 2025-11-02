@@ -18,9 +18,9 @@
 /* pojedynczy element listy */
 .sidebar li {
   border-radius: 8px;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 500;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
 }
 
 /* link w środku */
