@@ -113,3 +113,23 @@ export const FAKE_EVENTS = [
     TeamID: 2,
   },
 ];
+export const mockNotifications = [
+  {
+    NotificationID: 1,
+    Title: "Nowy trening!",
+    Description: "Trening przeniesiony na środę 18:00.",
+    StartTime: "2025-10-30T08:00:00",
+    EndTime: "2025-11-02T22:00:00",
+    CreatedBy: 3, // trener
+    TeamID: 1,
+  },
+  {
+    NotificationID: 2,
+    Title: "Aktualizacja systemu",
+    Description: "Wersja 2.0 już dostępna 🚀",
+    StartTime: "2025-10-28T00:00:00",
+    EndTime: "2025-11-30T23:59:59",
+    CreatedBy: 1, // admin
+    TeamID: null, // globalne
+  },
+];

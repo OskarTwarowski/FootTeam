@@ -8,7 +8,7 @@ import AppLayout from "./pages/AppLayout/AppLayout";
 import TeamView from "./pages/AppLayout/viewPages/TeamView";
 import CalendarView from "./pages/AppLayout/viewPages/Calendar/CalendarView";
 import PaymentsView from "./pages/AppLayout/viewPages/PaymentsView";
-import NotificationView from "./pages/AppLayout/viewPages/NotificationView";
+import NotificationView from "./pages/AppLayout/viewPages/Notification/NotificationView";
 import SettingsView from "./pages/AppLayout/viewPages/SettingsView";
 import ProfileView from "./pages/AppLayout/viewPages/Profile/ProfileView";
 import ProfileCreateForm from "./pages/AppLayout/viewPages/Profile/ProfileCreateForm";

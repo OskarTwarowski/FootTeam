@@ -8,6 +8,7 @@ import {
   fetchProfiles,
   addProfile,
 } from "../../../../store/features/profileSlice";
+import { getTeams } from "../../../../services/TeamService";
 
 function ProfileList() {
   const dispatch = useDispatch();
@@ -16,6 +17,8 @@ function ProfileList() {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedProfileToDelete, setSelectedProfileToDelete] = useState(null);
+  const teams = getTeams();
+  console.log(teams);
 
   useEffect(() => {
     dispatch(fetchProfiles());
@@ -49,31 +52,40 @@ function ProfileList() {
   return (
     <div>
       <ul className={styles.list}>
-        {profiles.map((profile, index) => (
-          <li key={index} className={styles.item}>
-            <button
-              className={`${styles.itemButton} ${
-                activeProfile?.PlayerID === profile.PlayerID
-                  ? styles.active
-                  : ""
-              }`}
-              onClick={() => handleProfileClick(profile)}
-            >
-              <span className={`${styles.name} ${styles.textColor}`}>
-                {profile.FirstName} {profile.LastName}
-              </span>
-              <span className={`${styles.phone} ${styles.textColor}`}>
-                {profile.Phone}
-              </span>
-              <span
-                className={`${styles.delete} ${styles.textColor}`}
-                onClick={(e) => handleDeleteClick(profile, e)}
+        {profiles.map((profile, index) => {
+          const playerTeam = teams.find((t) => t.TeamID === profile.TeamID);
+
+          return (
+            <li key={index} className={styles.item}>
+              <button
+                className={`${styles.itemButton} ${
+                  activeProfile?.PlayerID === profile.PlayerID
+                    ? styles.active
+                    : ""
+                }`}
+                onClick={() => handleProfileClick(profile)}
               >
-                ✖
-              </span>
-            </button>
-          </li>
-        ))}
+                <span className={`${styles.name} ${styles.textColor}`}>
+                  {profile.FirstName} {profile.LastName}
+                </span>
+                <span className={`${styles.team} ${styles.textColor}`}>
+                  {playerTeam ? playerTeam.Name : "Brak drużyny"}
+                </span>
+
+                <span className={`${styles.phone} ${styles.textColor}`}>
+                  {profile.Phone}
+                </span>
+
+                <span
+                  className={`${styles.delete} ${styles.textColor}`}
+                  onClick={(e) => handleDeleteClick(profile, e)}
+                >
+                  ✖
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
       <ConfirmModal

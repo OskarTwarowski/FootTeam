@@ -10,7 +10,7 @@
 
 .itemButton {
   display: grid;
-  grid-template-columns: 2fr 1fr auto; /* lewo: imię, środek: tel, prawo: X */
+  grid-template-columns: 2fr 1fr 1fr auto; /* lewo: imię, środek: tel, prawo: X */
   align-items: center;
   gap: 1rem;
   width: 100%;
