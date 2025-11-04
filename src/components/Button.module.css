@@ -13,6 +13,13 @@
   background-color: var(--color-brand--2);
   color: var(--color-dark--1);
 }
+.primarybtn {
+  display: block;
+  margin: 2.5rem auto 2.5rem auto;
+  font-weight: 700;
+  background-color: var(--color-brand--2);
+  color: var(--color-dark--1);
+}
 
 .back {
   font-weight: 600;

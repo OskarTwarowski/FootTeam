@@ -3,7 +3,9 @@
   border-radius: 12px;
   color: #ececec;
   max-height: calc(100vh - 180px);
-  margin-top: 10rem;
+  width: 90%;
+
+  /*margin-top: 10rem; */
 }
 
 h2 {
@@ -52,4 +54,11 @@ h2 {
   color: #aaa !important;
   display: block;
   text-align: right;
+}
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5rem;
+  width: 80%;
 }

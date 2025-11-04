@@ -8,7 +8,7 @@ import {
   fetchProfiles,
   addProfile,
 } from "../../../../store/features/profileSlice";
-import { getTeams } from "../../../../services/TeamService";
+import { findTeamByCode } from "../../../../services/TeamService";
 
 function ProfileList() {
   const dispatch = useDispatch();
@@ -17,8 +17,8 @@ function ProfileList() {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedProfileToDelete, setSelectedProfileToDelete] = useState(null);
-  const teams = getTeams();
-  console.log(teams);
+
+  console.log(profiles);
 
   useEffect(() => {
     dispatch(fetchProfiles());
@@ -53,7 +53,9 @@ function ProfileList() {
     <div>
       <ul className={styles.list}>
         {profiles.map((profile, index) => {
-          const playerTeam = teams.find((t) => t.TeamID === profile.TeamID);
+          const team = findTeamByCode(profile.TeamCode);
+
+          // const playerTeam = team.find((t) => t.TeamID === profile.TeamID);
 
           return (
             <li key={index} className={styles.item}>
@@ -69,7 +71,7 @@ function ProfileList() {
                   {profile.FirstName} {profile.LastName}
                 </span>
                 <span className={`${styles.team} ${styles.textColor}`}>
-                  {playerTeam ? playerTeam.Name : "Brak drużyny"}
+                  {team ? team.Name : "Brak drużyny"}
                 </span>
 
                 <span className={`${styles.phone} ${styles.textColor}`}>

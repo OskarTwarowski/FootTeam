@@ -7,6 +7,7 @@ import { Modal } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { updateProfile } from "../../../../store/features/profileSlice";
+import { findTeamByCode } from "../../../../services/TeamService";
 
 function ProfileEditForm({ show, onClose }) {
   const dispatch = useDispatch();
@@ -31,10 +32,11 @@ function ProfileEditForm({ show, onClose }) {
 
   const onSubmit = (data) => {
     if (!activeProfile) return alert("Brak aktywnego profilu");
-
+    const team = findTeamByCode(data.TeamCode);
     const editedProfile = {
       ...activeProfile,
       ...data,
+      TeamID: team.TeamID,
     };
     dispatch(updateProfile(editedProfile));
     onClose();
