@@ -1,5 +1,4 @@
 import styles from "./ProfileButton.module.css";
-import { FAKE_USERS } from "../../../mockData";
 import { useEffect, useState } from "react";
 
 function ProfileButton() {
@@ -11,7 +10,7 @@ function ProfileButton() {
   return (
     <div className={styles.profile}>
       {!user && <p>Brak danych Profilu.</p>}
-      <h2 className={styles.username}>{user?.Username ?? "—"}</h2>
+      <h2 className={styles.username}>{user?.Email ?? "—"}</h2>
       <p className={styles.role}>{user?.Role ?? "—"}</p>
     </div>
   );

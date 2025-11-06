@@ -117,7 +117,11 @@ function CalendarView() {
         components={{
           toolbar: CustomHeader,
         }}
-        onSelectSlot={handleSelectSlot}
+        onSelectSlot={
+          activeProfile?.Role === "Trener" || activeProfile?.Role === "Admin"
+            ? handleSelectSlot
+            : undefined
+        }
         onSelectEvent={handleSelectEvent}
       />
 
