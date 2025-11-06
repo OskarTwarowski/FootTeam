@@ -45,6 +45,6 @@ CREATE TABLE Notifications (
     StartTime DATETIME,
     EndTime DATETIME,
     CreatedBy INT,
-    FOREIGN KEY (CreatedBy) REFERENCES Users(UserID) ON DELETE SET NULL
+    FOREIGN KEY (CreatedBy) REFERENCES Users(UserID) ON DELETE SET NULL,
     FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE SET NULL
 );
