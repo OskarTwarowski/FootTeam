@@ -1,0 +1,44 @@
+.footer {
+  width: 100%;
+  backdrop-filter: blur(6px);
+  color: #c8f5dc;
+  text-align: center;
+  padding: 1.8rem 1rem;
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  border-top: 5px solid rgba(12, 12, 12, 0.1);
+}
+
+.text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: black;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.github {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  color: #000000;
+  font-weight: 600;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.github:hover {
+  color: #25a244;
+  transform: translateY(-2px);
+}
+
+.github svg {
+  font-size: 1.4rem;
+}

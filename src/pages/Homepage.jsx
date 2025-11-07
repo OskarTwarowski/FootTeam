@@ -1,25 +1,40 @@
 import { Link } from "react-router-dom";
 import PageNav from "../components/PageNav";
+import CarouselSection from "./AppLayout/components/CarouselSection";
 import styles from "./Homepage.module.css";
+import ContactSection from "./AppLayout/components/ContactSection";
+import Footer from "./AppLayout/components/Footer";
 
 function Homepage() {
   return (
     <main className={styles.homepage}>
       <PageNav />
-      <section>
-        <h1>FootTeam</h1>
-        <h1>Proste i przyjemne zarządzanie druzyną</h1>
-        <h2>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam
-          eaque iusto qui maxime nesciunt alias quae mollitia inventore! Debitis
-          voluptatem architecto quasi hic sit quas consectetur maiores quaerat
-          officia in.
-        </h2>
-        {/* link do usunięcia w przyszłości, pomija logowanie */}
-        <Link to="app" className="cta">
-          app
-        </Link>
+
+      {/* HERO SECTION */}
+      <section className={styles.hero}>
+        <div className={styles.heroContent}>
+          <h1>⚽️ Witaj w FootTeam!</h1>
+          <h2>Proste i przyjemne zarządzanie drużyną</h2>
+          <p>
+            Zorganizuj swoją drużynę jak profesjonalista. Dzięki FootTeam z
+            łatwością zaplanujesz treningi, prześlesz powiadomienia zawodnikom i
+            utrzymasz doskonałą komunikację w zespole – wszystko w jednym
+            miejscu. Nieważne, czy jesteś trenerem czy rodzicem, FootTeam pomoże
+            Ci być zawsze na bieżąco i działać skuteczniej.
+          </p>
+          {/*do usunięcia */}
+          <Link to="app" className={styles.cta}>
+            Przejdź do aplikacji
+          </Link>
+        </div>
       </section>
+
+      {/* TESTIMONIALS SECTION */}
+      <section className={styles.testimonials}>
+        <CarouselSection />
+      </section>
+      <ContactSection />
+      <Footer />
     </main>
   );
 }

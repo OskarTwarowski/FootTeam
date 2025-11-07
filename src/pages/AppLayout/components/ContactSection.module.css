@@ -1,0 +1,41 @@
+.contact {
+  color: #fff;
+  text-align: center;
+  padding: 6rem 2rem;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contact h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #b7fbd3;
+}
+
+.contact p {
+  font-size: 2rem;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  color: #e8f6ef;
+}
+
+.button {
+  display: inline-block;
+  background-color: #25a244;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.9rem 2.2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background-color: #1b7e34;
+  transform: scale(1.05);
+}
