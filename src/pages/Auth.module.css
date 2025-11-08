@@ -1,10 +1,10 @@
-.login {
-  margin: 2.5rem;
+.login,
+.register {
+  margin: 0;
   padding: 2.5rem 5rem;
-  background-color: var(--color-dark--1);
-  min-height: calc(100vh - 5rem);
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #adb5bd 100%);
 }
-
 .form {
   background-color: var(--color-dark--2);
   border-radius: 7px;
@@ -14,6 +14,7 @@
   gap: 2rem;
   max-width: 48rem;
   margin: 8rem auto;
+  backdrop-filter: blur(8px);
 }
 
 .row {
@@ -21,12 +22,7 @@
   flex-direction: column;
   gap: 0.5rem;
 }
-.register {
-  margin: 2.5rem;
-  padding: 2.5rem 5rem;
-  background-color: var(--color-dark--1);
-  min-height: calc(100vh - 5rem);
-}
+
 .box {
   box-sizing: border-box;
   border: solid var(--color-light--1) 10px;
@@ -88,11 +84,144 @@
   font-size: 1.2rem;
   text-decoration: none;
   text-transform: uppercase;
-  color: peachpuff;
+  color: #74c69d; /* jasna zieleń */
+  font-weight: 600;
   transition: color 0.2s ease;
 }
 
 .backLogin:hover,
 .backLogin:active {
-  color: #ffd9b3;
+  color: #95d5b2; /* trochę jaśniejszy odcień przy hoverze */
+}
+/* Layout sekcji */
+.checkboxRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Cały kontener (input + label) */
+.checkboxContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  flex-wrap: wrap;
+}
+
+/* Ukrycie natywnego checkboxa */
+.checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+.checkboxLabel input {
+  width: auto;
+  margin-right: 1rem;
+}
+/* Styl dla „customowego” kwadratu */
+.customCheckbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #25a244;
+  border-radius: 5px;
+  background-color: transparent;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Gdy zaznaczony – kolor + ikonka (pseudo-element) */
+.checkbox:checked + .customCheckbox {
+  background-color: #25a244;
+  box-shadow: 0 0 8px rgba(37, 162, 68, 0.5);
+}
+
+.checkbox:checked + .customCheckbox::after {
+  content: "✔";
+  position: absolute;
+  color: white;
+  font-size: 0.9rem;
+  left: 3px;
+  top: -1px;
+}
+
+/* Tekst obok */
+.checkboxLabel {
+  font-size: 1.1rem;
+  color: #f4fff9;
+  line-height: 1.4;
+}
+
+/* Linki */
+.link {
+  color: #b7fbd3;
+  font-weight: 600;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #25a244;
+}
+
+/* Błąd walidacji */
+.instructions {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+} /* Layout sekcji */
+/* Layout sekcji */
+.checkboxRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Cały kontener (input + label) */
+.checkboxContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  flex-wrap: wrap;
+}
+
+/* Ukrycie natywnego checkboxa */
+.checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Tekst obok */
+.checkboxLabel {
+  font-size: 1.1rem;
+  display: flex;
+  flex-direction: row;
+}
+
+/* Linki */
+.link {
+  color: #b7fbd3;
+  font-weight: 600;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #25a244;
+}
+
+/* Błąd walidacji */
+.instructions {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+.middle {
+  align-self: center;
 }

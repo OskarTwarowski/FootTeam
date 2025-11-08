@@ -20,7 +20,7 @@ function About() {
               W aplikacji znajdziesz kalendarz spotkań, moduł płatności,
               powiadomienia oraz system ról, dzięki którym każdy użytkownik ma
               dostęp tylko do potrzebnych funkcji. FootTeam powstał z pasji do
-              sportu i nowoczesnych technologii — chcemy, by codzienne
+              sportu i nowoczesnych technologii. Chcemy, by codzienne
               funkcjonowanie drużyny było łatwiejsze, bardziej przejrzyste i
               zorganizowane. Wierzymy, że dobra współpraca zaczyna się od dobrej
               komunikacji.

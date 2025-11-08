@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import About from "./pages/about";
+import About from "./pages/About";
 import Login from "./pages/Login";
 import Homepage from "./pages/Homepage";
 import Register from "./pages/Register";
@@ -14,7 +14,8 @@ import ProfileView from "./pages/AppLayout/viewPages/Profile/ProfileView";
 import ProfileCreateForm from "./pages/AppLayout/viewPages/Profile/ProfileCreateForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ProfileEditButton from "./pages/AppLayout/viewPages/Profile/ProfileEditButton";
-
+import Regulamin from "./pages/Regulamin";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 function App() {
   return (
     <BrowserRouter>
@@ -23,7 +24,10 @@ function App() {
         <Route path="o-nas" element={<About />} />
         <Route path="logowanie" element={<Login />} />
         <Route path="rejestracja" element={<Register />} />
+        <Route path="regulamin" element={<Regulamin />} />
+        <Route path="polityka-prywatnosci" element={<PrivacyPolicy />} />
         <Route path="*" element={<PageNotFound />} />
+
         <Route path="app" element={<AppLayout />}>
           <Route index element={<ProfileView />} />
           <Route path="profil" element={<ProfileView />}>

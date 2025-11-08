@@ -153,9 +153,31 @@ export default function RegisterForm() {
           </p>
         )}
       </div>
+      {/* TOS CHECKBOX */}
+      <div className={styles.checkboxRow}>
+        <label htmlFor="terms" className={styles.checkboxLabel}>
+          <input type="checkbox" id="terms" {...register("terms")} />
+          <span>
+            Akceptuję{" "}
+            <Link to="/regulamin" className={styles.link}>
+              Regulamin
+            </Link>{" "}
+            i{" "}
+            <Link to="/polityka-prywatnosci" className={styles.link}>
+              Politykę Prywatności
+            </Link>
+          </span>
+        </label>
+
+        {errors.terms && (
+          <p className={styles.instructions}>
+            <FontAwesomeIcon icon={faInfoCircle} /> {errors.terms.message}
+          </p>
+        )}
+      </div>
 
       {/* handle submit button */}
-      <div>
+      <div className={styles.middle}>
         <Button type="primary" disabled={!isValid}>
           Zarejestruj się
         </Button>

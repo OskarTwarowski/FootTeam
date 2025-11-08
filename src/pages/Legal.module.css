@@ -1,0 +1,46 @@
+.legalPage {
+  min-height: 100vh;
+  background: linear-gradient(rgba(6, 30, 48, 0.9), rgba(12, 75, 63, 0.85)),
+    url("../../public/legal-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  color: #e9fff3;
+  padding: 5rem 10%;
+  font-family: "Poppins", sans-serif;
+}
+
+.legalPage h1 {
+  font-size: 2.5rem;
+  color: #b5ffd2;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.legalPage h2 {
+  font-size: 1.4rem;
+  margin-top: 2rem;
+  color: #9ef5c2;
+}
+
+.legalPage p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin: 0.75rem 0;
+}
+
+.backBtn {
+  display: block;
+  margin: 4rem auto 2rem auto;
+  background-color: #25a244;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.backBtn:hover {
+  background-color: #208a3b;
+}
