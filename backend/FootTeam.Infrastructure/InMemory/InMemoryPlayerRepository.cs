@@ -6,30 +6,69 @@ namespace FootTeam.Infrastructure.InMemory;
 public sealed class InMemoryPlayerRepository : IPlayerRepository
 {
     private readonly Dictionary<int, Player> _players = new();
+    private readonly ITeamRepository _teamRepository;
     private int _seq = 1;
     private readonly object _lock = new();
 
-    public Task<IReadOnlyList<Player>> ListAsync(string? team = null, CancellationToken ct = default)
+    public InMemoryPlayerRepository(ITeamRepository teamRepository)
     {
-        lock (_lock)
-        {
-            IEnumerable<Player> q = _players.Values;
-            if (!string.IsNullOrWhiteSpace(team))
-            {
-                var t = team.Trim();
-                q = q.Where(p => string.Equals(p.Team, t, StringComparison.OrdinalIgnoreCase));
-            }
-            return Task.FromResult<IReadOnlyList<Player>>(q.OrderBy(p => p.LastName).ThenBy(p => p.FirstName).ToList());
-        }
+        _teamRepository = teamRepository;
     }
 
-    public Task<Player?> GetAsync(int id, CancellationToken ct = default)
+    public async Task<IReadOnlyList<Player>> ListAsync(int? teamId = null, CancellationToken ct = default)
     {
-        lock (_lock)
+        IEnumerable<Player> query = _players.Values;
+        
+        if (teamId.HasValue)
         {
-            _players.TryGetValue(id, out var p);
-            return Task.FromResult(p);
+            query = query.Where(p => p.TeamID == teamId.Value);
         }
+        
+        var result = query
+            .OrderBy(p => p.LastName)
+            .ThenBy(p => p.FirstName)
+            .Select(p => new Player
+            {
+                PlayerID = p.PlayerID,
+                FirstName = p.FirstName,
+                LastName = p.LastName,
+                BirthDate = p.BirthDate,
+                Position = p.Position,
+                TeamID = p.TeamID,
+                UserID = p.UserID
+            })
+            .ToList();
+        
+        foreach (var player in result.Where(p => p.TeamID.HasValue))
+        {
+            player.Team = await _teamRepository.GetAsync(player.TeamID.Value, ct);
+        }
+        
+        return result;
+    }
+
+    public async Task<Player?> GetAsync(int id, CancellationToken ct = default)
+    {
+        var player = _players.Values.FirstOrDefault(p => p.PlayerID == id);
+        if (player == null) return null;
+
+        var result = new Player
+        {
+            PlayerID = player.PlayerID,
+            FirstName = player.FirstName,
+            LastName = player.LastName,
+            BirthDate = player.BirthDate,
+            Position = player.Position,
+            TeamID = player.TeamID,
+            UserID = player.UserID
+        };
+
+        if (result.TeamID.HasValue)
+        {
+            result.Team = await _teamRepository.GetAsync(result.TeamID.Value, ct);
+        }
+
+        return result;
     }
 
     public Task<Player> CreateAsync(Player player, CancellationToken ct = default)

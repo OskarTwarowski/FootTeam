@@ -30,7 +30,7 @@ public sealed class AuthController(IUserService users, IUserRepository userRepo,
         var hash = BCrypt.Net.BCrypt.HashPassword(req.Password);
 
         // Use email as the username internally for registration
-        var created = await _users.CreateAsync(req.Email, req.Email, hash, req.Role, DateTime.UtcNow, ct);
+        var created = await _users.CreateAsync(req.Email, hash, req.Role, ct);
         var resp = new AuthUserResponse
         {
             UserID = created.UserID,

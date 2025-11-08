@@ -9,19 +9,28 @@ public sealed class EfPlayerRepository(AppDbContext db) : IPlayerRepository
 {
     private readonly AppDbContext _db = db;
 
-    public async Task<IReadOnlyList<Player>> ListAsync(string? team = null, CancellationToken ct = default)
+    public async Task<IReadOnlyList<Player>> ListAsync(int? teamId = null, CancellationToken ct = default)
     {
-        IQueryable<Player> query = _db.Players.AsNoTracking();
-        if (!string.IsNullOrWhiteSpace(team))
+        IQueryable<Player> query = _db.Players
+            .AsNoTracking()
+            .Include(p => p.Team);
+            
+        if (teamId.HasValue)
         {
-            var t = team.Trim();
-            query = query.Where(p => p.Team == t);
+            query = query.Where(p => p.TeamID == teamId.Value);
         }
-        return await query.OrderBy(p => p.LastName).ThenBy(p => p.FirstName).ToListAsync(ct);
+        
+        return await query
+            .OrderBy(p => p.LastName)
+            .ThenBy(p => p.FirstName)
+            .ToListAsync(ct);
     }
 
     public Task<Player?> GetAsync(int id, CancellationToken ct = default)
-        => _db.Players.AsNoTracking().FirstOrDefaultAsync(p => p.PlayerID == id, ct);
+        => _db.Players
+            .AsNoTracking()
+            .Include(p => p.Team)
+            .FirstOrDefaultAsync(p => p.PlayerID == id, ct);
 
     public async Task<Player> CreateAsync(Player player, CancellationToken ct = default)
     {

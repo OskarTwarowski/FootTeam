@@ -10,5 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FootTeam.Domain\FootTeam.Domain.csproj" />
+    <ProjectReference Include="..\FootTeam.Application\FootTeam.Application.csproj" />
   </ItemGroup>
 </Project>

@@ -1,12 +1,16 @@
 namespace FootTeam.Domain.Entities;
 
-public sealed class Player
+public class Player
 {
     public int PlayerID { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateTime? BirthDate { get; set; }
     public string? Position { get; set; }
-    public string? Team { get; set; }
+    public int? TeamID { get; set; }
     public int? UserID { get; set; }
+    
+    public virtual User? User { get; set; }
+    public virtual Team? Team { get; set; }
+    public virtual ICollection<TrainingParticipant> TrainingParticipants { get; set; } = new List<TrainingParticipant>();
 }

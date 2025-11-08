@@ -14,8 +14,7 @@ public sealed class InMemoryUserRepository : IUserRepository
         lock (_lock)
         {
             return Task.FromResult<IReadOnlyList<User>>(_users.Values
-                .OrderBy(u => u.Username)
-                .ThenBy(u => u.Email)
+                .OrderBy(u => u.Email)
                 .ToList());
         }
     }
@@ -44,13 +43,23 @@ public sealed class InMemoryUserRepository : IUserRepository
         lock (_lock)
         {
             if (!_users.ContainsKey(user.UserID)) return Task.FromResult<User?>(null);
-            var cur = _users[user.UserID];
-            cur.Username = user.Username;
-            cur.Email = user.Email;
-            cur.PasswordHash = user.PasswordHash;
-            cur.Role = user.Role;
-            cur.CreatedAt = user.CreatedAt;
-            return Task.FromResult<User?>(cur);
+            var existing = _users[user.UserID];
+            
+            // Only update email if it's different
+            if (existing.Email != user.Email)
+            {
+                existing.Email = user.Email;
+            }
+            
+            // Only update password if it's not empty
+            if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                existing.PasswordHash = user.PasswordHash;
+            }
+            
+            existing.Role = user.Role;
+            existing.CreatedAt = user.CreatedAt;
+            return Task.FromResult<User?>(existing);
         }
     }
 
@@ -67,14 +76,6 @@ public sealed class InMemoryUserRepository : IUserRepository
         lock (_lock)
         {
             return Task.FromResult(_users.Values.FirstOrDefault(u => u.Email == email));
-        }
-    }
-
-    public Task<User?> GetByUsernameAsync(string username, CancellationToken ct = default)
-    {
-        lock (_lock)
-        {
-            return Task.FromResult(_users.Values.FirstOrDefault(u => u.Username == username));
         }
     }
 }

@@ -13,9 +13,9 @@ public sealed class PlayersController(IPlayerService playerService) : Controller
 
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<PlayerResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListAsync([FromQuery] string? team, CancellationToken ct)
+    public async Task<IActionResult> ListAsync([FromQuery] int? teamId, CancellationToken ct)
     {
-        var players = await _playerService.ListAsync(team, ct);
+        var players = await _playerService.ListAsync(teamId, ct);
         return Ok(players.Select(PlayerResponse.FromDomain));
     }
 
@@ -45,7 +45,14 @@ public sealed class PlayersController(IPlayerService playerService) : Controller
     public async Task<IActionResult> CreateAsync([FromBody] CreatePlayerRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
-        var player = await _playerService.CreateAsync(request.FirstName, request.LastName, request.BirthDate, request.Position, request.Team, request.UserID, ct);
+        var player = await _playerService.CreateAsync(
+            request.FirstName, 
+            request.LastName, 
+            request.BirthDate, 
+            request.Position, 
+            request.TeamID, 
+            request.UserID, 
+            ct);
         var response = PlayerResponse.FromDomain(player);
         return Created($"/api/players/{response.PlayerID}", response);
     }
@@ -56,9 +63,15 @@ public sealed class PlayersController(IPlayerService playerService) : Controller
     public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdatePlayerRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
-        var updated = await _playerService.UpdateAsync(id, request.FirstName, request.LastName, request.BirthDate, request.Position, request.Team, request.UserID, ct);
-        if (updated is null) return NotFound();
-        return Ok(PlayerResponse.FromDomain(updated));
+        var updated = await _playerService.UpdateAsync(
+            id, 
+            request.FirstName, 
+            request.LastName, 
+            request.BirthDate, 
+            request.Position, 
+            request.TeamID, 
+            ct);
+        return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
     }
 
     [HttpPut("user/{userId}")]
@@ -67,9 +80,15 @@ public sealed class PlayersController(IPlayerService playerService) : Controller
     public async Task<IActionResult> UpdateByUserIdAsync(int userId, [FromBody] UpdatePlayerRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
-        var updated = await _playerService.UpdateByUserIdAsync(userId, request.FirstName, request.LastName, request.BirthDate, request.Position, request.Team, ct);
-        if (updated is null) return NotFound();
-        return Ok(PlayerResponse.FromDomain(updated));
+        var updated = await _playerService.UpdateByUserIdAsync(
+            userId, 
+            request.FirstName, 
+            request.LastName, 
+            request.BirthDate, 
+            request.Position, 
+            request.TeamID, 
+            ct);
+        return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
     }
 
     [HttpDelete("{id:int}")]
@@ -102,8 +121,7 @@ public sealed class CreatePlayerRequest
     public DateTime? BirthDate { get; set; }
     [StringLength(50)]
     public string? Position { get; set; }
-    [StringLength(50)]
-    public string? Team { get; set; }
+    public int? TeamID { get; set; }
     public int? UserID { get; set; }
 }
 
@@ -116,8 +134,7 @@ public sealed class UpdatePlayerRequest
     public DateTime? BirthDate { get; set; }
     [StringLength(50)]
     public string? Position { get; set; }
-    [StringLength(50)]
-    public string? Team { get; set; }
+    public int? TeamID { get; set; }
     public int? UserID { get; set; }
 }
 
@@ -128,7 +145,8 @@ public sealed class PlayerResponse
     public string LastName { get; set; } = string.Empty;
     public DateTime? BirthDate { get; set; }
     public string? Position { get; set; }
-    public string? Team { get; set; }
+    public int? TeamID { get; set; }
+    public string? TeamName { get; set; }
     public int? UserID { get; set; }
 
     public static PlayerResponse FromDomain(Player p) => new()
@@ -138,7 +156,8 @@ public sealed class PlayerResponse
         LastName = p.LastName,
         BirthDate = p.BirthDate,
         Position = p.Position,
-        Team = p.Team,
+        TeamID = p.TeamID,
+        TeamName = p.Team?.Name,
         UserID = p.UserID
     };
 }

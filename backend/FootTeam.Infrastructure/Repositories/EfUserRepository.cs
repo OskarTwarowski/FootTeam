@@ -10,7 +10,7 @@ public sealed class EfUserRepository(AppDbContext db) : IUserRepository
     private readonly AppDbContext _db = db;
 
     public Task<IReadOnlyList<User>> ListAsync(CancellationToken ct = default)
-        => _db.Users.AsNoTracking().OrderBy(u => u.Username).ThenBy(u => u.Email).ToListAsync(ct).ContinueWith(t => (IReadOnlyList<User>)t.Result, ct);
+        => _db.Users.AsNoTracking().OrderBy(u => u.Email).ToListAsync(ct).ContinueWith(t => (IReadOnlyList<User>)t.Result, ct);
 
     public Task<User?> GetAsync(int id, CancellationToken ct = default)
         => _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserID == id, ct);
@@ -26,11 +26,22 @@ public sealed class EfUserRepository(AppDbContext db) : IUserRepository
     {
         var existing = await _db.Users.FirstOrDefaultAsync(u => u.UserID == user.UserID, ct);
         if (existing is null) return null;
-        existing.Username = user.Username;
-        existing.Email = user.Email;
-        existing.PasswordHash = user.PasswordHash;
+        
+        // Only update email if it's different
+        if (existing.Email != user.Email)
+        {
+            existing.Email = user.Email;
+        }
+        
+        // Only update password if it's not empty
+        if (!string.IsNullOrEmpty(user.PasswordHash))
+        {
+            existing.PasswordHash = user.PasswordHash;
+        }
+        
         existing.Role = user.Role;
         existing.CreatedAt = user.CreatedAt;
+        
         await _db.SaveChangesAsync(ct);
         return existing;
     }
@@ -47,6 +58,4 @@ public sealed class EfUserRepository(AppDbContext db) : IUserRepository
     public Task<User?> GetByEmailAsync(string email, CancellationToken ct = default)
         => _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email, ct);
 
-    public Task<User?> GetByUsernameAsync(string username, CancellationToken ct = default)
-        => _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Username == username, ct);
 }

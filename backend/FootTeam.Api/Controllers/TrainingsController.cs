@@ -11,17 +11,11 @@ public sealed class TrainingsController(ITrainingService trainings) : Controller
 {
     private readonly ITrainingService _trainings = trainings;
 
-    /// <summary>
-    /// List trainings.
-    /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<TrainingResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListAsync(CancellationToken ct)
         => Ok((await _trainings.ListAsync(ct)).Select(TrainingResponse.FromDomain));
 
-    /// <summary>
-    /// Get training by id.
-    /// </summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(TrainingResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -31,9 +25,6 @@ public sealed class TrainingsController(ITrainingService trainings) : Controller
         return t is null ? NotFound() : Ok(TrainingResponse.FromDomain(t));
     }
 
-    /// <summary>
-    /// Create training.
-    /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(TrainingResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -45,9 +36,6 @@ public sealed class TrainingsController(ITrainingService trainings) : Controller
         return Created($"/api/trainings/{resp.TrainingID}", resp);
     }
 
-    /// <summary>
-    /// Update training.
-    /// </summary>
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(TrainingResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -58,9 +46,6 @@ public sealed class TrainingsController(ITrainingService trainings) : Controller
         return updated is null ? NotFound() : Ok(TrainingResponse.FromDomain(updated));
     }
 
-    /// <summary>
-    /// Delete training.
-    /// </summary>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteAsync(int id, CancellationToken ct)
@@ -69,17 +54,11 @@ public sealed class TrainingsController(ITrainingService trainings) : Controller
         return NoContent();
     }
 
-    /// <summary>
-    /// List participants for a training.
-    /// </summary>
     [HttpGet("{id:int}/participants")]
     [ProducesResponseType(typeof(IReadOnlyList<TrainingParticipantResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListParticipantsAsync(int id, CancellationToken ct)
         => Ok((await _trainings.ListParticipantsAsync(id, ct)).Select(TrainingParticipantResponse.FromDomain));
 
-    /// <summary>
-    /// Add a participant to training.
-    /// </summary>
     [HttpPost("{id:int}/participants/{playerId:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AddParticipantAsync(int id, int playerId, CancellationToken ct)
@@ -88,9 +67,6 @@ public sealed class TrainingsController(ITrainingService trainings) : Controller
         return NoContent();
     }
 
-    /// <summary>
-    /// Remove a participant from training.
-    /// </summary>
     [HttpDelete("{id:int}/participants/{playerId:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RemoveParticipantAsync(int id, int playerId, CancellationToken ct)

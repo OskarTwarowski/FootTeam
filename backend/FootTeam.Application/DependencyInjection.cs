@@ -11,7 +11,7 @@ public static class DependencyInjection
         services.AddScoped<IPlayerService, PlayerService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITrainingService, TrainingService>();
-        services.AddScoped<IEventService, EventService>();
+        services.AddScoped<INotificationService, NotificationService>();
         return services;
     }
 }

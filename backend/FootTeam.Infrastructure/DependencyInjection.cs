@@ -1,3 +1,4 @@
+using FootTeam.Application.Abstractions;
 using FootTeam.Domain.Repositories;
 using FootTeam.Infrastructure.InMemory;
 using FootTeam.Infrastructure.Persistence;
@@ -17,11 +18,14 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-        services.AddSingleton<IPlayerRepository, InMemoryPlayerRepository>();
+        var teamRepository = new InMemoryTeamRepository();
+        
+        services.AddSingleton<ITeamRepository>(teamRepository);
+        services.AddSingleton<IPlayerRepository>(new InMemoryPlayerRepository(teamRepository));
         services.AddSingleton<IUserRepository, InMemoryUserRepository>();
         services.AddSingleton<ITrainingRepository, InMemoryTrainingRepository>();
         services.AddSingleton<ITrainingParticipantRepository, InMemoryTrainingParticipantRepository>();
-        services.AddSingleton<IEventRepository, InMemoryEventRepository>();
+        services.AddSingleton<INotificationRepository, InMemoryNotificationRepository>();
         return services;
     }
 }
