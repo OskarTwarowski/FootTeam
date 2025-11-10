@@ -26,6 +26,9 @@ function Homepage() {
           <Link to="app" className={styles.cta}>
             Przejdź do aplikacji
           </Link>
+          <Link to="/register-trainer" className={styles.cta}>
+            Zostań Trenerem
+          </Link>
         </div>
       </section>
 

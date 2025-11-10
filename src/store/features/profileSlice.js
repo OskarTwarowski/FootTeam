@@ -10,9 +10,16 @@ import {
 // pobieranie profili z localStorage
 export const fetchProfiles = createAsyncThunk(
   "profiles/fetchProfiles",
-  async () => {
-    const profiles = await getProfiles();
-    return profiles;
+  async (_, thunkAPI) => {
+    const loggedUser = thunkAPI.getState().auth.user; // bierz z Redux, nie z LS
+    if (!loggedUser) return [];
+
+    const profiles = JSON.parse(localStorage.getItem("Profiles")) || [];
+    const normalizedProfiles = profiles.flatMap((p) =>
+      Array.isArray(p) ? p : [p]
+    );
+
+    return normalizedProfiles.filter((p) => p.UserID === loggedUser.UserID);
   }
 );
 

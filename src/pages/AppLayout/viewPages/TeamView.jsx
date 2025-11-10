@@ -5,9 +5,20 @@ import { getTeams } from "../../../services/TeamService";
 function TeamView() {
   const activeProfile = useSelector((state) => state.activeProfile.profile);
   const profiles = useSelector((state) => state.profiles?.list ?? []);
+  const userRole = useSelector((state) => state.auth.user?.Role);
   const teams = getTeams();
 
-  if (!activeProfile) {
+  if (userRole === "Trener" && !activeProfile) {
+    return (
+      <div className={styles.emptyProfileBox}>
+        <h2>
+          Jeśli chcesz stworzyć drużyne Prosze skontaktuj sie z nami,poprzez
+          ustawienia ⮕ kontakt
+        </h2>
+        <p>Jeśli masz drużyne ⮕ Wybierz profil, aby połączyć się z drużyną. </p>
+      </div>
+    );
+  } else if (!activeProfile) {
     return (
       <div className={styles.emptyProfileBox}>
         <h2>Brak aktywnego profilu</h2>

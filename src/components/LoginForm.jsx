@@ -7,9 +7,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FAKE_PROFILES, FAKE_USERS } from "../mockData";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../store/features/authSlice";
+import { fetchProfiles } from "../store/features/profileSlice";
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -22,35 +26,41 @@ export default function LoginForm() {
   });
   //-----------------------------------------------------------------------------------
   const onSubmit = (data) => {
-    const foundUser = FAKE_USERS.find(
-      (u) => u.Email === data.email && u.PasswordHash === data.password
-    );
-    if (foundUser) {
-      const foundProfiles = FAKE_PROFILES.filter(
-        (p) => p.UserID === foundUser.UserID
-      );
+    dispatch(loginUser({ email: data.email, password: data.password }))
+      .unwrap()
+      .then((res) => {
+        const foundProfiles = FAKE_PROFILES.filter(
+          (p) => p.UserID === res.user.UserID
+        );
 
-      navigate("/app/profil", { replace: true });
-      localStorage.setItem("loggedUser", JSON.stringify(foundUser));
-      if (foundProfiles) {
+        // zapis do localStorage
         const existingProfiles =
           JSON.parse(localStorage.getItem("Profiles")) || [];
 
-        const profileExists = existingProfiles.some(
-          (p) => p.UserID === foundProfiles.UserID
-        );
+        // foundProfiles może być tablicą — spłaszczamy
+        const profilesToAdd = Array.isArray(foundProfiles)
+          ? foundProfiles
+          : [foundProfiles];
 
-        if (!profileExists) {
-          existingProfiles.push(foundProfiles);
-          localStorage.setItem("Profiles", JSON.stringify(existingProfiles));
-        }
-      }
-    } else {
-      setError("username", {
-        type: "manual",
-        message: "Zły login lub hasło",
+        profilesToAdd.forEach((p) => {
+          if (!existingProfiles.some((ep) => ep.PlayerID === p.PlayerID)) {
+            existingProfiles.push(p);
+          }
+        });
+
+        localStorage.setItem("Profiles", JSON.stringify(existingProfiles));
+
+        // fetchujemy profile do redux
+        dispatch(fetchProfiles());
+
+        navigate("/app/profil", { replace: true });
+      })
+      .catch(() => {
+        setError("email", {
+          type: "manual",
+          message: "Zły login lub hasło",
+        });
       });
-    }
   };
   //-----------------------------------------------------------------------------------
   return (
@@ -69,9 +79,9 @@ export default function LoginForm() {
           placeholder="adres@email.com"
           {...register("email")}
         />
-        {errors.username && (
+        {errors.email && (
           <p className={styles.instructions}>
-            <FontAwesomeIcon icon={faInfoCircle} /> {errors.username.message}
+            <FontAwesomeIcon icon={faInfoCircle} /> {errors.email.message}
           </p>
         )}
       </div>

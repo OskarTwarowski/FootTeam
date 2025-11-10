@@ -1,0 +1,60 @@
+/* src/pages/Payments/PaymentsView.module.css */
+.payments {
+  padding: 2rem;
+  width: 80%;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-light--1);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.item span {
+  flex: 1;
+}
+
+.item span:first-child {
+  text-align: left; /* miesiąc */
+}
+
+.item span:nth-child(2) {
+  text-align: center; /* kwota */
+}
+
+.item span.status {
+  text-align: center;
+}
+
+.item button {
+  flex: 0; /* przycisk nie rozciąga się */
+}
+
+.payButton {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  font-weight: 500;
+}
+
+.payButton:hover {
+  background-color: #45a049;
+}
+
+.status {
+  margin-right: 1rem;
+  font-weight: bold;
+}

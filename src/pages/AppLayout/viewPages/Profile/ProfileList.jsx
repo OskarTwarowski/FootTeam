@@ -17,12 +17,13 @@ function ProfileList() {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedProfileToDelete, setSelectedProfileToDelete] = useState(null);
+  const loggedUser = useSelector((state) => state.auth.user);
 
   console.log(profiles);
 
   useEffect(() => {
-    dispatch(fetchProfiles());
-  }, [dispatch]);
+    if (loggedUser) dispatch(fetchProfiles());
+  }, [dispatch, loggedUser]);
 
   // modal usuwania
   const handleDeleteClick = (profile, e) => {

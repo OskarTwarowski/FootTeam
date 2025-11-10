@@ -13,7 +13,7 @@ function NotificationView() {
   const [notifications, setNotifications] = useState([]);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showGlobalModal, setShowGlobalModal] = useState(false);
-
+  const userRole = useSelector((state) => state.auth.user?.Role);
   useEffect(() => {
     if (activeProfile?.TeamID) {
       const teamNotifications = getNotifications(activeProfile.TeamID);
@@ -50,7 +50,7 @@ function NotificationView() {
             Dodaj Powiadomienie Drużyny
           </Button>
         )}
-        {activeProfile?.Role === "Trener" && (
+        {userRole === "Trener" && (
           <Button type="primary" onClick={() => setShowGlobalModal(true)}>
             Dodaj Globalne Powiadomienie
           </Button>

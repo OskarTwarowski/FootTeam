@@ -1,10 +1,7 @@
 export function getProfiles() {
   const stored = JSON.parse(localStorage.getItem("Profiles")) || [];
-
-  // Spłaszczenie tablicy — usuwa przypadkowe [[...]]
-  const normalized = stored.flatMap((p) => (Array.isArray(p) ? p : [p]));
-
-  return normalized;
+  // usuwa zagnieżdżenia, jeśli jeszcze jakieś są
+  return stored.flatMap((p) => (Array.isArray(p) ? p : [p]));
 }
 
 export function saveProfiles(profiles) {
