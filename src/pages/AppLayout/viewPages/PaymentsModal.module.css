@@ -1,0 +1,108 @@
+/* src/components/PaymentModal/PaymentModal.module.css */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.modal {
+  width: 420px;
+  max-width: calc(100% - 32px);
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #eee;
+  color: var(--color-dark--2);
+}
+.close {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.content {
+  padding: 1rem;
+}
+.methodTabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+.methodTabs button {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+  cursor: pointer;
+}
+.methodTabs .active {
+  background: var(--color-primary, #0b7cff);
+  color: white;
+  border-color: transparent;
+}
+.form label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+}
+.form {
+  color: var(--color-dark--2);
+}
+.form input {
+  width: 100%;
+  padding: 0.45rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  margin-top: 0.25rem;
+}
+.row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.error {
+  color: #9b1c1c;
+  margin-top: 0.6rem;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+.cancel {
+  background: transparent;
+  border: 1px solid #ddd;
+  padding: 0.45rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.pay {
+  background: var(--color-primary, #0b7cff);
+  color: white;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.pay:disabled,
+.cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.picture {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}

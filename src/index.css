@@ -38,7 +38,7 @@
   --color-dark--1: #c3c7cb; /* sidebar / karty */
   --color-dark--2: #adb3b8; /* przyciski */
   --color-dark--3: #5b636a; /* ciemniejsze akcenty */
-  --color-light--1: #2b2f33; /* tekst główny */
+  --color-light--1: #4d545a; /* tekst główny */
   --color-light--2: #1f2225; /* tytuły */
   --color-light--3: #3a3f44; /* subtelne linie, ramki */
   background-color: var(--color-dark--0);
