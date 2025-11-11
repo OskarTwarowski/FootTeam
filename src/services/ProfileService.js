@@ -38,3 +38,8 @@ export function removeProfile(profileToRemove) {
   localStorage.setItem("Profiles", JSON.stringify(updated));
   window.dispatchEvent(new Event("storage"));
 }
+export function removePlayerFromTeam(profile) {
+  if (!profile) return;
+  const updatedProfile = { ...profile, TeamID: null, TeamCode: null };
+  updateProfile(updatedProfile);
+}

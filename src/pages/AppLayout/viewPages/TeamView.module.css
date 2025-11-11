@@ -5,8 +5,13 @@
   border-radius: 16px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
   width: 80%;
-  margin: 0 auto;
+  margin: 3rem auto;
   max-width: 900px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
 }
 
 .header {
@@ -34,6 +39,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .playerItem {
@@ -46,7 +53,11 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-
+.playerInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* odległość między imieniem a ✖ */
+}
 .playerItem:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
@@ -110,4 +121,34 @@
 
 .emptyProfileBox p {
   color: var(--color-dark--1) !important;
+}
+.editTeam {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.2s;
+}
+
+.editTeam:hover {
+  background-color: #0056b3;
+}
+.playerRemove {
+  cursor: pointer;
+  color: #e53935;
+  font-weight: bold;
+  margin-left: 10px;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.playerRemove:hover {
+  color: #b71c1c;
+  transform: scale(1.2);
 }

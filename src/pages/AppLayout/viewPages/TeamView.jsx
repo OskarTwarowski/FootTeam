@@ -1,41 +1,40 @@
-import { useSelector } from "react-redux";
-import styles from "./TeamView.module.css";
+import { useSelector, useDispatch } from "react-redux";
 import { getTeams } from "../../../services/TeamService";
+import { useState, useEffect } from "react";
+import { removePlayerFromTeam } from "../../../services/ProfileService";
+import {
+  fetchProfiles,
+  updateProfile as updateProfileThunk,
+} from "../../../store/features/profileSlice";
+import styles from "./TeamView.module.css";
 
 function TeamView() {
+  const dispatch = useDispatch();
   const activeProfile = useSelector((state) => state.activeProfile.profile);
-  const profiles = useSelector((state) => state.profiles?.list ?? []);
-  const userRole = useSelector((state) => state.auth.user?.Role);
+  const profiles = useSelector((state) => state.profiles.list ?? []);
   const teams = getTeams();
 
-  if (userRole === "Trener" && !activeProfile) {
-    return (
-      <div className={styles.emptyProfileBox}>
-        <h2>
-          Jeśli chcesz stworzyć drużyne Prosze skontaktuj sie z nami,poprzez
-          ustawienia ⮕ kontakt
-        </h2>
-        <p>Jeśli masz drużyne ⮕ Wybierz profil, aby połączyć się z drużyną. </p>
-      </div>
+  const [isOpen, setIsOpen] = useState(false);
+  const [teamPlayers, setTeamPlayers] = useState([]);
+
+  useEffect(() => {
+    if (!activeProfile) return;
+    setTeamPlayers(profiles.filter((p) => p.TeamID === activeProfile.TeamID));
+  }, [activeProfile, profiles]);
+
+  const handleDeleteFromTeam = async (player, e) => {
+    e.stopPropagation();
+    await dispatch(
+      updateProfileThunk({ ...player, TeamID: null, TeamCode: null })
     );
-  } else if (!activeProfile) {
-    return (
-      <div className={styles.emptyProfileBox}>
-        <h2>Brak aktywnego profilu</h2>
-        <p>Wybierz profil, aby połączyć się z drużyną.</p>
-      </div>
-    );
-  }
+    dispatch(fetchProfiles());
+  };
+
+  if (!activeProfile) return <p>Wybierz profil</p>;
 
   const currentTeam = teams.find(
     (team) => team.TeamID === activeProfile.TeamID
   );
-
-  const teamPlayers = profiles.filter((p) => p.TeamID === activeProfile.TeamID);
-
-  if (teamPlayers.length === 0) {
-    return <p>Brak graczy w tej drużynie.</p>;
-  }
 
   const sortedPlayers = [
     ...teamPlayers.filter((p) => p.Role === "Trener"),
@@ -59,17 +58,38 @@ function TeamView() {
               index % 2 === 1 ? styles.alternate : ""
             }`}
           >
-            <span
-              className={`${styles.playerName} ${
-                player.Role === "Trener" ? styles.coach : ""
-              }`}
-            >
-              {player.FirstName} {player.LastName}
-            </span>
+            <div className={styles.playerInfo}>
+              <span
+                className={`${styles.playerName} ${
+                  player.Role === "Trener" ? styles.coach : ""
+                }`}
+              >
+                {player.FirstName} {player.LastName}
+              </span>
+
+              {isOpen && (
+                <span
+                  className={styles.playerRemove}
+                  onClick={(e) => handleDeleteFromTeam(player, e)}
+                >
+                  ✖
+                </span>
+              )}
+            </div>
+
             <span className={styles.playerPhone}>{player.Phone}</span>
           </li>
         ))}
       </ul>
+
+      {activeProfile.Role === "Trener" && (
+        <button
+          onClick={() => setIsOpen((prev) => !prev)}
+          className={styles.editTeam}
+        >
+          Edytuj drużynę
+        </button>
+      )}
     </div>
   );
 }
