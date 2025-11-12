@@ -1,8 +1,9 @@
 import { useSelector, useDispatch } from "react-redux";
-import { getTeams } from "../../../services/TeamService";
+import { findPlayersInTeam, getTeams } from "../../../services/TeamService";
 import { useState, useEffect } from "react";
 import { removePlayerFromTeam } from "../../../services/ProfileService";
 import {
+  fetchAllProfiles,
   fetchProfiles,
   updateProfile as updateProfileThunk,
 } from "../../../store/features/profileSlice";
@@ -18,16 +19,20 @@ function TeamView() {
   const [teamPlayers, setTeamPlayers] = useState([]);
 
   useEffect(() => {
-    if (!activeProfile) return;
-    setTeamPlayers(profiles.filter((p) => p.TeamID === activeProfile.TeamID));
-  }, [activeProfile, profiles]);
+    if (!activeProfile) {
+      setTeamPlayers([]);
+      return;
+    }
 
+    const currentPlayers = findPlayersInTeam(activeProfile.TeamCode);
+    setTeamPlayers(currentPlayers);
+  }, [activeProfile, profiles]);
   const handleDeleteFromTeam = async (player, e) => {
     e.stopPropagation();
     await dispatch(
       updateProfileThunk({ ...player, TeamID: null, TeamCode: null })
     );
-    dispatch(fetchProfiles());
+    dispatch(fetchAllProfiles());
   };
 
   if (!activeProfile) return <p>Wybierz profil</p>;

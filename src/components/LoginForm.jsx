@@ -10,6 +10,7 @@ import { FAKE_PROFILES, FAKE_USERS } from "../mockData";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/features/authSlice";
 import { fetchProfiles } from "../store/features/profileSlice";
+import { getTeams } from "../services/TeamService";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -54,6 +55,7 @@ export default function LoginForm() {
         dispatch(fetchProfiles());
 
         navigate("/app/profil", { replace: true });
+        dispatch(getTeams);
       })
       .catch(() => {
         setError("email", {

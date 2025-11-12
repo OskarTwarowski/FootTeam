@@ -22,16 +22,33 @@ export const fetchProfiles = createAsyncThunk(
     return normalizedProfiles.filter((p) => p.UserID === loggedUser.UserID);
   }
 );
+// pobieranie wszystkich profili
+export const fetchAllProfiles = createAsyncThunk(
+  "profiles/fetchAllProfiles",
+  async () => {
+    const profiles = JSON.parse(localStorage.getItem("Profiles")) || [];
+    const normalizedProfiles = profiles.flatMap((p) =>
+      Array.isArray(p) ? p : [p]
+    );
+    return normalizedProfiles;
+  }
+);
 
 // dodawanie profilu
 export const addProfile = createAsyncThunk(
   "profiles/addProfile",
-  async (profile) => {
+  async (profile, thunkAPI) => {
     await addProfileService(profile);
+
+    const loggedUser = thunkAPI.getState().auth.user;
+    if (!loggedUser) return [];
+
     const profiles = getProfiles();
-    return profiles;
+    // filtruj tylko profile tego użytkownika
+    return profiles.filter((p) => p.UserID === loggedUser.UserID);
   }
 );
+
 export const updateProfile = createAsyncThunk(
   "profiles/updateProfile",
   async (profile) => {
@@ -83,6 +100,10 @@ const profileSlice = createSlice({
         }
       })
       .addCase(removeProfile.fulfilled, (state, action) => {
+        state.list = action.payload;
+      })
+      .addCase(fetchAllProfiles.fulfilled, (state, action) => {
+        state.status = "succeeded";
         state.list = action.payload;
       });
   },

@@ -1,15 +1,21 @@
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./SettingsView.module.css";
 import { toggleLightMode } from "../../../store/features/settingsSlice";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../../store/features/authSlice";
 // dodaj jakieś stockowe zdjęcie
 
 function SettingsView() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { lightMode } = useSelector((state) => state.settings);
   const handleToggleTheme = () => {
     dispatch(toggleLightMode());
   };
-
+  const handleLogOut = () => {
+    dispatch(logout());
+    navigate("/", { replace: true });
+  };
   const handleContactClick = () => {
     window.location.href =
       "mailto:support@example.com?subject=Kontakt%20z%20aplikacji";
@@ -28,7 +34,9 @@ function SettingsView() {
           Kontakt mailowy
         </button>
         <button className={styles.delete}>Usuń konto</button>
-        <button className={styles.logout}>Wyloguj się</button>
+        <button className={styles.logout} onClick={handleLogOut}>
+          Wyloguj się
+        </button>
       </div>
 
       {/* Prawa kolumna: kontakt telefoniczny */}

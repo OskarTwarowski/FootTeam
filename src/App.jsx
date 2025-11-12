@@ -16,7 +16,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ProfileEditButton from "./pages/AppLayout/viewPages/Profile/ProfileEditButton";
 import Regulamin from "./pages/Regulamin";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import { getHealth, getPlayers } from "./API/getPlayers";
 function App() {
+  getPlayers();
+  getHealth();
   return (
     <BrowserRouter>
       <Routes>

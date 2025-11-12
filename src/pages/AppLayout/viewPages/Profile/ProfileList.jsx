@@ -19,8 +19,6 @@ function ProfileList() {
   const [selectedProfileToDelete, setSelectedProfileToDelete] = useState(null);
   const loggedUser = useSelector((state) => state.auth.user);
 
-  console.log(profiles);
-
   useEffect(() => {
     if (loggedUser) dispatch(fetchProfiles());
   }, [dispatch, loggedUser]);
