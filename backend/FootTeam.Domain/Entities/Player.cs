@@ -12,5 +12,4 @@ public class Player
     
     public virtual User? User { get; set; }
     public virtual Team? Team { get; set; }
-    public virtual ICollection<TrainingParticipant> TrainingParticipants { get; set; } = new List<TrainingParticipant>();
 }

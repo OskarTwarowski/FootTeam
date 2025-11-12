@@ -26,45 +26,29 @@ public sealed class PlayerService(IPlayerRepository repository, ITeamRepository 
     public Task<Player?> GetAsync(int id, CancellationToken ct = default)
         => _repository.GetAsync(id, ct);
 
-    public async Task<Player> CreateAsync(string firstName, string lastName, DateTime? birthDate, string? position, int? teamId, int? userId, CancellationToken ct = default)
+    public async Task<Player> CreateAsync(string firstName, string lastName, int? teamId, int? userId, CancellationToken ct = default)
     {
-        Team? team = null;
-        if (teamId.HasValue)
-        {
-            team = await _teamRepository.GetAsync(teamId.Value, ct);
-        }
-
         var player = new Player
         {
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
-            BirthDate = birthDate,
-            Position = string.IsNullOrWhiteSpace(position) ? null : position!.Trim(),
-            Team = team,
             TeamID = teamId,
             UserID = userId
         };
         return await _repository.CreateAsync(player, ct);
     }
 
-    public async Task<Player?> UpdateAsync(int id, string? firstName, string? lastName, DateTime? birthDate, string? position, int? teamId, CancellationToken ct = default)
+    public async Task<Player?> UpdateAsync(int id, string? firstName, string? lastName, int? teamId, CancellationToken ct = default)
     {
         var existing = await _repository.GetAsync(id, ct);
         if (existing is null) return null;
         
         if (!string.IsNullOrWhiteSpace(firstName)) existing.FirstName = firstName.Trim();
         if (!string.IsNullOrWhiteSpace(lastName)) existing.LastName = lastName.Trim();
-        if (birthDate.HasValue) existing.BirthDate = birthDate;
-        if (!string.IsNullOrWhiteSpace(position)) existing.Position = position.Trim();
         
         if (teamId.HasValue)
         {
-            var team = await _teamRepository.GetAsync(teamId.Value, ct);
-            if (team != null)
-            {
-                existing.Team = team;
-                existing.TeamID = teamId;
-            }
+            existing.TeamID = teamId;
         }
         
         return await _repository.UpdateAsync(existing, ct);
@@ -79,7 +63,7 @@ public sealed class PlayerService(IPlayerRepository repository, ITeamRepository 
         return players.FirstOrDefault(p => p.UserID == userId);
     }
 
-    public async Task<Player?> UpdateByUserIdAsync(int userId, string? firstName, string? lastName, DateTime? birthDate, string? position, int? teamId, CancellationToken ct = default)
+    public async Task<Player?> UpdateByUserIdAsync(int userId, string? firstName, string? lastName, int? teamId, CancellationToken ct = default)
     {
         var players = await _repository.ListAsync(ct: ct);
         var player = players.FirstOrDefault(p => p.UserID == userId);
@@ -87,16 +71,10 @@ public sealed class PlayerService(IPlayerRepository repository, ITeamRepository 
 
         if (!string.IsNullOrWhiteSpace(firstName)) player.FirstName = firstName.Trim();
         if (!string.IsNullOrWhiteSpace(lastName)) player.LastName = lastName.Trim();
-        if (birthDate.HasValue) player.BirthDate = birthDate;
-        if (!string.IsNullOrWhiteSpace(position)) player.Position = position.Trim();
         
         if (teamId.HasValue)
         {
-            var team = await _teamRepository.GetAsync(teamId.Value, ct);
-            if (team != null)
-            {
-                player.Team = team;
-            }
+            player.TeamID = teamId;
         }
 
         return await _repository.UpdateAsync(player, ct);

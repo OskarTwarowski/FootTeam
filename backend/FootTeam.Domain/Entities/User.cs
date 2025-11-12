@@ -8,7 +8,7 @@ public class User
     public string Role { get; set; } = string.Empty;
     public DateTime? CreatedAt { get; set; }
     
-    // Navigation properties
+    
     public virtual Player? Player { get; set; }
     public virtual ICollection<Training> CoachedTrainings { get; set; } = new List<Training>();
     public virtual ICollection<Team> CoachedTeams { get; set; } = new List<Team>();

@@ -26,6 +26,18 @@ public sealed class EfTeamRepository(AppDbContext db) : ITeamRepository
             .FirstOrDefaultAsync(t => t.TeamID == id, ct);
     }
 
+    public async Task<Team?> GetWithDetailsAsync(int id, params System.Linq.Expressions.Expression<Func<Team, object>>[] includes)
+    {
+        var query = _db.Teams.AsQueryable();
+        
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+        
+        return await query.FirstOrDefaultAsync(t => t.TeamID == id);
+    }
+
     public async Task<Team> CreateAsync(Team team, CancellationToken ct = default)
     {
         _db.Teams.Add(team);
@@ -50,5 +62,13 @@ public sealed class EfTeamRepository(AppDbContext db) : ITeamRepository
             .ExecuteDeleteAsync(ct);
         
         return rowsAffected > 0;
+    }
+
+    public async Task<IReadOnlyList<Player>> GetPlayersByTeamIdAsync(int teamId, CancellationToken ct = default)
+    {
+        return await _db.Players
+            .Where(p => p.TeamID == teamId)
+            .AsNoTracking()
+            .ToListAsync(ct);
     }
 }

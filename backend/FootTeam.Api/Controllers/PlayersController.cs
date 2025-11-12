@@ -48,8 +48,6 @@ public sealed class PlayersController(IPlayerService playerService) : Controller
         var player = await _playerService.CreateAsync(
             request.FirstName, 
             request.LastName, 
-            request.BirthDate, 
-            request.Position, 
             request.TeamID, 
             request.UserID, 
             ct);
@@ -67,8 +65,6 @@ public sealed class PlayersController(IPlayerService playerService) : Controller
             id, 
             request.FirstName, 
             request.LastName, 
-            request.BirthDate, 
-            request.Position, 
             request.TeamID, 
             ct);
         return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
@@ -84,8 +80,6 @@ public sealed class PlayersController(IPlayerService playerService) : Controller
             userId, 
             request.FirstName, 
             request.LastName, 
-            request.BirthDate, 
-            request.Position, 
             request.TeamID, 
             ct);
         return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
@@ -118,9 +112,6 @@ public sealed class CreatePlayerRequest
     [Required]
     [StringLength(100, MinimumLength = 2)]
     public string LastName { get; set; } = string.Empty;
-    public DateTime? BirthDate { get; set; }
-    [StringLength(50)]
-    public string? Position { get; set; }
     public int? TeamID { get; set; }
     public int? UserID { get; set; }
 }
@@ -131,9 +122,6 @@ public sealed class UpdatePlayerRequest
     public string? FirstName { get; set; }
     [StringLength(100, MinimumLength = 2)]
     public string? LastName { get; set; }
-    public DateTime? BirthDate { get; set; }
-    [StringLength(50)]
-    public string? Position { get; set; }
     public int? TeamID { get; set; }
     public int? UserID { get; set; }
 }
@@ -143,8 +131,6 @@ public sealed class PlayerResponse
     public int PlayerID { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public DateTime? BirthDate { get; set; }
-    public string? Position { get; set; }
     public int? TeamID { get; set; }
     public string? TeamName { get; set; }
     public int? UserID { get; set; }
@@ -154,8 +140,6 @@ public sealed class PlayerResponse
         PlayerID = p.PlayerID,
         FirstName = p.FirstName,
         LastName = p.LastName,
-        BirthDate = p.BirthDate,
-        Position = p.Position,
         TeamID = p.TeamID,
         TeamName = p.Team?.Name,
         UserID = p.UserID

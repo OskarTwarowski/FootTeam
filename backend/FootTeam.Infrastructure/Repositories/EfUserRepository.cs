@@ -27,13 +27,13 @@ public sealed class EfUserRepository(AppDbContext db) : IUserRepository
         var existing = await _db.Users.FirstOrDefaultAsync(u => u.UserID == user.UserID, ct);
         if (existing is null) return null;
         
-        // Only update email if it's different
+        
         if (existing.Email != user.Email)
         {
             existing.Email = user.Email;
         }
         
-        // Only update password if it's not empty
+        
         if (!string.IsNullOrEmpty(user.PasswordHash))
         {
             existing.PasswordHash = user.PasswordHash;

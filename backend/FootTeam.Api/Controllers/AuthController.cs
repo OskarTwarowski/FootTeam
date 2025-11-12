@@ -26,10 +26,10 @@ public sealed class AuthController(IUserService users, IUserRepository userRepo,
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
-        // Hash plain password
+        
         var hash = BCrypt.Net.BCrypt.HashPassword(req.Password);
 
-        // Use email as the username internally for registration
+        
         var created = await _users.CreateAsync(req.Email, hash, req.Role, ct);
         var resp = new AuthUserResponse
         {

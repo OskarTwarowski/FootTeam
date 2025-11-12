@@ -10,6 +10,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IPlayerService, PlayerService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITeamService, TeamService>();
         services.AddScoped<ITrainingService, TrainingService>();
         services.AddScoped<INotificationService, NotificationService>();
         return services;

@@ -54,26 +54,6 @@ public sealed class TrainingsController(ITrainingService trainings) : Controller
         return NoContent();
     }
 
-    [HttpGet("{id:int}/participants")]
-    [ProducesResponseType(typeof(IReadOnlyList<TrainingParticipantResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListParticipantsAsync(int id, CancellationToken ct)
-        => Ok((await _trainings.ListParticipantsAsync(id, ct)).Select(TrainingParticipantResponse.FromDomain));
-
-    [HttpPost("{id:int}/participants/{playerId:int}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> AddParticipantAsync(int id, int playerId, CancellationToken ct)
-    {
-        await _trainings.AddParticipantAsync(id, playerId, ct);
-        return NoContent();
-    }
-
-    [HttpDelete("{id:int}/participants/{playerId:int}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> RemoveParticipantAsync(int id, int playerId, CancellationToken ct)
-    {
-        await _trainings.RemoveParticipantAsync(id, playerId, ct);
-        return NoContent();
-    }
 }
 
 public sealed class CreateTrainingRequest
@@ -122,14 +102,4 @@ public sealed class TrainingResponse
     };
 }
 
-public sealed class TrainingParticipantResponse
-{
-    public int TrainingID { get; set; }
-    public int PlayerID { get; set; }
-
-    public static TrainingParticipantResponse FromDomain(TrainingParticipant tp) => new()
-    {
-        TrainingID = tp.TrainingID,
-        PlayerID = tp.PlayerID
-    };
-}
+ 

@@ -8,7 +8,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<Player> Players => Set<Player>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Training> Trainings => Set<Training>();
-    public DbSet<TrainingParticipant> TrainingParticipants => Set<TrainingParticipant>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<Team> Teams => Set<Team>();
 
@@ -23,14 +22,18 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.Property(e => e.PlayerID).HasColumnName("PlayerID");
             entity.Property(e => e.FirstName).HasMaxLength(50);
             entity.Property(e => e.LastName).HasMaxLength(50);
-            entity.Property(e => e.BirthDate);
-            entity.Property(e => e.Position).HasMaxLength(50);
+            // Columns BirthDate and Position do not exist in current MySQL schema
+            entity.Ignore(e => e.BirthDate);
+            entity.Ignore(e => e.Position);
             entity.Property(e => e.UserID).HasColumnName("UserID");
-            entity.HasOne<User>()
+            
+            
+            entity.HasOne(p => p.User)
                   .WithMany()
                   .HasForeignKey(p => p.UserID)
                   .OnDelete(DeleteBehavior.SetNull);
-            entity.HasOne<Team>()
+                  
+            entity.HasOne(p => p.Team)
                   .WithMany(t => t.Players)
                   .HasForeignKey(p => p.TeamID)
                   .OnDelete(DeleteBehavior.SetNull);
@@ -45,6 +48,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.Property(e => e.PasswordHash).HasMaxLength(255).IsRequired();
             entity.Property(e => e.Role).HasMaxLength(20).IsRequired();
             entity.Property(e => e.CreatedAt);
+            // DB schema does not define a one-to-one User↔Player; avoid shadow FK (UserID1)
+            entity.Ignore(u => u.Player);
             entity.HasMany(u => u.CoachedTeams)
                   .WithOne(t => t.Coach)
                   .HasForeignKey(t => t.CoachID)
@@ -55,39 +60,38 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         {
             entity.ToTable("Trainings");
             entity.HasKey(e => e.TrainingID);
+            entity.Property(e => e.TrainingID).HasColumnName("TrainingID");
             entity.Property(e => e.Title).HasMaxLength(100);
-            entity.Property(e => e.Description);
-            entity.Property(e => e.Location).HasMaxLength(100);
+            entity.Property(e => e.Description).HasColumnType("TEXT");
+            // Location column does not exist in DB schema
+            entity.Ignore(e => e.Location);
             entity.Property(e => e.StartTime);
             entity.Property(e => e.EndTime);
             entity.Property(e => e.CoachID).HasColumnName("CoachID");
-            entity.HasOne<User>()
-                  .WithMany()
-                  .HasForeignKey(e => e.CoachID)
+            entity.Property(e => e.TeamID).HasColumnName("TeamID");
+            
+            entity.HasOne(t => t.Coach)
+                  .WithMany(u => u.CoachedTrainings)
+                  .HasForeignKey(t => t.CoachID)
+                  .OnDelete(DeleteBehavior.SetNull);
+                  
+            entity.HasOne(t => t.Team)
+                  .WithMany(t => t.Trainings)
+                  .HasForeignKey(t => t.TeamID)
                   .OnDelete(DeleteBehavior.SetNull);
         });
 
-        modelBuilder.Entity<TrainingParticipant>(entity =>
-        {
-            entity.ToTable("TrainingParticipants");
-            entity.HasKey(e => new { e.TrainingID, e.PlayerID });
-            entity.HasOne<Training>()
-                  .WithMany()
-                  .HasForeignKey(e => e.TrainingID)
-                  .OnDelete(DeleteBehavior.Cascade);
-            entity.HasOne<Player>()
-                  .WithMany()
-                  .HasForeignKey(e => e.PlayerID)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
+        // TrainingParticipants table does not exist in current DB schema; no mapping
 
         modelBuilder.Entity<Team>(entity =>
         {
             entity.ToTable("Teams");
-            entity.HasKey(t => t.TeamID);
-            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
-            entity.Property(t => t.CoachID).HasColumnName("CoachID");
-            entity.HasOne<User>()
+            entity.HasKey(e => e.TeamID);
+            entity.Property(e => e.TeamID).HasColumnName("TeamID");
+            entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.CoachID).HasColumnName("CoachID");
+            
+            entity.HasOne(t => t.Coach)
                   .WithMany(u => u.CoachedTeams)
                   .HasForeignKey(t => t.CoachID)
                   .OnDelete(DeleteBehavior.SetNull);
@@ -97,20 +101,21 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         {
             entity.ToTable("Notifications");
             entity.HasKey(e => e.NotificationID);
-            entity.Property(e => e.Title).HasMaxLength(100).IsRequired();
-            entity.Property(e => e.Description);
-            entity.Property(e => e.StartTime).IsRequired();
+            entity.Property(e => e.NotificationID).HasColumnName("NotificationID");
+            entity.Property(e => e.Title).HasMaxLength(100);
+            entity.Property(e => e.Description).HasColumnType("TEXT");
+            entity.Property(e => e.StartTime);
             entity.Property(e => e.EndTime);
-            entity.Property(e => e.CreatedBy).IsRequired();
-            entity.Property(e => e.TeamID);
+            entity.Property(e => e.CreatedBy).HasColumnName("CreatedBy");
+            entity.Property(e => e.TeamID).HasColumnName("TeamID");
             
-            entity.HasOne<User>()
-                  .WithMany()
+            entity.HasOne(n => n.Creator)
+                  .WithMany(u => u.CreatedNotifications)
                   .HasForeignKey(n => n.CreatedBy)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.SetNull);
                   
-            entity.HasOne<Team>()
-                  .WithMany()
+            entity.HasOne(n => n.Team)
+                  .WithMany(t => t.Notifications)
                   .HasForeignKey(n => n.TeamID)
                   .OnDelete(DeleteBehavior.SetNull);
         });

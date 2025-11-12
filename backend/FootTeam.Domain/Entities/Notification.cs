@@ -15,7 +15,7 @@ public class Notification
     public int? CreatedBy { get; set; }
     public int? TeamID { get; set; }
     
-    // Navigation properties
+    
     public virtual User? Creator { get; set; }
     public virtual Team? Team { get; set; }
 }

@@ -20,16 +20,16 @@ public sealed class UserService(IUserRepository repository, IPlayerRepository pl
 
     public async Task<User> CreateAsync(string email, string password, string role, CancellationToken ct = default)
     {
-        // Check if user with this email already exists
+        
         var existingUser = await _repository.GetByEmailAsync(email, ct);
         if (existingUser != null)
         {
             throw new InvalidOperationException("User with this email already exists.");
         }
 
-        // In a real application, you would hash the password here
-        // For example: var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-        var passwordHash = password; // This is just a placeholder
+        
+        
+        var passwordHash = password; 
 
         var u = new User
         {
@@ -41,12 +41,12 @@ public sealed class UserService(IUserRepository repository, IPlayerRepository pl
 
         var created = await _repository.CreateAsync(u, ct);
 
-        // If the role is Player, create a player profile
+        
         if (string.Equals(created.Role, "Player", StringComparison.OrdinalIgnoreCase))
         {
             var p = new Player
             {
-                FirstName = email.Split('@')[0], // Use part of email as first name
+                FirstName = email.Split('@')[0], 
                 LastName = string.Empty,
                 BirthDate = null,
                 Position = null,
@@ -66,7 +66,7 @@ public sealed class UserService(IUserRepository repository, IPlayerRepository pl
         
         if (!string.IsNullOrWhiteSpace(email))
         {
-            // Check if the new email is already taken by another user
+            
             var userWithSameEmail = await _repository.GetByEmailAsync(email, ct);
             if (userWithSameEmail != null && userWithSameEmail.UserID != id)
             {
@@ -77,9 +77,9 @@ public sealed class UserService(IUserRepository repository, IPlayerRepository pl
         
         if (!string.IsNullOrWhiteSpace(password))
         {
-            // In a real application, you would hash the password here
-            // existing.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
-            existing.PasswordHash = password; // This is just a placeholder
+            
+            
+            existing.PasswordHash = password; 
         }
         
         if (!string.IsNullOrWhiteSpace(role))

@@ -4,10 +4,9 @@ using FootTeam.Domain.Repositories;
 
 namespace FootTeam.Application.Services;
 
-public sealed class TrainingService(ITrainingRepository trainings, ITrainingParticipantRepository participants) : ITrainingService
+public sealed class TrainingService(ITrainingRepository trainings) : ITrainingService
 {
     private readonly ITrainingRepository _trainings = trainings;
-    private readonly ITrainingParticipantRepository _participants = participants;
 
     public Task<IReadOnlyList<Training>> ListAsync(CancellationToken ct = default)
         => _trainings.ListAsync(ct);
@@ -45,12 +44,4 @@ public sealed class TrainingService(ITrainingRepository trainings, ITrainingPart
     public Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         => _trainings.DeleteAsync(id, ct);
 
-    public Task<IReadOnlyList<TrainingParticipant>> ListParticipantsAsync(int trainingId, CancellationToken ct = default)
-        => _participants.ListByTrainingAsync(trainingId, ct);
-
-    public Task<bool> AddParticipantAsync(int trainingId, int playerId, CancellationToken ct = default)
-        => _participants.AddAsync(trainingId, playerId, ct);
-
-    public Task<bool> RemoveParticipantAsync(int trainingId, int playerId, CancellationToken ct = default)
-        => _participants.RemoveAsync(trainingId, playerId, ct);
 }
