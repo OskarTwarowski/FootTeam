@@ -14,7 +14,7 @@ function TeamView() {
   const activeProfile = useSelector((state) => state.activeProfile.profile);
   const profiles = useSelector((state) => state.profiles.list ?? []);
   const teams = getTeams();
-
+  const userRole = useSelector((state) => state.auth.user?.Role);
   const [isOpen, setIsOpen] = useState(false);
   const [teamPlayers, setTeamPlayers] = useState([]);
 
@@ -35,8 +35,24 @@ function TeamView() {
     dispatch(fetchAllProfiles());
   };
 
-  if (!activeProfile) return <p>Wybierz profil</p>;
-
+  if (userRole === "Trener" && !activeProfile) {
+    return (
+      <div className={styles.emptyProfileBox}>
+        <h2>
+          Jeśli chcesz stworzyć drużyne Prosze skontaktuj sie z nami,poprzez
+          ustawienia ⮕ kontakt
+        </h2>
+        <p>Jeśli masz drużyne ⮕ Wybierz profil, aby połączyć się z drużyną. </p>
+      </div>
+    );
+  } else if (!activeProfile) {
+    return (
+      <div className={styles.emptyProfileBox}>
+        <h2>Brak aktywnego profilu</h2>
+        <p>Wybierz profil, aby połączyć się z drużyną.</p>
+      </div>
+    );
+  }
   const currentTeam = teams.find(
     (team) => team.TeamID === activeProfile.TeamID
   );
