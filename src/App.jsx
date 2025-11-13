@@ -16,10 +16,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ProfileEditButton from "./pages/AppLayout/viewPages/Profile/ProfileEditButton";
 import Regulamin from "./pages/Regulamin";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import RegisterTrener from "./components/RegisterTrener";
 import { getHealth, getPlayers } from "./API/getPlayers";
+import AdminView from "./pages/AppLayout/viewPages/Admin/AdminView";
+import AdminRoute from "./components/AdminRoute";
 function App() {
-  getPlayers();
-  getHealth();
+  //getPlayers();
+  //getHealth();
   return (
     <BrowserRouter>
       <Routes>
@@ -27,6 +30,7 @@ function App() {
         <Route path="o-nas" element={<About />} />
         <Route path="logowanie" element={<Login />} />
         <Route path="rejestracja" element={<Register />} />
+        <Route path="rejestracja-trener" element={<RegisterTrener />} />
         <Route path="regulamin" element={<Regulamin />} />
         <Route path="polityka-prywatnosci" element={<PrivacyPolicy />} />
         <Route path="*" element={<PageNotFound />} />
@@ -42,6 +46,14 @@ function App() {
           <Route path="platnosci" element={<PaymentsView />} />
           <Route path="powiadomienia" element={<NotificationView />} />
           <Route path="ustawienia" element={<SettingsView />} />
+          <Route
+            path="admin"
+            element={
+              <AdminRoute>
+                <AdminView />
+              </AdminRoute>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

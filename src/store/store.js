@@ -5,9 +5,11 @@ import profileReducers from "../store/features/profileSlice";
 import registerReducers from "../store/features/RegisterSlice";
 import trainingReducer from "../store/features/trainingSlice";
 import authReducer from "../store/features/authSlice";
+import teamReducer from "../store/features/teamSlice";
 
 export const store = configureStore({
   reducer: {
+    teams: teamReducer,
     settings: settingsReducer,
     activeProfile: activeProfileReducer,
     profiles: profileReducers,

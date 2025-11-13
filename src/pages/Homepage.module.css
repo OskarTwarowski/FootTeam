@@ -69,6 +69,7 @@
   font-size: 1.3rem;
   font-weight: 600;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  margin: 1rem;
 }
 
 .cta:hover {

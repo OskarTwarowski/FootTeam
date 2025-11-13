@@ -50,7 +50,7 @@ function NotificationView() {
             Dodaj Powiadomienie Drużyny
           </Button>
         )}
-        {userRole === "Trener" && (
+        {userRole === "Admin" && (
           <Button type="primary" onClick={() => setShowGlobalModal(true)}>
             Dodaj Globalne Powiadomienie
           </Button>

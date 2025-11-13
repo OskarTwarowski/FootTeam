@@ -144,7 +144,7 @@
   cursor: pointer;
   color: #e53935;
   font-weight: bold;
-  margin-left: 10px;
+  margin-right: 2rem;
   transition: transform 0.15s ease, color 0.15s ease;
 }
 

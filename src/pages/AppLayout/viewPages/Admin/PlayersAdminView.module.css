@@ -1,0 +1,44 @@
+.container {
+  padding: 2rem;
+  color: white;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: none;
+  margin-bottom: 1rem;
+}
+
+.playerList {
+  list-style: none;
+  padding: 0;
+}
+
+.playerItem {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--color-dark--3);
+  padding: 0.5rem 0.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.info,
+.noResults {
+  color: gray;
+  font-size: 0.9rem;
+}
+.playerRemove {
+  cursor: pointer;
+  color: #e53935;
+  font-weight: bold;
+  margin-right: 2rem;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.playerRemove:hover {
+  color: #b71c1c;
+  transform: scale(1.2);
+}

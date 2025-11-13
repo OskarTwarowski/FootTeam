@@ -9,6 +9,7 @@ function SettingsView() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { lightMode } = useSelector((state) => state.settings);
+
   const handleToggleTheme = () => {
     dispatch(toggleLightMode());
   };

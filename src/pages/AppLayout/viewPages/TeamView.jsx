@@ -87,8 +87,10 @@ function TeamView() {
               >
                 {player.FirstName} {player.LastName}
               </span>
+            </div>
 
-              {isOpen && (
+            <span className={styles.playerPhone}>
+              {isOpen && player.Role !== "Trener" && (
                 <span
                   className={styles.playerRemove}
                   onClick={(e) => handleDeleteFromTeam(player, e)}
@@ -96,9 +98,8 @@ function TeamView() {
                   ✖
                 </span>
               )}
-            </div>
-
-            <span className={styles.playerPhone}>{player.Phone}</span>
+              {player.Phone}
+            </span>
           </li>
         ))}
       </ul>

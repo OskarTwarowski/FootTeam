@@ -46,6 +46,7 @@ export const FAKE_PROFILES = [
     Phone: "123123123",
     TeamCode: "TEAM001",
     TeamID: 1,
+    Role: "Rodzic",
   },
   {
     UserID: 2,
@@ -55,6 +56,7 @@ export const FAKE_PROFILES = [
     Phone: "999888777",
     TeamCode: "TEAM001",
     TeamID: 1,
+    Role: "Rodzic",
   },
   {
     UserID: 3, // parent1
@@ -64,6 +66,27 @@ export const FAKE_PROFILES = [
     Phone: "555333222",
     TeamCode: "TEAM002",
     TeamID: 2,
+    Role: "Rodzic",
+  },
+  {
+    UserID: 4,
+    PlayerID: 5,
+    FirstName: "Oskar",
+    LastName: "Purchawski",
+    Phone: "915521332",
+    TeamCode: "TEAM001",
+    TeamID: 1,
+    Role: "Rodzic",
+  },
+  {
+    UserID: 4,
+    PlayerID: 6,
+    FirstName: "Olaf",
+    LastName: "Purchawiejski",
+    Phone: "122311411",
+    TeamCode: "TEAM001",
+    TeamID: 1,
+    Role: "Rodzic",
   },
 ];
 
