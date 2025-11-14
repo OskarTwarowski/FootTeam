@@ -7,30 +7,23 @@ import {
   removeProfile as removeProfileService,
 } from "../../services/ProfileService";
 
-// pobieranie profili z localStorage
+// pobieranie profili TYLKO dla zalogowanego użytkownika
 export const fetchProfiles = createAsyncThunk(
   "profiles/fetchProfiles",
   async (_, thunkAPI) => {
-    const loggedUser = thunkAPI.getState().auth.user; // bierz z Redux, nie z LS
+    const loggedUser = thunkAPI.getState().auth.user;
     if (!loggedUser) return [];
 
-    const profiles = JSON.parse(localStorage.getItem("Profiles")) || [];
-    const normalizedProfiles = profiles.flatMap((p) =>
-      Array.isArray(p) ? p : [p]
-    );
-
-    return normalizedProfiles.filter((p) => p.UserID === loggedUser.UserID);
+    const profiles = getProfiles();
+    return profiles.filter((p) => p.UserID === loggedUser.UserID);
   }
 );
-// pobieranie wszystkich profili
+
+// pobieranie wszystkich profili (np. dla admina)
 export const fetchAllProfiles = createAsyncThunk(
   "profiles/fetchAllProfiles",
   async () => {
-    const profiles = JSON.parse(localStorage.getItem("Profiles")) || [];
-    const normalizedProfiles = profiles.flatMap((p) =>
-      Array.isArray(p) ? p : [p]
-    );
-    return normalizedProfiles;
+    return getProfiles();
   }
 );
 
@@ -38,73 +31,91 @@ export const fetchAllProfiles = createAsyncThunk(
 export const addProfile = createAsyncThunk(
   "profiles/addProfile",
   async (profile, thunkAPI) => {
+    const loggedUser = thunkAPI.getState().auth.user;
     await addProfileService(profile);
 
-    const loggedUser = thunkAPI.getState().auth.user;
     if (!loggedUser) return [];
 
     const profiles = getProfiles();
-    // filtruj tylko profile tego użytkownika
     return profiles.filter((p) => p.UserID === loggedUser.UserID);
   }
 );
 
+// aktualizacja profilu
 export const updateProfile = createAsyncThunk(
   "profiles/updateProfile",
   async (profile) => {
-    const updated = await updateProfileService(profile);
-    return updated;
+    return await updateProfileService(profile);
   }
 );
+
+// usuwanie profilu
 export const removeProfile = createAsyncThunk(
   "profiles/removeProfile",
-  async (profile) => {
+  async (profile, thunkAPI) => {
+    const loggedUser = thunkAPI.getState().auth.user;
     await removeProfileService(profile);
+
+    if (!loggedUser) return [];
+
     const profiles = getProfiles();
-    return profiles;
+    return profiles.filter((p) => p.UserID === loggedUser.UserID);
   }
 );
+
+//
+// SLICE
+//
+
 const profileSlice = createSlice({
   name: "profiles",
   initialState: {
     list: [],
-    status: "idle", // idle | loading | succeeded | failed
+    status: "idle",
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      /* --- FETCH PROFILES --- */
       .addCase(fetchProfiles.pending, (state) => {
         state.status = "loading";
       })
       .addCase(fetchProfiles.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = action.payload;
+        state.list = action.payload || [];
       })
       .addCase(fetchProfiles.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
-      .addCase(addProfile.fulfilled, (state, action) => {
-        state.list = action.payload;
-      })
 
-      .addCase(updateProfile.fulfilled, (state, action) => {
-        const updated = action.payload;
-        if (!updated) return;
-        const index = state.list.findIndex(
-          (p) => p.PlayerID === updated.PlayerID
-        );
-        if (index !== -1) {
-          state.list[index] = updated;
-        }
-      })
-      .addCase(removeProfile.fulfilled, (state, action) => {
-        state.list = action.payload;
-      })
+      /* --- FETCH ALL --- */
       .addCase(fetchAllProfiles.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.list = action.payload;
+      })
+
+      /* --- ADD --- */
+      .addCase(addProfile.fulfilled, (state, action) => {
+        state.list = action.payload || [];
+      })
+
+      /* --- UPDATE --- */
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        const updated = action.payload;
+        if (!updated) return;
+
+        const index = state.list.findIndex(
+          (p) => p.PlayerID === updated.PlayerID
+        );
+
+        if (index !== -1) state.list[index] = updated;
+      })
+
+      /* --- REMOVE --- */
+      .addCase(removeProfile.fulfilled, (state, action) => {
+        state.list = action.payload || [];
       });
   },
 });

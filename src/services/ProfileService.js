@@ -1,3 +1,9 @@
+import { FAKE_PROFILES } from "../mockData";
+
+if (!localStorage.getItem("Profiles")) {
+  localStorage.setItem("Profiles", JSON.stringify(FAKE_PROFILES));
+}
+
 export function getProfiles() {
   const stored = JSON.parse(localStorage.getItem("Profiles")) || [];
   // usuwa zagnieżdżenia, jeśli jeszcze jakieś są
