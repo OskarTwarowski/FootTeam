@@ -14,7 +14,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--color-light--1);
+  background-color: var(--color-light--2);
   color: white;
   padding: 1rem 2rem;
   border-radius: 8px;
@@ -45,7 +45,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  background-color: #4caf50;
+  background-color: var(--success);
   color: white;
   font-weight: 500;
 }

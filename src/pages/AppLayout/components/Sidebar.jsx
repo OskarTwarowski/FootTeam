@@ -2,6 +2,15 @@ import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Logo from "../../../components/Logo";
 import styles from "./Sidebar.module.css";
+import {
+  UserRoundPen,
+  NotebookTabs,
+  Calendar,
+  CreditCard,
+  Bell,
+  Settings,
+  UserStar,
+} from "lucide-react";
 
 function Sidebar() {
   const userRole = useSelector((state) => state.auth.user?.Role);
@@ -9,7 +18,6 @@ function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <Logo />
-
       <nav>
         <ul>
           <li>
@@ -17,6 +25,7 @@ function Sidebar() {
               to="profil"
               className={({ isActive }) => (isActive ? styles.active : "")}
             >
+              <UserRoundPen className={styles.marginRight} />
               Profil
             </NavLink>
           </li>
@@ -26,6 +35,7 @@ function Sidebar() {
               to="druzyna"
               className={({ isActive }) => (isActive ? styles.active : "")}
             >
+              <NotebookTabs className={styles.marginRight} />
               Drużyna
             </NavLink>
           </li>
@@ -35,6 +45,7 @@ function Sidebar() {
               to="kalendarz"
               className={({ isActive }) => (isActive ? styles.active : "")}
             >
+              <Calendar className={styles.marginRight} />
               Kalendarz
             </NavLink>
           </li>
@@ -44,6 +55,7 @@ function Sidebar() {
               to="platnosci"
               className={({ isActive }) => (isActive ? styles.active : "")}
             >
+              <CreditCard className={styles.marginRight} />
               Płatności
             </NavLink>
           </li>
@@ -53,6 +65,7 @@ function Sidebar() {
               to="powiadomienia"
               className={({ isActive }) => (isActive ? styles.active : "")}
             >
+              <Bell className={styles.marginRight} />
               Powiadomienia
             </NavLink>
           </li>
@@ -62,6 +75,7 @@ function Sidebar() {
               to="ustawienia"
               className={({ isActive }) => (isActive ? styles.active : "")}
             >
+              <Settings className={styles.marginRight} />
               Ustawienia
             </NavLink>
           </li>
@@ -73,6 +87,7 @@ function Sidebar() {
                 to="admin"
                 className={({ isActive }) => (isActive ? styles.active : "")}
               >
+                <UserStar className={styles.marginRight} />
                 Panel Administratora
               </NavLink>
             </li>

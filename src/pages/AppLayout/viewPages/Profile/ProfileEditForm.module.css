@@ -36,7 +36,7 @@ input {
   outline: none;
 }
 input:focus {
-  background-color: var(--color-light--3);
+  background-color: var(--color-light--1);
 }
 .error {
   color: darkred !important;
@@ -52,4 +52,8 @@ input:focus {
   cursor: pointer;
   font-weight: bold;
   transition: background 0.2s;
+}
+.cancelButton:hover {
+  background: #2563eb !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }

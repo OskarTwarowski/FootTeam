@@ -1,0 +1,12 @@
+.marginRight {
+  height: 18px;
+  width: 18px;
+  margin-right: 0.5rem;
+}
+.buttonEdit {
+  font-weight: 600;
+}
+.buttonAdd {
+  font-weight: 700 !important;
+  background-color: #14b8a6 !important;
+}

@@ -8,6 +8,7 @@ import {
   updateProfile as updateProfileThunk,
 } from "../../../store/features/profileSlice";
 import styles from "./TeamView.module.css";
+import { Phone } from "lucide-react";
 
 function TeamView() {
   const dispatch = useDispatch();
@@ -98,6 +99,7 @@ function TeamView() {
                   ✖
                 </span>
               )}
+              <Phone className={styles.phonesvg} />
               {player.Phone}
             </span>
           </li>

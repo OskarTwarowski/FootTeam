@@ -8,6 +8,11 @@
   border-radius: 5px;
   cursor: pointer;
 }
+.btn:hover {
+  background: var(--primary) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
 .primary {
   font-weight: 700;
   background-color: var(--color-brand--2);

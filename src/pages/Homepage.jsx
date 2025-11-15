@@ -15,12 +15,12 @@ function Homepage() {
 
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <h1>⚽️ Witaj w FootTeam!</h1>
+          <h1> Witaj w FootTeam!</h1>
           <h2>Proste i przyjemne zarządzanie drużyną</h2>
           <p>
             Zorganizuj swoją drużynę jak profesjonalista. Dzięki FootTeam z
             łatwością zaplanujesz treningi, prześlesz powiadomienia zawodnikom i
-            utrzymasz doskonałą komunikację w zespole – wszystko w jednym
+            utrzymasz doskonałą komunikację w zespole. wszystko w jednym
             miejscu.
           </p>
 

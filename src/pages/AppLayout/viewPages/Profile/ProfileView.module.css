@@ -1,33 +1,104 @@
-/* (--color-dark--3) */
 .profileBox {
   display: grid;
-  grid-template-rows: auto 1fr auto; /* górna lista + dolny pasek */
-  background: #76818a;
+  grid-template-rows: auto 1fr auto;
+  background: linear-gradient(145deg, #f5f6fa, #e4e6ef);
   color: #fff;
   padding: 2rem;
-  border-radius: 8px;
-  width: 75%;
+  border-radius: 12px;
+  width: 85%;
   max-width: 1200px;
   margin: 2rem auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  border: 1px solid #2c2c3f;
-  gap: 1.5rem; /* odstęp między listą a przyciskami */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid #475569; /* slate-600 */
+  gap: 1.5rem;
+  transition: all 0.3s ease;
 }
 
-.profileList {
-  overflow-y: auto; /* jeśli lista będzie długa */
+.profileBox:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
-.profileButtons {
-  display: flex;
-  justify-content: space-between; /* przyciski na krańcach */
-  border-top: 1px solid #2c2c3f;
-  padding-top: 1rem;
-}
+/* Nagłówek */
 .header {
   font-size: 2rem;
   width: 100%;
   text-align: center;
-  border-bottom: 1px solid #2c2c3f;
-  gap: 1.5rem;
+  border-bottom: 2px solid #475569;
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  color: #222;
+  letter-spacing: 0.025em;
+}
+
+/* Lista profili */
+.profileList {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 60vh;
+  padding-right: 0.5rem;
+}
+
+/* Custom scrollbar */
+.profileList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.profileList::-webkit-scrollbar-track {
+  background: #222; /* slate-800 */
+  border-radius: 4px;
+}
+
+.profileList::-webkit-scrollbar-thumb {
+  background: #a7a9ac; /* slate-600 */
+  border-radius: 4px;
+}
+
+.profileList::-webkit-scrollbar-thumb:hover {
+  background: #64748b; /* slate-500 */
+}
+
+/* Przyciski na dole */
+.profileButtons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 2px solid #475569;
+  padding-top: 1.5rem;
+}
+
+/* Responsywność */
+@media (max-width: 1024px) {
+  .profileBox {
+    width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .profileBox {
+    width: 95%;
+    padding: 1.5rem;
+    margin: 1rem auto;
+  }
+
+  .header {
+    font-size: 1.5rem;
+  }
+
+  .profileButtons {
+    flex-direction: column;
+  }
+
+  .profileList {
+    max-height: 50vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileBox {
+    padding: 1rem;
+  }
+
+  .header {
+    font-size: 1.25rem;
+  }
 }

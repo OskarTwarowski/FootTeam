@@ -1,29 +1,43 @@
 .app {
-  height: 90rem;
-  margin: 2.5rem;
-  /* background-color: rgb(6, 6, 36); */
-  /*padding: 2.5rem 5rem 2.5rem 0rem; */
-  padding-right: 5rem;
-  background-color: var(--color-dark--2);
+  min-height: 100vh; /* zamiast sztywnego 85rem */
+
+  background: linear-gradient(
+      180deg,
+      rgba(187, 200, 99, 0.95) 0%,
+      rgba(101, 140, 88, 0.9) 50%,
+      rgba(49, 105, 78, 1) 100%
+    ),
+    url("../../public/background-pic.jpg");
+
   display: grid;
   position: relative;
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 260px 4fr 1fr;
 }
-/* .app section {
-  display: flex;
-  flex-direction: row;
-  height: 85%;
-  align-items: center;
-  justify-content: center;
-  gap: 2.5rem;
-  text-align: center;
-
-  xxxx
-
-
-  display: grid;
-  grid-template-columns: 1fr 4fr;
-  height: 100vh;
-  background-color: #f9f9f9;
-  position: relative;
-} */
+.outletContainer {
+  min-width: 700px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(31, 107, 57, 0.9) 50%,
+    rgba(86, 180, 102, 0.8) 100%
+  );
+  background-size: cover;
+  background-position: center;
+  padding: 2rem;
+  margin-left: 10rem;
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}

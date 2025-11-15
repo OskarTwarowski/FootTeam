@@ -6,7 +6,11 @@
   --color-brand--4: #007a89;
   --color-brand--5: #006076;
   --sidebar-1: #34495e;
-
+  --color-backgroud--1: #049dbf;
+  --color-backgroud-2: #04adbf;
+  --color-backgroud--3: #038c5a;
+  --color-bg-light: #1e293b;
+  --color-bg-alt: #94a3b8;
   --color-dark--0: #242a2e;
   --color-dark--1: #2d3439;
   --color-dark--2: #42484d;
@@ -14,6 +18,42 @@
   --color-light--1: #aaa;
   --color-light--2: #ececec;
   --color-light--3: #d6dee0;
+
+  --primary: #2fa84f;
+  --primary-light: #66c372;
+  --primary-dark: #1f7a3b;
+
+  --accent: #d9805f;
+  --accent-light: #e9a58a;
+
+  --success: #038c5a;
+  --warning: #9ca653;
+
+  /* Tła */
+  --bg-light: #f5f9fa;
+  --bg-dark: #0f1c24;
+
+  /* Teksty */
+  --text-dark: #121212;
+  --text-light: #fdfdfd;
+
+  /* Cienie */
+  --shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+.Trener-1-hex {
+  color: #049dbf;
+}
+.Trener-2-hex {
+  color: #04adbf;
+}
+.Trener-3-hex {
+  color: #038c5a;
+}
+.Trener-4-hex {
+  color: #9ca653;
+}
+.Trener-5-hex {
+  color: #d9805f;
 }
 /*   h1,
   h2,

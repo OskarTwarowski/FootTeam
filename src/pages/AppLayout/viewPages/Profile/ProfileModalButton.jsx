@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import ProfileCreateForm from "./ProfileCreateForm";
 import { Button as BsButton } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserPlus } from "lucide-react";
+import styles from "./ProfileEditButton.module.css";
 
 export default function ProfileModalButton() {
   const navigate = useNavigate();
@@ -23,7 +25,10 @@ export default function ProfileModalButton() {
   };
   return (
     <>
-      <BsButton onClick={handleOpen}>Utwórz profil</BsButton>
+      <BsButton onClick={handleOpen} className={styles.buttonAdd}>
+        <UserPlus className={styles.marginRight} />
+        Utwórz profil
+      </BsButton>
       <ProfileCreateForm show={showModal} onClose={handleClose} />
     </>
   );

@@ -3,7 +3,8 @@ import ProfileEditForm from "./ProfileEditForm";
 import { Button as BsButton } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-
+import { UserRoundCog } from "lucide-react";
+import styles from "./ProfileEditButton.module.css";
 function ProfileEditButton() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,8 +33,10 @@ function ProfileEditButton() {
     <>
       <BsButton
         onClick={handleOpen}
-        disabled={!activeProfile} // przycisk nieaktywny jeśli brak wybranego profilu
+        disabled={!activeProfile}
+        className={styles.buttonEdit}
       >
+        <UserRoundCog className={styles.marginRight} />
         Edytuj Profil
       </BsButton>
 

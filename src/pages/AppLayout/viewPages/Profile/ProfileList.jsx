@@ -9,6 +9,7 @@ import {
   addProfile,
 } from "../../../../store/features/profileSlice";
 import { findTeamByCode } from "../../../../services/TeamService";
+import { Trash2, Phone } from "lucide-react";
 
 function ProfileList() {
   const dispatch = useDispatch();
@@ -49,45 +50,54 @@ function ProfileList() {
   }
 
   return (
-    <div>
-      <ul className={styles.list}>
-        {profiles.map((profile, index) => {
-          const team = findTeamByCode(profile.TeamCode);
+    <div className={styles.container}>
+      <div className={styles.tableHeader}>
+        <div className={styles.headerCell}>Imie Nazwisko</div>
+        <div className={styles.headerCell}>Drużyna</div>
+        <div className={styles.headerCell}>Telefon</div>
+        <div className={styles.headerCellAction}></div>
+      </div>
+      <div>
+        <ul className={styles.list}>
+          {profiles.map((profile, index) => {
+            const team = findTeamByCode(profile.TeamCode);
 
-          // const playerTeam = team.find((t) => t.TeamID === profile.TeamID);
+            // const playerTeam = team.find((t) => t.TeamID === profile.TeamID);
 
-          return (
-            <li key={index} className={styles.item}>
-              <button
-                className={`${styles.itemButton} ${
-                  activeProfile?.PlayerID === profile.PlayerID
-                    ? styles.active
-                    : ""
-                }`}
-                onClick={() => handleProfileClick(profile)}
-              >
-                <span className={`${styles.name} ${styles.textColor}`}>
-                  {profile.FirstName} {profile.LastName}
-                </span>
-                <span className={`${styles.team} ${styles.textColor}`}>
-                  {team ? team.Name : "Brak drużyny"}
-                </span>
-
-                <span className={`${styles.phone} ${styles.textColor}`}>
-                  {profile.Phone}
-                </span>
-
-                <span
-                  className={`${styles.delete} ${styles.textColor}`}
-                  onClick={(e) => handleDeleteClick(profile, e)}
+            return (
+              <li key={index} className={styles.item}>
+                <button
+                  className={`${styles.itemButton} ${
+                    activeProfile?.PlayerID === profile.PlayerID
+                      ? styles.active
+                      : ""
+                  }`}
+                  onClick={() => handleProfileClick(profile)}
                 >
-                  ✖
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+                  <span className={`${styles.name} ${styles.textColor}`}>
+                    {profile.FirstName} {profile.LastName}
+                  </span>
+                  <span className={`${styles.team} ${styles.textColor}`}>
+                    {team ? team.Name : "Brak drużyny"}
+                  </span>
+
+                  <span className={`${styles.phone} ${styles.textColor}`}>
+                    <Phone className={styles.phonesvg} />
+                    {profile.Phone}
+                  </span>
+
+                  <span
+                    className={`${styles.delete} ${styles.textColor}`}
+                    onClick={(e) => handleDeleteClick(profile, e)}
+                  >
+                    <Trash2 className={styles.delete} />
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
 
       <ConfirmModal
         show={showModal}

@@ -7,9 +7,6 @@
   justify-content: center;
   min-height: 80vh;
   gap: 3rem; /* większe odstępy między przyciskami */
-  background-color: var(
-    --color-dark--2
-  ); /* ciemniejsze tło całego panelu ustawień */
 }
 
 .buttonList {
@@ -21,7 +18,7 @@
 }
 
 .buttonSettings {
-  background-color: #666; /* szary odcień */
+  background-color: #000000; /* szary odcień */
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 1.8rem 2.5rem; /* większe przyciski */
@@ -40,7 +37,8 @@
 
 /* przycisk usuń konto */
 .delete {
-  background-color: #666;
+  margin-top: 2rem;
+  background-color: #000000;
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 1.8rem 2.5rem;
@@ -59,7 +57,7 @@
 
 /* przycisk wylogowania się */
 .logout {
-  background-color: #666;
+  background-color: #000000;
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 1.8rem 2.5rem;
