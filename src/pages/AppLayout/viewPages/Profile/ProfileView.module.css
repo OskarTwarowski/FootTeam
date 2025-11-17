@@ -95,6 +95,7 @@
 
 @media (max-width: 480px) {
   .profileBox {
+    margin-top: 50px;
     padding: 1rem;
   }
 

@@ -108,15 +108,15 @@
   }
 
   .heroContent h1 {
-    font-size: 2.6rem;
+    font-size: 3rem;
   }
 
   .heroContent h2 {
-    font-size: 1.4rem;
+    font-size: 2rem;
   }
 
   .heroContent p {
-    font-size: 1rem;
+    font-size: 1.5rem;
     max-width: 95%;
   }
 }

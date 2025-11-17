@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Logo from "../../../components/Logo";
 import styles from "./Sidebar.module.css";
+
 import {
   UserRoundPen,
   NotebookTabs,
@@ -10,20 +11,31 @@ import {
   Bell,
   Settings,
   UserStar,
+  X,
 } from "lucide-react";
 
-function Sidebar() {
+function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const userRole = useSelector((state) => state.auth.user?.Role);
 
   return (
-    <aside className={styles.sidebar}>
+    <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : ""}`}>
+      {/* CLOSE BUTTON ON MOBILE */}
+      <button
+        className={styles.closeButton}
+        onClick={() => setSidebarOpen(false)}
+      >
+        <X size={26} />
+      </button>
+
       <Logo />
+
       <nav>
         <ul>
           <li>
             <NavLink
               to="profil"
               className={({ isActive }) => (isActive ? styles.active : "")}
+              onClick={() => setSidebarOpen(false)}
             >
               <UserRoundPen className={styles.marginRight} />
               Profil
@@ -34,6 +46,7 @@ function Sidebar() {
             <NavLink
               to="druzyna"
               className={({ isActive }) => (isActive ? styles.active : "")}
+              onClick={() => setSidebarOpen(false)}
             >
               <NotebookTabs className={styles.marginRight} />
               Drużyna
@@ -44,6 +57,7 @@ function Sidebar() {
             <NavLink
               to="kalendarz"
               className={({ isActive }) => (isActive ? styles.active : "")}
+              onClick={() => setSidebarOpen(false)}
             >
               <Calendar className={styles.marginRight} />
               Kalendarz
@@ -54,6 +68,7 @@ function Sidebar() {
             <NavLink
               to="platnosci"
               className={({ isActive }) => (isActive ? styles.active : "")}
+              onClick={() => setSidebarOpen(false)}
             >
               <CreditCard className={styles.marginRight} />
               Płatności
@@ -64,6 +79,7 @@ function Sidebar() {
             <NavLink
               to="powiadomienia"
               className={({ isActive }) => (isActive ? styles.active : "")}
+              onClick={() => setSidebarOpen(false)}
             >
               <Bell className={styles.marginRight} />
               Powiadomienia
@@ -74,18 +90,19 @@ function Sidebar() {
             <NavLink
               to="ustawienia"
               className={({ isActive }) => (isActive ? styles.active : "")}
+              onClick={() => setSidebarOpen(false)}
             >
               <Settings className={styles.marginRight} />
               Ustawienia
             </NavLink>
           </li>
 
-          {/* Widoczne tylko dla administratora */}
           {userRole === "Admin" && (
             <li>
               <NavLink
                 to="admin"
                 className={({ isActive }) => (isActive ? styles.active : "")}
+                onClick={() => setSidebarOpen(false)}
               >
                 <UserStar className={styles.marginRight} />
                 Panel Administratora
@@ -96,9 +113,7 @@ function Sidebar() {
       </nav>
 
       <footer className={styles.footer}>
-        <p className={styles.copyright}>
-          &copy; {new Date().getFullYear()} FootTeam
-        </p>
+        <p>&copy; {new Date().getFullYear()} FootTeam</p>
       </footer>
     </aside>
   );

@@ -30,3 +30,8 @@
   font-size: 1.2rem;
   font-weight: 400;
 }
+@media (max-width: 500px) {
+  .profile {
+    display: none;
+  }
+}

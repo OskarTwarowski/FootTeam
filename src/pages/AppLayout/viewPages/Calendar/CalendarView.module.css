@@ -81,3 +81,34 @@
 span {
   color: #181818 !important;
 }
+/* TELEFONY - pełna szerokość, mniejsze marginesy */
+@media (max-width: 768px) {
+  .container {
+    padding: 0;
+  }
+
+  .calendarContainer {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 5px;
+    box-shadow: none; /* opcjonalnie */
+  }
+}
+
+/* MAŁE TELEFONY */
+@media (max-width: 480px) {
+  .calendarContainer {
+    margin-top: 50px;
+  }
+
+  :global(.rbc-toolbar) {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  :global(.rbc-toolbar-label) {
+    font-size: 1.2rem;
+  }
+}

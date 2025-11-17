@@ -1,6 +1,9 @@
-.app {
-  min-height: 100vh; /* zamiast sztywnego 85rem */
+/* =====================
+   DESKTOP
+===================== */
 
+.app {
+  min-height: 100vh;
   background: linear-gradient(
       180deg,
       rgba(187, 200, 99, 0.95) 0%,
@@ -13,22 +16,86 @@
   position: relative;
   grid-template-columns: 260px 4fr 1fr;
 }
+
 .outletContainer {
-  min-width: 700px;
   background: linear-gradient(
     180deg,
     rgba(0, 0, 0, 0.5) 0%,
     rgba(31, 107, 57, 0.9) 50%,
     rgba(86, 180, 102, 0.8) 100%
   );
+
   background-size: cover;
   background-position: center;
   padding: 2rem;
-  margin-left: 10rem;
+  margin: 2rem;
   border-radius: 20px;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+
   animation: fadeIn 0.3s ease;
 }
+
+/* =====================
+   SIDEBAR DESKTOP
+===================== */
+
+.sidebar {
+  width: 260px;
+  padding: 3rem 2rem;
+  background: linear-gradient(180deg, #0f172a, #1e293b);
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  border-radius: 0 20px 20px 0;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.25);
+}
+
+/* =====================
+   MOBILE RESPONSIVE
+===================== */
+
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    height: 100vh;
+    width: 260px;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .outletContainer {
+    margin: 1rem;
+    padding: 1rem;
+    min-width: auto;
+  }
+}
+
+/* Bardzo małe telefony */
+
+@media (max-width: 480px) {
+  .outletContainer {
+    padding: 0.8rem;
+  }
+
+  .sidebar ul li {
+    font-size: 1.4rem;
+  }
+}
+
+/* =====================
+   ANIMACJE
+===================== */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -39,5 +106,38 @@
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
+  }
+}
+/* OVERLAY ON MOBILE */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+}
+
+/* MOBILE MENU BUTTON */
+.mobileMenuButton {
+  display: none;
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  padding: 0.6rem;
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+  color: white;
+}
+
+@media (max-width: 900px) {
+  .mobileMenuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
