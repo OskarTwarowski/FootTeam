@@ -40,32 +40,7 @@
   /* Cienie */
   --shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
-.Trener-1-hex {
-  color: #049dbf;
-}
-.Trener-2-hex {
-  color: #04adbf;
-}
-.Trener-3-hex {
-  color: #038c5a;
-}
-.Trener-4-hex {
-  color: #9ca653;
-}
-.Trener-5-hex {
-  color: #d9805f;
-}
-/*   h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  p,
-  label {
-    color: #fff !important; 
-    font-weight: normal; 
-*/
+
 .light-mode {
   --color-brand--1: #006076;
   --color-brand--2: #00c46a;
@@ -74,13 +49,13 @@
   --color-brand--5: #00ad83;
   --sidebar-1: #709fce;
 
-  --color-dark--0: #d0d3d6; /* główne tło – jasny szary */
-  --color-dark--1: #c3c7cb; /* sidebar / karty */
-  --color-dark--2: #adb3b8; /* przyciski */
-  --color-dark--3: #5b636a; /* ciemniejsze akcenty */
-  --color-light--1: #4d545a; /* tekst główny */
-  --color-light--2: #1f2225; /* tytuły */
-  --color-light--3: #3a3f44; /* subtelne linie, ramki */
+  --color-dark--0: #d0d3d6;
+  --color-dark--1: #c3c7cb;
+  --color-dark--2: #adb3b8;
+  --color-dark--3: #5b636a;
+  --color-light--1: #4d545a;
+  --color-light--2: #1f2225;
+  --color-light--3: #3a3f44;
   background-color: var(--color-dark--0);
   color: var(--color-light--2);
 }
