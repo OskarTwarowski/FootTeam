@@ -15,7 +15,7 @@ public sealed class EfNotificationRepository(AppDbContext db) : INotificationRep
         
         if (teamId.HasValue)
         {
-            query = query.Where(n => n.TeamID == teamId);
+            query = query.Where(n => n.TeamID == teamId || n.TeamID == null);
         }
         
         return query

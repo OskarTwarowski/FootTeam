@@ -2,10 +2,13 @@ using System.ComponentModel.DataAnnotations;
 using FootTeam.Application.Abstractions;
 using FootTeam.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace FootTeam.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public sealed class TeamsController : ControllerBase
 {
@@ -21,7 +24,27 @@ public sealed class TeamsController : ControllerBase
     public async Task<IActionResult> GetAllAsync(CancellationToken ct)
     {
         var teams = await _teamService.GetTeamsAsync(ct);
-        return Ok(teams.Select(TeamResponse.FromDomain));
+        if (User.IsInRole("Admin"))
+            return Ok(teams.Select(TeamResponse.FromDomain));
+
+        var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
+        if (!int.TryParse(sub, out var currentUserId)) return Forbid();
+
+        if (User.IsInRole("Coach"))
+        {
+            var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
+            if (coachTeam is null) return Ok(Enumerable.Empty<TeamResponse>());
+            return Ok(new[] { TeamResponse.FromDomain(coachTeam) });
+        }
+        else
+        {
+            // Regular user: return only their team if exists
+            var me = HttpContext.RequestServices.GetService(typeof(IPlayerService)) as IPlayerService;
+            var player = me is null ? null : await me.GetByUserIdAsync(currentUserId, ct);
+            if (player?.TeamID is null) return Ok(Enumerable.Empty<TeamResponse>());
+            var team = teams.FirstOrDefault(t => t.TeamID == player.TeamID);
+            return team is null ? Ok(Enumerable.Empty<TeamResponse>()) : Ok(new[] { TeamResponse.FromDomain(team) });
+        }
     }
 
     [HttpGet("{id}")]
@@ -31,6 +54,21 @@ public sealed class TeamsController : ControllerBase
     {
         var team = await _teamService.GetTeamByIdAsync(id, ct);
         if (team is null) return NotFound();
+        if (!User.IsInRole("Admin"))
+        {
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
+            if (!int.TryParse(sub, out var currentUserId)) return Forbid();
+            if (User.IsInRole("Coach"))
+            {
+                if (team.CoachID != currentUserId) return Forbid();
+            }
+            else
+            {
+                var me = HttpContext.RequestServices.GetService(typeof(IPlayerService)) as IPlayerService;
+                var player = me is null ? null : await me.GetByUserIdAsync(currentUserId, ct);
+                if (player?.TeamID != team.TeamID) return Forbid();
+            }
+        }
         return Ok(TeamResponse.FromDomain(team));
     }
 
@@ -47,6 +85,7 @@ public sealed class TeamsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAsync([FromBody] CreateTeamRequest request, CancellationToken ct)
@@ -66,6 +105,7 @@ public sealed class TeamsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -86,6 +126,7 @@ public sealed class TeamsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAsync(int id, CancellationToken ct)

@@ -6,64 +6,68 @@ GET {{baseUrl}}/api/health
 ### List players
 GET {{baseUrl}}/api/players
 
-### Create player
-POST {{baseUrl}}/api/players
-Content-Type: application/json
 
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "birthDate": "2005-05-14",
-  "position": "Forward",
-  "team": "U18",
-  "userID": 1
-}
-
-### Users
+### Users - list
 GET {{baseUrl}}/api/users
 
+### Users - get by id
+GET {{baseUrl}}/api/users/1
+
+### Users - create
 POST {{baseUrl}}/api/users
 Content-Type: application/json
 
 {
-  "username": "coach1",
-  "email": "coach1@example.com",
-  "passwordHash": "hash",
+  "email": "user1@example.com",
+  "password": "Passw0rd!",
   "role": "Coach"
 }
 
-### Trainings
+### Users - update
+PUT {{baseUrl}}/api/users/1
+Content-Type: application/json
+
+{
+  "email": "user1.updated@example.com",
+  "password": "NewPassw0rd!",
+  "role": "Player"
+}
+
+### Users - delete
+DELETE {{baseUrl}}/api/users/1
+
+### Trainings - list
 GET {{baseUrl}}/api/trainings
 
+### Trainings - get by id
+GET {{baseUrl}}/api/trainings/1
+
+### Trainings - create
 POST {{baseUrl}}/api/trainings
 Content-Type: application/json
 
 {
   "title": "Trening poniedziałek",
-  "description": "Strzały i kondycja",
-  "location": "Boisko A",
   "startTime": "2025-10-20T17:00:00",
-  "endTime": "2025-10-20T18:30:00"
+  "endTime": "2025-10-20T18:30:00",
+  "coachID": 1,
+  "teamID": 1
 }
 
-### Participants for training (replace 1)
-GET {{baseUrl}}/api/trainings/1/participants
+### Trainings - update
+PUT {{baseUrl}}/api/trainings/1
+Content-Type: application/json
 
-POST {{baseUrl}}/api/trainings/1/participants/1
-
-DELETE {{baseUrl}}/api/trainings/1/participants/1
-
-### Events
-GET {{baseUrl}}/api/events
-
-POST {{baseUrl}}/api/events
+PUT {{baseUrl}}/api/trainings/1
 Content-Type: application/json
 
 {
-  "title": "Sparring",
-  "eventDate": "2025-10-25T10:00:00",
-  "location": "Stadion"
+  "title": "Trening środa",
+  "teamID": 1
 }
+
+### Trainings - delete
+DELETE {{baseUrl}}/api/trainings/1
 
 ### Auth - Register (JWT)
 POST {{baseUrl}}/api/auth/register
@@ -88,3 +92,132 @@ Content-Type: application/json
 # @token = paste_token_here
 GET {{baseUrl}}/api/players
 Authorization: Bearer {{token}}
+
+### Players - list (optionally ?teamId=1)
+GET {{baseUrl}}/api/players?teamId=1
+
+### Players - get by id
+GET {{baseUrl}}/api/players/1
+
+### Players - get by user id
+GET {{baseUrl}}/api/players/user/1
+
+### Players - create
+POST {{baseUrl}}/api/players
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "teamID": 1,
+  "userID": 1
+}
+
+### Players - update by id
+PUT {{baseUrl}}/api/players/1
+Content-Type: application/json
+
+{
+  "firstName": "Johnny",
+  "teamID": 2
+}
+
+### Players - update by user id
+PUT {{baseUrl}}/api/players/user/1
+Content-Type: application/json
+
+{
+  "lastName": "Doe-Updated",
+  "teamID": 3
+}
+
+### Players - delete by id
+DELETE {{baseUrl}}/api/players/1
+
+### Players - delete by user id
+DELETE {{baseUrl}}/api/players/user/1
+
+### Teams - list
+GET {{baseUrl}}/api/teams
+
+### Teams - get by id
+GET {{baseUrl}}/api/teams/1
+
+### Teams - get players for team
+GET {{baseUrl}}/api/teams/players/1
+
+### Teams - create
+POST {{baseUrl}}/api/teams
+Content-Type: application/json
+
+{
+  "name": "U18",
+  "coachId": 1
+}
+
+### Teams - update
+PUT {{baseUrl}}/api/teams/1
+Content-Type: application/json
+
+{
+  "name": "U19"
+}
+
+### Teams - delete
+DELETE {{baseUrl}}/api/teams/1
+
+### Notifications - list all (includes broadcasts)
+GET {{baseUrl}}/api/notifications
+
+### Notifications - list for teamId=1 (includes broadcasts with null TeamID)
+GET {{baseUrl}}/api/notifications?teamId=1
+
+### Notifications - create broadcast (no TeamId => visible to all teams)
+POST {{baseUrl}}/api/notifications
+Content-Type: application/json
+
+{
+  "title": "Ogólna informacja",
+  "description": "Dotyczy wszystkich drużyn",
+  "startTime": "2025-11-26T09:00:00",
+  "endTime": "2025-11-26T10:00:00",
+  "createdBy": 1
+}
+
+### Notifications - create targeted (only for teamId=1)
+POST {{baseUrl}}/api/notifications
+Content-Type: application/json
+
+{
+  "title": "Info dla U18",
+  "description": "Tylko dla drużyny U18",
+  "startTime": "2025-11-27T17:00:00",
+  "endTime": "2025-11-27T18:00:00",
+  "createdBy": 1,
+  "teamId": 1
+}
+
+### Notifications - get by id
+GET {{baseUrl}}/api/notifications/1
+
+### Notifications - list by creator (user)
+GET {{baseUrl}}/api/notifications/user/1
+
+### Notifications - delete
+DELETE {{baseUrl}}/api/notifications/1
+
+### Notifications - convert to broadcast (clear TeamID by setting teamId: 0)
+PUT {{baseUrl}}/api/notifications/1
+Content-Type: application/json
+
+{
+  "teamId": 0
+}
+
+### Notifications - retarget to a team (e.g., teamId: 2)
+PUT {{baseUrl}}/api/notifications/1
+Content-Type: application/json
+
+{
+  "teamId": 2
+}

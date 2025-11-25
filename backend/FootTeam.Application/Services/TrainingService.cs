@@ -14,7 +14,7 @@ public sealed class TrainingService(ITrainingRepository trainings) : ITrainingSe
     public Task<Training?> GetAsync(int id, CancellationToken ct = default)
         => _trainings.GetAsync(id, ct);
 
-    public async Task<Training> CreateAsync(string? title, string? description, string? location, DateTime? startTime, DateTime? endTime, int? coachId, CancellationToken ct = default)
+    public async Task<Training> CreateAsync(string? title, string? description, string? location, DateTime? startTime, DateTime? endTime, int? coachId, int? teamId, CancellationToken ct = default)
     {
         var t = new Training
         {
@@ -23,12 +23,13 @@ public sealed class TrainingService(ITrainingRepository trainings) : ITrainingSe
             Location = string.IsNullOrWhiteSpace(location) ? null : location.Trim(),
             StartTime = startTime,
             EndTime = endTime,
-            CoachID = coachId
+            CoachID = coachId,
+            TeamID = teamId
         };
         return await _trainings.CreateAsync(t, ct);
     }
 
-    public async Task<Training?> UpdateAsync(int id, string? title, string? description, string? location, DateTime? startTime, DateTime? endTime, int? coachId, CancellationToken ct = default)
+    public async Task<Training?> UpdateAsync(int id, string? title, string? description, string? location, DateTime? startTime, DateTime? endTime, int? coachId, int? teamId, CancellationToken ct = default)
     {
         var existing = await _trainings.GetAsync(id, ct);
         if (existing is null) return null;
@@ -38,6 +39,10 @@ public sealed class TrainingService(ITrainingRepository trainings) : ITrainingSe
         existing.StartTime = startTime ?? existing.StartTime;
         existing.EndTime = endTime ?? existing.EndTime;
         existing.CoachID = coachId ?? existing.CoachID;
+        if (teamId.HasValue)
+        {
+            existing.TeamID = teamId;
+        }
         return await _trainings.UpdateAsync(existing, ct);
     }
 

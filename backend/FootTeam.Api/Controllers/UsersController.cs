@@ -4,10 +4,13 @@ using FootTeam.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace FootTeam.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public sealed class UsersController(IUserService users) : ControllerBase
 {
@@ -23,11 +26,18 @@ public sealed class UsersController(IUserService users) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAsync(int id, CancellationToken ct)
     {
+        if (!User.IsInRole("Admin"))
+        {
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
+            if (!int.TryParse(sub, out var currentUserId) || currentUserId != id)
+                return Forbid();
+        }
         var user = await _users.GetAsync(id, ct);
         return user is null ? NotFound() : Ok(UserResponse.FromDomain(user));
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAsync([FromBody] CreateUserRequest req, CancellationToken ct)
@@ -44,6 +54,12 @@ public sealed class UsersController(IUserService users) : ControllerBase
     public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateUserRequest req, CancellationToken ct)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        if (!User.IsInRole("Admin"))
+        {
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
+            if (!int.TryParse(sub, out var currentUserId) || currentUserId != id)
+                return Forbid();
+        }
         var updated = await _users.UpdateAsync(id, req.Email, req.Password, req.Role, ct);
         return updated is null ? NotFound() : Ok(UserResponse.FromDomain(updated));
     }
@@ -52,6 +68,12 @@ public sealed class UsersController(IUserService users) : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteAsync(int id, CancellationToken ct)
     {
+        if (!User.IsInRole("Admin"))
+        {
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
+            if (!int.TryParse(sub, out var currentUserId) || currentUserId != id)
+                return Forbid();
+        }
         await _users.DeleteAsync(id, ct);
         return NoContent();
     }

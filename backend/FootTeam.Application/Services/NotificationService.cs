@@ -56,7 +56,10 @@ public sealed class NotificationService(INotificationRepository repository) : IN
         if (description != null) existing.Description = description.Trim();
         if (startTime.HasValue) existing.StartTime = startTime;
         if (endTime.HasValue) existing.EndTime = endTime;
-        if (teamId.HasValue) existing.TeamID = teamId;
+        if (teamId.HasValue)
+        {
+            existing.TeamID = teamId <= 0 ? null : teamId;
+        }
         
         return await _repository.UpdateAsync(existing, ct);
     }
