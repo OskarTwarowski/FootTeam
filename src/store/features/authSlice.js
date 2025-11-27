@@ -1,27 +1,46 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import API from "../../API/axios";
 
+// LOGIN
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, thunkAPI) => {
     try {
-      // Tutaj normalnie fetch('/api/login', { email, password })
-      const users = JSON.parse(localStorage.getItem("Users")) || [];
-      const user = users.find(
-        (u) => u.Email === email && u.PasswordHash === password
-      );
+      const res = await API.post("/auth/login", { email, password });
+      // backend zwraca: token + userId + role
+      const data = res.data;
 
-      if (!user) throw new Error("Nieprawidłowe dane");
+      // zapisz token w localStorage
+      localStorage.setItem("token", data.token);
 
-      // symulacja tokena
-      const token = "mock-jwt-token";
-
-      // zapis do localStorage
+      // zapisz usera (minimalne dane)
+      const user = {
+        userId: data.userId,
+        email: email,
+        role: data.role ?? data.Role ?? null,
+      };
       localStorage.setItem("loggedUser", JSON.stringify(user));
-      localStorage.setItem("token", token);
 
-      return { user, token };
+      return { user, token: data.token };
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.message);
+      return thunkAPI.rejectWithValue("Nieprawidłowy email lub hasło");
+    }
+  }
+);
+
+// REGISTER
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async ({ email, password, role }, thunkAPI) => {
+    try {
+      const res = await API.post("/auth/register", {
+        email,
+        password,
+        role,
+      });
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Rejestracja nie powiodła się");
     }
   }
 );
@@ -45,8 +64,11 @@ const authSlice = createSlice({
       localStorage.removeItem("activeProfile");
     },
   },
+
   extraReducers: (builder) => {
     builder
+
+      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.status = "loading";
         state.error = null;
@@ -57,6 +79,19 @@ const authSlice = createSlice({
         state.token = action.payload.token;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+
+      // REGISTER
+      .addCase(registerUser.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(registerUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

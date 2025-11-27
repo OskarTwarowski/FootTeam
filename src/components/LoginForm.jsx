@@ -6,15 +6,14 @@ import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FAKE_PROFILES, FAKE_USERS } from "../mockData";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/features/authSlice";
-import { fetchProfiles } from "../store/features/profileSlice";
-import { getTeams } from "../services/TeamService";
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const { status, error } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -25,46 +24,24 @@ export default function LoginForm() {
     resolver: yupResolver(loginSchema),
     mode: "onChange",
   });
-  //-----------------------------------------------------------------------------------
+
+  // -----------------------------------------------------------------------------
   const onSubmit = (data) => {
     dispatch(loginUser({ email: data.email, password: data.password }))
       .unwrap()
       .then((res) => {
-        const foundProfiles = FAKE_PROFILES.filter(
-          (p) => p.UserID === res.user.UserID
-        );
-
-        // zapis do localStorage
-        const existingProfiles =
-          JSON.parse(localStorage.getItem("Profiles")) || [];
-
-        // foundProfiles może być tablicą — spłaszczamy
-        const profilesToAdd = Array.isArray(foundProfiles)
-          ? foundProfiles
-          : [foundProfiles];
-
-        profilesToAdd.forEach((p) => {
-          if (!existingProfiles.some((ep) => ep.PlayerID === p.PlayerID)) {
-            existingProfiles.push(p);
-          }
-        });
-
-        localStorage.setItem("Profiles", JSON.stringify(existingProfiles));
-
-        // fetchujemy profile do redux
-        dispatch(fetchProfiles());
-
+        console.log("LOGIN RESPONSE:", res);
         navigate("/app/profil", { replace: true });
-        dispatch(getTeams);
       })
       .catch(() => {
         setError("email", {
           type: "manual",
-          message: "Zły login lub hasło",
+          message: "Zły email lub hasło",
         });
       });
   };
-  //-----------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------
+
   return (
     <form
       className={`${styles.form} ${styles.box}`}
@@ -72,7 +49,7 @@ export default function LoginForm() {
     >
       <h1>Logowanie</h1>
 
-      {/* === USERNAME === */}
+      {/* EMAIL */}
       <div className={styles.row}>
         <label htmlFor="email">Email użytkownika:</label>
         <input
@@ -81,6 +58,7 @@ export default function LoginForm() {
           placeholder="adres@email.com"
           {...register("email")}
         />
+
         {errors.email && (
           <p className={styles.instructions}>
             <FontAwesomeIcon icon={faInfoCircle} /> {errors.email.message}
@@ -88,7 +66,7 @@ export default function LoginForm() {
         )}
       </div>
 
-      {/* === PASSWORD === */}
+      {/* PASSWORD */}
       <div className={styles.row}>
         <label htmlFor="password">Hasło:</label>
         <input
@@ -97,6 +75,7 @@ export default function LoginForm() {
           placeholder="Hasło"
           {...register("password")}
         />
+
         {errors.password && (
           <p className={styles.instructions}>
             <FontAwesomeIcon icon={faInfoCircle} /> {errors.password.message}
@@ -104,14 +83,20 @@ export default function LoginForm() {
         )}
       </div>
 
-      {/* === SUBMIT BUTTON === */}
+      {/* BŁĄD Z REDUX */}
+      {error && (
+        <p className={styles.instructions} style={{ color: "red" }}>
+          {error}
+        </p>
+      )}
+
+      {/* SUBMIT */}
       <div>
-        <Button type="primary" disabled={!isValid}>
-          Zaloguj się
+        <Button type="primary" disabled={!isValid || status === "loading"}>
+          {status === "loading" ? "Logowanie..." : "Zaloguj się"}
         </Button>
       </div>
 
-      {/* === REGISTER LINK === */}
       <p className={styles.alrRegistered}>
         Nie masz konta? <br />
         <Link to="/rejestracja" className={styles.backLogin}>
