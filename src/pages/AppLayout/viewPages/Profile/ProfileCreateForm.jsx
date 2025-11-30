@@ -5,13 +5,21 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CreateProfileSchema } from "../../../../Hooks/validators";
 import { Modal } from "react-bootstrap";
 
-//
-import { addProfile } from "../../../../store/features/profileSlice";
-import { fetchProfiles } from "../../../../store/features/profileSlice";
-import { useDispatch } from "react-redux";
-import { findTeamByCode } from "../../../../services/TeamService";
+import { useDispatch, useSelector } from "react-redux";
+import { createProfile } from "../../../../store/features/profileSlice";
+import { fetchTeams } from "../../../../store/features/teamSlice";
+import { useEffect } from "react";
 
 function ProfileCreateForm({ show, onClose }) {
+  const dispatch = useDispatch();
+
+  const { list: teams } = useSelector((state) => state.teams);
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    dispatch(fetchTeams());
+  }, [dispatch]);
+
   const {
     register,
     handleSubmit,
@@ -20,30 +28,23 @@ function ProfileCreateForm({ show, onClose }) {
     resolver: yupResolver(CreateProfileSchema),
     mode: "onChange",
   });
-  const generatePlayerId = () =>
-    Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36);
 
-  const dispatch = useDispatch();
   const onSubmit = (data) => {
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-    if (!loggedUser) return alert("Musisz być zalogowany");
-    const team = findTeamByCode(data.TeamCode);
-    if (!team) {
-      alert("nie znaleziono drużyny o takim kodzie");
-      return;
-    }
+    if (!user) return alert("Musisz być zalogowany!");
 
-    const newProfile = {
-      UserID: loggedUser.UserID,
-      PlayerID: generatePlayerId(),
-      TeamID: team.TeamID,
-      ...data,
+    const payload = {
+      firstName: data.FirstName,
+      lastName: data.LastName,
+      teamID: Number(data.TeamID),
+      userID: user.userId,
     };
 
-    dispatch(addProfile(newProfile))
+    dispatch(createProfile(payload))
       .unwrap()
-      .then(() => dispatch(fetchProfiles())); //
-    onClose();
+      .then(() => {
+        onClose();
+      })
+      .catch(() => alert("Nie udało się stworzyć profilu"));
   };
 
   return (
@@ -79,22 +80,18 @@ function ProfileCreateForm({ show, onClose }) {
           </div>
 
           <div className={styles.row}>
-            <label htmlFor="Phone">Numer telefonu:</label>
-            <input id="Phone" {...register("Phone")} placeholder="123456789" />
-            {errors.Phone && (
-              <p className={styles.error}>{errors.Phone.message}</p>
-            )}
-          </div>
+            <label htmlFor="TeamID">Drużyna:</label>
+            <select id="TeamID" {...register("TeamID")}>
+              <option value="">Wybierz...</option>
+              {teams.map((team) => (
+                <option key={team.teamID} value={team.teamID}>
+                  {team.name}
+                </option>
+              ))}
+            </select>
 
-          <div className={styles.row}>
-            <label htmlFor="TeamCode">Kod drużyny:</label>
-            <input
-              id="TeamCode"
-              {...register("TeamCode")}
-              placeholder="np. ABC123"
-            />
-            {errors.TeamCode && (
-              <p className={styles.error}>{errors.TeamCode.message}</p>
+            {errors.TeamID && (
+              <p className={styles.error}>{errors.TeamID.message}</p>
             )}
           </div>
 

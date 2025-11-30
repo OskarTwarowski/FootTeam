@@ -1,32 +1,24 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchAllProfiles,
-  updateProfile,
-} from "../../../../store/features/profileSlice";
+import { updateProfile } from "../../../../store/features/profileSlice";
 import styles from "./PlayersAdminView.module.css";
 
 function PlayersAdminView() {
   const dispatch = useDispatch();
   const profiles = useSelector((state) => state.profiles.list ?? []);
   const [search, setSearch] = useState("");
-  useEffect(() => {
-    dispatch(fetchAllProfiles());
-  }, [dispatch]);
+  useEffect(() => {}, [dispatch]);
   const handleDeleteFromTeam = async (player, e) => {
     e.stopPropagation();
     await dispatch(updateProfile({ ...player, TeamID: null, TeamCode: null }));
-    dispatch(fetchAllProfiles());
   };
   const handleDeleteRole = async (player, e) => {
     e.stopPropagation();
     await dispatch(updateProfile({ ...player, Role: null }));
-    dispatch(fetchAllProfiles());
   };
   const handleRoleTrener = async (player, e) => {
     e.stopPropagation();
-    await dispatch(updateProfile({ ...player, Role: "Trener" }));
-    dispatch(fetchAllProfiles());
+    await dispatch(updateProfile({ ...player, Role: "Coach" }));
   };
   const filteredProfiles =
     search.length >= 3

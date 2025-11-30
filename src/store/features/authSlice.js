@@ -7,18 +7,16 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, thunkAPI) => {
     try {
       const res = await API.post("/auth/login", { email, password });
-      // backend zwraca: token + userId + role
       const data = res.data;
 
-      // zapisz token w localStorage
-      localStorage.setItem("token", data.token);
-
-      // zapisz usera (minimalne dane)
+      // backend zwraca: token, userId, email, role
       const user = {
         userId: data.userId,
-        email: email,
-        role: data.role ?? data.Role ?? null,
+        email: data.email,
+        role: data.role,
       };
+
+      localStorage.setItem("token", data.token);
       localStorage.setItem("loggedUser", JSON.stringify(user));
 
       return { user, token: data.token };

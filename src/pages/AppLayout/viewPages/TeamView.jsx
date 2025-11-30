@@ -3,7 +3,6 @@ import { findPlayersInTeam, getTeams } from "../../../services/TeamService";
 import { useState, useEffect } from "react";
 import { removePlayerFromTeam } from "../../../services/ProfileService";
 import {
-  fetchAllProfiles,
   fetchProfiles,
   updateProfile as updateProfileThunk,
 } from "../../../store/features/profileSlice";
@@ -33,7 +32,6 @@ function TeamView() {
     await dispatch(
       updateProfileThunk({ ...player, TeamID: null, TeamCode: null })
     );
-    dispatch(fetchAllProfiles());
   };
 
   if (userRole === "Trener" && !activeProfile) {

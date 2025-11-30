@@ -1,71 +1,63 @@
-// src/store/slices/profileSlice.js
+// src/store/features/profileSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  getProfiles,
-  addProfile as addProfileService,
-  updateProfile as updateProfileService,
-  removeProfile as removeProfileService,
-} from "../../services/ProfileService";
+  getPlayerByUser,
+  createPlayer,
+  updatePlayer,
+  deletePlayer,
+} from "../../API/players";
 
-// pobieranie profili TYLKO dla zalogowanego użytkownika
 export const fetchProfiles = createAsyncThunk(
   "profiles/fetchProfiles",
   async (_, thunkAPI) => {
     const loggedUser = thunkAPI.getState().auth.user;
     if (!loggedUser) return [];
 
-    const profiles = getProfiles();
-    return profiles.filter((p) => p.UserID === loggedUser.UserID);
+    try {
+      const data = await getPlayerByUser(loggedUser.userId);
+
+      return data ? [data] : [];
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Błąd pobierania profili");
+    }
   }
 );
-
-// pobieranie wszystkich profili (np. dla admina)
-export const fetchAllProfiles = createAsyncThunk(
-  "profiles/fetchAllProfiles",
-  async () => {
-    return getProfiles();
-  }
-);
-
-// dodawanie profilu
 export const addProfile = createAsyncThunk(
   "profiles/addProfile",
-  async (profile, thunkAPI) => {
-    const loggedUser = thunkAPI.getState().auth.user;
-    await addProfileService(profile);
+  async (newProfile, thunkAPI) => {
+    try {
+      const created = await createPlayer(newProfile);
 
-    if (!loggedUser) return [];
-
-    const profiles = getProfiles();
-    return profiles.filter((p) => p.UserID === loggedUser.UserID);
+      return [created];
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Błąd tworzenia profilu");
+    }
   }
 );
 
-// aktualizacja profilu
 export const updateProfile = createAsyncThunk(
   "profiles/updateProfile",
-  async (profile) => {
-    return await updateProfileService(profile);
+  async ({ id, data }, thunkAPI) => {
+    try {
+      const updated = await updatePlayer(id, data);
+      return updated;
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Błąd aktualizacji profilu");
+    }
   }
 );
 
-// usuwanie profilu
 export const removeProfile = createAsyncThunk(
   "profiles/removeProfile",
-  async (profile, thunkAPI) => {
-    const loggedUser = thunkAPI.getState().auth.user;
-    await removeProfileService(profile);
-
-    if (!loggedUser) return [];
-
-    const profiles = getProfiles();
-    return profiles.filter((p) => p.UserID === loggedUser.UserID);
+  async (id, thunkAPI) => {
+    try {
+      await deletePlayer(id);
+      return []; // brak profilu po usunięciu
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Błąd usuwania profilu");
+    }
   }
 );
-
-//
-// SLICE
-//
 
 const profileSlice = createSlice({
   name: "profiles",
@@ -74,50 +66,46 @@ const profileSlice = createSlice({
     status: "idle",
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearProfiles(state) {
+      state.list = [];
+    },
+  },
   extraReducers: (builder) => {
     builder
-      /* --- FETCH PROFILES --- */
+      /* === FETCH === */
       .addCase(fetchProfiles.pending, (state) => {
         state.status = "loading";
       })
       .addCase(fetchProfiles.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = action.payload || [];
+        state.list = action.payload;
       })
       .addCase(fetchProfiles.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message;
+        state.error = action.payload;
       })
 
-      /* --- FETCH ALL --- */
-      .addCase(fetchAllProfiles.fulfilled, (state, action) => {
-        state.status = "succeeded";
+      /* === ADD === */
+      .addCase(addProfile.fulfilled, (state, action) => {
         state.list = action.payload;
       })
 
-      /* --- ADD --- */
-      .addCase(addProfile.fulfilled, (state, action) => {
-        state.list = action.payload || [];
-      })
-
-      /* --- UPDATE --- */
+      /* === UPDATE === */
       .addCase(updateProfile.fulfilled, (state, action) => {
         const updated = action.payload;
-        if (!updated) return;
-
-        const index = state.list.findIndex(
-          (p) => p.PlayerID === updated.PlayerID
+        const idx = state.list.findIndex(
+          (p) => p.playerID === updated.playerID
         );
-
-        if (index !== -1) state.list[index] = updated;
+        if (idx !== -1) state.list[idx] = updated;
       })
 
-      /* --- REMOVE --- */
+      /* === REMOVE === */
       .addCase(removeProfile.fulfilled, (state, action) => {
-        state.list = action.payload || [];
+        state.list = [];
       });
   },
 });
 
+export const { clearProfiles } = profileSlice.actions;
 export default profileSlice.reducer;

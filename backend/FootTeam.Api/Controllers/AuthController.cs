@@ -45,6 +45,7 @@ public sealed class AuthController(IUserService users, IUserRepository userRepo,
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest req, CancellationToken ct)
     {
+        
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
         if (string.IsNullOrWhiteSpace(req.Email)) return Unauthorized();
@@ -56,7 +57,14 @@ public sealed class AuthController(IUserService users, IUserRepository userRepo,
         if (!ok) return Unauthorized();
 
         var token = GenerateJwt(user.UserID.ToString(), user.Email, user.Email, user.Role);
-        return Ok(new LoginResponse { Token = token });
+         return Ok(new LoginResponse
+    {
+        
+        Token = token,
+        UserId = user.UserID,
+        Email = user.Email,
+        Role = user.Role
+    });
     }
 
     private string GenerateJwt(string sub, string username, string email, string role)
@@ -116,6 +124,9 @@ public sealed class LoginRequest
 public sealed class LoginResponse
 {
     public string Token { get; set; } = string.Empty;
+    public int UserId { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
 }
 
 public sealed class AuthUserResponse
