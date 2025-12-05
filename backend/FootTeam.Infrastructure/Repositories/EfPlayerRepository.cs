@@ -36,6 +36,10 @@ public sealed class EfPlayerRepository(AppDbContext db) : IPlayerRepository
     {
         _db.Players.Add(player);
         await _db.SaveChangesAsync(ct);
+        if (player.TeamID.HasValue)
+        {
+            await _db.Entry(player).Reference(p => p.Team).LoadAsync(ct);
+        }
         return player;
     }
 
@@ -47,9 +51,13 @@ public sealed class EfPlayerRepository(AppDbContext db) : IPlayerRepository
         existing.LastName = player.LastName;
         existing.BirthDate = player.BirthDate;
         existing.Position = player.Position;
-        existing.Team = player.Team;
+        existing.TeamID = player.TeamID;
         existing.UserID = player.UserID;
         await _db.SaveChangesAsync(ct);
+        if (existing.TeamID.HasValue)
+        {
+            await _db.Entry(existing).Reference(p => p.Team).LoadAsync(ct);
+        }
         return existing;
     }
 

@@ -161,6 +161,7 @@ public sealed class TeamResponse
     public int? CoachId { get; set; }
     public string? CoachName { get; set; }
     public int PlayerCount { get; set; }
+    public string TeamCode { get; set; } = string.Empty;
 
     public static TeamResponse FromDomain(Team team)
     {
@@ -170,7 +171,8 @@ public sealed class TeamResponse
             Name = team.Name,
             CoachId = team.CoachID,
             CoachName = team.Coach?.Email,
-            PlayerCount = team.Players?.Count ?? 0
+            PlayerCount = team.Players?.Count ?? 0,
+            TeamCode = team.TeamCode
         };
     }
 }

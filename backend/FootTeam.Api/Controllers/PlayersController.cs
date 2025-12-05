@@ -233,6 +233,7 @@ public sealed class PlayerResponse
     public int? TeamID { get; set; }
     public string? TeamName { get; set; }
     public int? UserID { get; set; }
+    public string? TeamCode { get; set; }
 
     public static PlayerResponse FromDomain(Player p) => new()
     {
@@ -241,6 +242,7 @@ public sealed class PlayerResponse
         LastName = p.LastName,
         TeamID = p.TeamID,
         TeamName = p.Team?.Name,
-        UserID = p.UserID
+        UserID = p.UserID,
+        TeamCode = p.Team?.TeamCode
     };
 }

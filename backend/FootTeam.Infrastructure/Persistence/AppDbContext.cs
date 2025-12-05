@@ -90,6 +90,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.Property(e => e.TeamID).HasColumnName("TeamID");
             entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
             entity.Property(e => e.CoachID).HasColumnName("CoachID");
+            entity.Property(e => e.TeamCode).HasColumnName("TeamCode").HasMaxLength(12).IsRequired();
+            entity.HasIndex(e => e.TeamCode).IsUnique();
             
             entity.HasOne(t => t.Coach)
                   .WithMany(u => u.CoachedTeams)
