@@ -51,7 +51,7 @@ function ProfileList() {
   };
 
   if (!profiles || profiles.length === 0) {
-    return <p>Brak zapisanych profili.</p>;
+    return <p className={styles.noProfile}>Brak zapisanych profili.</p>;
   }
 
   return (
