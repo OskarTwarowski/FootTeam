@@ -25,6 +25,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             // Columns BirthDate and Position do not exist in current MySQL schema
             entity.Ignore(e => e.BirthDate);
             entity.Ignore(e => e.Position);
+            entity.Property(e => e.PhoneNumber)
+                  .HasColumnName("Phone")
+                  .HasConversion(
+                      v => string.IsNullOrWhiteSpace(v) ? (int?)null : int.Parse(new string(v.Where(char.IsDigit).ToArray())),
+                      v => v.HasValue ? v.Value.ToString() : null);
             entity.Property(e => e.UserID).HasColumnName("UserID");
             
             

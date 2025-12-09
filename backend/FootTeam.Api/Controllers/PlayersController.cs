@@ -86,18 +86,21 @@ public sealed class PlayersController(IPlayerService playerService, ITeamService
     public async Task<IActionResult> CreateAsync([FromBody] CreatePlayerRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        var teams = await _teamService.GetTeamsAsync(ct);
+        var targetTeam = teams.FirstOrDefault(t => string.Equals(t.TeamCode, request.TeamCode, StringComparison.OrdinalIgnoreCase));
+        if (targetTeam is null) return BadRequest("Invalid teamCode.");
         if (!User.IsInRole("Admin"))
         {
             var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
             if (!int.TryParse(sub, out var currentUserId)) return Forbid();
-            var teams = await _teamService.GetTeamsAsync(ct);
             var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
-            if (coachTeam is null || (request.TeamID.HasValue && coachTeam.TeamID != request.TeamID)) return Forbid();
+            if (coachTeam is null || coachTeam.TeamID != targetTeam.TeamID) return Forbid();
         }
         var player = await _playerService.CreateAsync(
             request.FirstName, 
             request.LastName, 
-            request.TeamID, 
+            request.PhoneNumber,
+            targetTeam.TeamID, 
             request.UserID, 
             ct);
         var response = PlayerResponse.FromDomain(player);
@@ -111,6 +114,15 @@ public sealed class PlayersController(IPlayerService playerService, ITeamService
     public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdatePlayerRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        int? resolvedTeamId = request.TeamID;
+        if (!string.IsNullOrWhiteSpace(request.TeamCode))
+        {
+            var teams = await _teamService.GetTeamsAsync(ct);
+            var targetTeam = teams.FirstOrDefault(t => string.Equals(t.TeamCode, request.TeamCode, StringComparison.OrdinalIgnoreCase));
+            if (targetTeam is null) return BadRequest("Invalid teamCode.");
+            if (resolvedTeamId.HasValue && resolvedTeamId.Value != targetTeam.TeamID) return BadRequest("Provided TeamID does not match teamCode.");
+            resolvedTeamId = targetTeam.TeamID;
+        }
         if (!User.IsInRole("Admin"))
         {
             var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
@@ -118,7 +130,7 @@ public sealed class PlayersController(IPlayerService playerService, ITeamService
             var teams = await _teamService.GetTeamsAsync(ct);
             var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
             if (coachTeam is null) return Forbid();
-            if (request.TeamID.HasValue && coachTeam.TeamID != request.TeamID) return Forbid();
+            if (resolvedTeamId.HasValue && coachTeam.TeamID != resolvedTeamId) return Forbid();
             var existing = await _playerService.GetAsync(id, ct);
             if (existing is null) return NotFound();
             if (existing.TeamID.HasValue && existing.TeamID != coachTeam.TeamID) return Forbid();
@@ -127,7 +139,8 @@ public sealed class PlayersController(IPlayerService playerService, ITeamService
             id, 
             request.FirstName, 
             request.LastName, 
-            request.TeamID, 
+            request.PhoneNumber,
+            resolvedTeamId, 
             ct);
         return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
     }
@@ -139,6 +152,15 @@ public sealed class PlayersController(IPlayerService playerService, ITeamService
     public async Task<IActionResult> UpdateByUserIdAsync(int userId, [FromBody] UpdatePlayerRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        int? resolvedTeamId = request.TeamID;
+        if (!string.IsNullOrWhiteSpace(request.TeamCode))
+        {
+            var teams = await _teamService.GetTeamsAsync(ct);
+            var targetTeam = teams.FirstOrDefault(t => string.Equals(t.TeamCode, request.TeamCode, StringComparison.OrdinalIgnoreCase));
+            if (targetTeam is null) return BadRequest("Invalid teamCode.");
+            if (resolvedTeamId.HasValue && resolvedTeamId.Value != targetTeam.TeamID) return BadRequest("Provided TeamID does not match teamCode.");
+            resolvedTeamId = targetTeam.TeamID;
+        }
         if (!User.IsInRole("Admin"))
         {
             var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
@@ -149,13 +171,14 @@ public sealed class PlayersController(IPlayerService playerService, ITeamService
             var existing = await _playerService.GetByUserIdAsync(userId, ct);
             if (existing is null) return NotFound();
             if (existing.TeamID.HasValue && existing.TeamID != coachTeam.TeamID) return Forbid();
-            if (request.TeamID.HasValue && request.TeamID != coachTeam.TeamID) return Forbid();
+            if (resolvedTeamId.HasValue && resolvedTeamId != coachTeam.TeamID) return Forbid();
         }
         var updated = await _playerService.UpdateByUserIdAsync(
             userId, 
             request.FirstName, 
             request.LastName, 
-            request.TeamID, 
+            request.PhoneNumber,
+            resolvedTeamId, 
             ct);
         return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
     }
@@ -211,8 +234,12 @@ public sealed class CreatePlayerRequest
     [Required]
     [StringLength(100, MinimumLength = 2)]
     public string LastName { get; set; } = string.Empty;
-    public int? TeamID { get; set; }
+    [StringLength(30)]
+    public string? PhoneNumber { get; set; }
     public int? UserID { get; set; }
+    [Required]
+    [StringLength(20, MinimumLength = 4)]
+    public string TeamCode { get; set; } = string.Empty;
 }
 
 public sealed class UpdatePlayerRequest
@@ -221,8 +248,12 @@ public sealed class UpdatePlayerRequest
     public string? FirstName { get; set; }
     [StringLength(100, MinimumLength = 2)]
     public string? LastName { get; set; }
+    [StringLength(30)]
+    public string? PhoneNumber { get; set; }
     public int? TeamID { get; set; }
     public int? UserID { get; set; }
+    [StringLength(20, MinimumLength = 4)]
+    public string? TeamCode { get; set; }
 }
 
 public sealed class PlayerResponse
@@ -230,6 +261,7 @@ public sealed class PlayerResponse
     public int PlayerID { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
+    public string? PhoneNumber { get; set; }
     public int? TeamID { get; set; }
     public string? TeamName { get; set; }
     public int? UserID { get; set; }
@@ -240,6 +272,7 @@ public sealed class PlayerResponse
         PlayerID = p.PlayerID,
         FirstName = p.FirstName,
         LastName = p.LastName,
+        PhoneNumber = p.PhoneNumber,
         TeamID = p.TeamID,
         TeamName = p.Team?.Name,
         UserID = p.UserID,
