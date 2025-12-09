@@ -6,7 +6,7 @@ import { CreateProfileSchema } from "../../../../Hooks/validators";
 import { Modal } from "react-bootstrap";
 
 import { useDispatch, useSelector } from "react-redux";
-import { createProfile } from "../../../../store/features/profileSlice";
+import { addProfile } from "../../../../store/features/profileSlice";
 import { fetchTeams } from "../../../../store/features/teamSlice";
 import { useEffect } from "react";
 
@@ -39,7 +39,7 @@ function ProfileCreateForm({ show, onClose }) {
       userID: user.userId,
     };
 
-    dispatch(createProfile(payload))
+    dispatch(addProfile(payload))
       .unwrap()
       .then(() => {
         onClose();

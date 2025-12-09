@@ -22,7 +22,7 @@ import AdminView from "./pages/AppLayout/viewPages/Admin/AdminView";
 import AdminRoute from "./components/AdminRoute";
 import { getHealth } from "./API/getHealth";
 function App() {
-  getPlayers();
+  //getPlayers();
   getHealth();
   return (
     <BrowserRouter>
