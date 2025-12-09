@@ -88,7 +88,7 @@ function ProfileList() {
 
                 <span className={`${styles.phone} ${styles.textColor}`}>
                   <Phone className={styles.phonesvg} />
-                  {profile.phone || "—"}
+                  {profile.phoneNumber || "—"}
                 </span>
 
                 <span

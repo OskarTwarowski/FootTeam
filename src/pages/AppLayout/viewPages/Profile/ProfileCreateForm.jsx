@@ -7,18 +7,10 @@ import { Modal } from "react-bootstrap";
 
 import { useDispatch, useSelector } from "react-redux";
 import { addProfile } from "../../../../store/features/profileSlice";
-import { fetchTeams } from "../../../../store/features/teamSlice";
-import { useEffect } from "react";
 
 function ProfileCreateForm({ show, onClose }) {
   const dispatch = useDispatch();
-
-  const { list: teams } = useSelector((state) => state.teams);
   const user = useSelector((state) => state.auth.user);
-
-  useEffect(() => {
-    dispatch(fetchTeams());
-  }, [dispatch]);
 
   const {
     register,
@@ -33,18 +25,18 @@ function ProfileCreateForm({ show, onClose }) {
     if (!user) return alert("Musisz być zalogowany!");
 
     const payload = {
-      firstName: data.FirstName,
-      lastName: data.LastName,
-      teamID: Number(data.TeamID),
-      userID: user.userId,
+      FirstName: data.FirstName,
+      LastName: data.LastName,
+      PhoneNumber: data.Phone || null,
+      TeamCode: data.TeamCode,
+      UserID: user.userId,
     };
 
     dispatch(addProfile(payload))
       .unwrap()
-      .then(() => {
-        onClose();
-      })
+      .then(() => onClose())
       .catch(() => alert("Nie udało się stworzyć profilu"));
+    console.log("USER FROM REDUX:", user);
   };
 
   return (
@@ -55,6 +47,7 @@ function ProfileCreateForm({ show, onClose }) {
 
       <Modal.Body>
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+          {/* Imię */}
           <div className={styles.row}>
             <label htmlFor="FirstName">Imię:</label>
             <input
@@ -67,6 +60,7 @@ function ProfileCreateForm({ show, onClose }) {
             )}
           </div>
 
+          {/* Nazwisko */}
           <div className={styles.row}>
             <label htmlFor="LastName">Nazwisko:</label>
             <input
@@ -79,19 +73,25 @@ function ProfileCreateForm({ show, onClose }) {
             )}
           </div>
 
+          {/* Numer telefonu */}
           <div className={styles.row}>
-            <label htmlFor="TeamID">Drużyna:</label>
-            <select id="TeamID" {...register("TeamID")}>
-              <option value="">Wybierz...</option>
-              {teams.map((team) => (
-                <option key={team.teamID} value={team.teamID}>
-                  {team.name}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="Phone">Numer telefonu:</label>
+            <input id="Phone" {...register("Phone")} placeholder="123456789" />
+            {errors.Phone && (
+              <p className={styles.error}>{errors.Phone.message}</p>
+            )}
+          </div>
 
-            {errors.TeamID && (
-              <p className={styles.error}>{errors.TeamID.message}</p>
+          {/* Kod drużyny */}
+          <div className={styles.row}>
+            <label htmlFor="TeamCode">Kod drużyny:</label>
+            <input
+              id="TeamCode"
+              {...register("TeamCode")}
+              placeholder="np. ABC123"
+            />
+            {errors.TeamCode && (
+              <p className={styles.error}>{errors.TeamCode.message}</p>
             )}
           </div>
 

@@ -78,72 +78,129 @@ public sealed class PlayersController(IPlayerService playerService, ITeamService
         if (player is null) return NotFound();
         return Ok(PlayerResponse.FromDomain(player));
     }
+[HttpPost]
+[Authorize]
+[ProducesResponseType(typeof(PlayerResponse), StatusCodes.Status201Created)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+public async Task<IActionResult> CreateAsync([FromBody] CreatePlayerRequest request, CancellationToken ct)
+{
+    if (!ModelState.IsValid)
+        return ValidationProblem(ModelState);
 
-    [HttpPost]
-    [Authorize(Roles = "Coach,Admin")]
-    [ProducesResponseType(typeof(PlayerResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateAsync([FromBody] CreatePlayerRequest request, CancellationToken ct)
+   
+    var teams = await _teamService.GetTeamsAsync(ct);
+    var targetTeam = teams.FirstOrDefault(t =>
+        string.Equals(t.TeamCode, request.TeamCode, StringComparison.OrdinalIgnoreCase));
+
+    if (targetTeam is null)
+        return BadRequest("Podany kod drużyny nie istnieje.");
+
+ 
+    var sub = User.FindFirstValue(ClaimTypes.NameIdentifier)
+              ?? User.FindFirstValue(ClaimTypes.Name);
+
+    if (!int.TryParse(sub, out var currentUserId))
+        return Forbid();
+
+ 
+    if (!User.IsInRole("Admin"))
     {
-        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        if (request.UserID != currentUserId)
+            return Forbid();
+    }
+
+    var player = await _playerService.CreateAsync(
+        request.FirstName,
+        request.LastName,
+        request.PhoneNumber,
+        targetTeam.TeamID,
+        request.UserID,
+        ct);
+
+    return Created($"/api/players/{player.PlayerID}", PlayerResponse.FromDomain(player));
+}
+
+   [HttpPut("{id:int}")]
+[Authorize]
+[ProducesResponseType(typeof(PlayerResponse), StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdatePlayerRequest request, CancellationToken ct)
+{
+    if (!ModelState.IsValid)
+        return ValidationProblem(ModelState);
+
+    var existing = await _playerService.GetAsync(id, ct);
+    if (existing is null)
+        return NotFound();
+
+    var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (!int.TryParse(sub, out var currentUserId))
+        return Forbid();
+    // === ADMIN - pełny dostęp ===
+    if (User.IsInRole("Admin"))
+        return await UpdateAsAdmin(id, request, ct);
+
+    // === COACH - brak dostępu ===
+    if (User.IsInRole("Coach"))
+        return Forbid();
+
+    // === PARENT — może edytować tylko SWÓJ profil ===
+    if (existing.UserID != currentUserId)
+        return Forbid();
+
+    int? resolvedTeamId = existing.TeamID;
+
+    if (!string.IsNullOrWhiteSpace(request.TeamCode))
+    {
         var teams = await _teamService.GetTeamsAsync(ct);
-        var targetTeam = teams.FirstOrDefault(t => string.Equals(t.TeamCode, request.TeamCode, StringComparison.OrdinalIgnoreCase));
-        if (targetTeam is null) return BadRequest("Invalid teamCode.");
-        if (!User.IsInRole("Admin"))
-        {
-            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
-            if (!int.TryParse(sub, out var currentUserId)) return Forbid();
-            var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
-            if (coachTeam is null || coachTeam.TeamID != targetTeam.TeamID) return Forbid();
-        }
-        var player = await _playerService.CreateAsync(
-            request.FirstName, 
-            request.LastName, 
-            request.PhoneNumber,
-            targetTeam.TeamID, 
-            request.UserID, 
-            ct);
-        var response = PlayerResponse.FromDomain(player);
-        return Created($"/api/players/{response.PlayerID}", response);
+        var targetTeam = teams.FirstOrDefault(t =>
+            string.Equals(t.TeamCode, request.TeamCode, StringComparison.OrdinalIgnoreCase));
+
+        if (targetTeam is null)
+            return BadRequest("Podany kod drużyny nie istnieje.");
+
+        resolvedTeamId = targetTeam.TeamID;
     }
 
-    [HttpPut("{id:int}")]
-    [Authorize(Roles = "Coach,Admin")]
-    [ProducesResponseType(typeof(PlayerResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdatePlayerRequest request, CancellationToken ct)
+    // Aktualizacja
+    var updated = await _playerService.UpdateAsync(
+        id,
+        request.FirstName,
+        request.LastName,
+        request.PhoneNumber,
+        resolvedTeamId,
+        ct);
+
+    return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
+}
+
+private async Task<IActionResult> UpdateAsAdmin(int id, UpdatePlayerRequest request, CancellationToken ct)
+{
+    int? resolvedTeamId = request.TeamID;
+
+    if (!string.IsNullOrWhiteSpace(request.TeamCode))
     {
-        if (!ModelState.IsValid) return ValidationProblem(ModelState);
-        int? resolvedTeamId = request.TeamID;
-        if (!string.IsNullOrWhiteSpace(request.TeamCode))
-        {
-            var teams = await _teamService.GetTeamsAsync(ct);
-            var targetTeam = teams.FirstOrDefault(t => string.Equals(t.TeamCode, request.TeamCode, StringComparison.OrdinalIgnoreCase));
-            if (targetTeam is null) return BadRequest("Invalid teamCode.");
-            if (resolvedTeamId.HasValue && resolvedTeamId.Value != targetTeam.TeamID) return BadRequest("Provided TeamID does not match teamCode.");
-            resolvedTeamId = targetTeam.TeamID;
-        }
-        if (!User.IsInRole("Admin"))
-        {
-            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
-            if (!int.TryParse(sub, out var currentUserId)) return Forbid();
-            var teams = await _teamService.GetTeamsAsync(ct);
-            var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
-            if (coachTeam is null) return Forbid();
-            if (resolvedTeamId.HasValue && coachTeam.TeamID != resolvedTeamId) return Forbid();
-            var existing = await _playerService.GetAsync(id, ct);
-            if (existing is null) return NotFound();
-            if (existing.TeamID.HasValue && existing.TeamID != coachTeam.TeamID) return Forbid();
-        }
-        var updated = await _playerService.UpdateAsync(
-            id, 
-            request.FirstName, 
-            request.LastName, 
-            request.PhoneNumber,
-            resolvedTeamId, 
-            ct);
-        return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
+        var teams = await _teamService.GetTeamsAsync(ct);
+        var targetTeam =
+            teams.FirstOrDefault(t => string.Equals(t.TeamCode, request.TeamCode, StringComparison.OrdinalIgnoreCase));
+
+        if (targetTeam is null)
+            return BadRequest("Invalid teamCode.");
+
+        resolvedTeamId = targetTeam.TeamID;
     }
+
+    var updated = await _playerService.UpdateAsync(
+        id,
+        request.FirstName,
+        request.LastName,
+        request.PhoneNumber,
+        resolvedTeamId,
+        ct);
+
+    return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
+}
+
 
     [HttpPut("user/{userId}")]
     [Authorize(Roles = "Coach,Admin")]

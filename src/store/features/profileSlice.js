@@ -27,7 +27,6 @@ export const addProfile = createAsyncThunk(
   async (newProfile, thunkAPI) => {
     try {
       const created = await createPlayer(newProfile);
-
       return [created];
     } catch (err) {
       return thunkAPI.rejectWithValue("Błąd tworzenia profilu");

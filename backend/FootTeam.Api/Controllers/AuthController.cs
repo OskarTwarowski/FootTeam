@@ -75,12 +75,14 @@ public sealed class AuthController(IUserService users, IUserRepository userRepo,
         var expiresMinutes = int.TryParse(_config["Jwt:ExpiresMinutes"], out var m) ? m : 60;
 
         var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, sub),
-            new(JwtRegisteredClaimNames.UniqueName, username),
-            new(JwtRegisteredClaimNames.Email, email ?? string.Empty),
-            new(ClaimTypes.Role, role ?? "User")
-        };
+{
+    new(ClaimTypes.NameIdentifier, sub),
+    new(JwtRegisteredClaimNames.Sub, sub),
+    new(JwtRegisteredClaimNames.UniqueName, username),
+    new(JwtRegisteredClaimNames.Email, email ?? string.Empty),
+    new(ClaimTypes.Role, role ?? "User")
+};
+
 
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         var creds = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);

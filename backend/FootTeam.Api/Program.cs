@@ -3,6 +3,9 @@ using FootTeam.Application;
 using FootTeam.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +20,8 @@ builder.Services.AddCors(options =>
                 builder.Configuration["Cors:Origin"] ?? "http://localhost:5173"
             )
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
 
 // Configure JWT Authentication
@@ -39,10 +43,17 @@ builder.Services.AddAuthentication(x =>
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = true,
         ValidateAudience = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
         ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"]
+        ValidAudience = jwtSettings["Audience"],
+        
+        // ↓↓↓ DODAJ TO ↓↓↓
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = JwtRegisteredClaimNames.Sub
     };
 });
+
 
 // Add application services
 builder.Services.AddApplication();

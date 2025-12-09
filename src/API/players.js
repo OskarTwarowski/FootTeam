@@ -10,7 +10,13 @@ export const getPlayerByUser = async (userId) => {
 };
 
 export const createPlayer = async (player) => {
-  return (await API.post("/players", player)).data;
+  const token = localStorage.getItem("token");
+
+  return (
+    await API.post("/players", player, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  ).data;
 };
 
 export const updatePlayer = async (id, player) => {
