@@ -1,30 +1,22 @@
-# ===========================
-# Base runtime image
-# ===========================
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
-
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 
-# ===========================
-# Build stage
-# ===========================
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy everything
-COPY . .
+COPY backend/FootTeam.Api/FootTeam.Api.csproj backend/FootTeam.Api/
+COPY backend/FootTeam.Application/*.csproj backend/FootTeam.Application/
+COPY backend/FootTeam.Domain/*.csproj backend/FootTeam.Domain/
+COPY backend/FootTeam.Infrastructure/*.csproj backend/FootTeam.Infrastructure/
 
-# Restore + build + publish
-RUN dotnet restore FootTeam.Api.csproj
-RUN dotnet publish FootTeam.Api.csproj -c Release -o /app/publish
+RUN dotnet restore backend/FootTeam.Api/FootTeam.Api.csproj
 
-# ===========================
-# Final stage
-# ===========================
+COPY backend/ .
+RUN dotnet publish FootTeam.Api/FootTeam.Api.csproj -c Release -o /app/publish
+
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-
 ENTRYPOINT ["dotnet", "FootTeam.Api.dll"]
