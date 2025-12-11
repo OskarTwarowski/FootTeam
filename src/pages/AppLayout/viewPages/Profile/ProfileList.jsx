@@ -98,6 +98,7 @@ function ProfileList() {
                   <Trash2 className={styles.delete} />
                 </span>
               </button>
+              gi
             </li>
           );
         })}

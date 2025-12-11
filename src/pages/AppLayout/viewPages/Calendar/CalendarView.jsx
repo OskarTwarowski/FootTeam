@@ -28,7 +28,7 @@ const localizer = dateFnsLocalizer({
 function CalendarView() {
   const dispatch = useDispatch();
 
-  const { list: trainings, status } = useSelector((state) => state.trainings);
+  const { list: trainings, status } = useSelector((state) => state.training);
   const activeProfile = useSelector((state) => state.activeProfile.profile);
 
   const [date, setDate] = useState(new Date());
