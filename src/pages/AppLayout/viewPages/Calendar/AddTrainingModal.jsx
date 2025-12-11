@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { addTraining } from "../../../../store/features/trainingSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createTraining,
+  fetchTrainings,
+} from "../../../../store/features/trainingSlice";
 import styles from "./AddTrainingModal.module.css";
 
-export default function AddTrainingModal({
-  show,
-  onClose,
-  coachId,
-  teamId,
-  preselectedDate,
-}) {
+export default function AddTrainingModal({ show, onClose, preselectedDate }) {
   const dispatch = useDispatch();
+  const activeProfile = useSelector((state) => state.activeProfile.profile);
 
   const [form, setForm] = useState({
     title: "",
@@ -18,15 +16,13 @@ export default function AddTrainingModal({
     startTime: "",
     endTime: "",
     description: "",
+    location: "",
   });
 
-  // 👇 aktualizuj date, gdy preselectedDate się zmieni
   useEffect(() => {
     if (preselectedDate) {
-      const formattedDate = new Date(preselectedDate)
-        .toISOString()
-        .split("T")[0];
-      setForm((prev) => ({ ...prev, date: formattedDate }));
+      const formatted = new Date(preselectedDate).toISOString().split("T")[0];
+      setForm((prev) => ({ ...prev, date: formatted }));
     }
   }, [preselectedDate]);
 
@@ -35,31 +31,42 @@ export default function AddTrainingModal({
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newTraining = {
-      TrainingID: Date.now(),
-      Title: form.title,
-      Description: form.description,
-      StartTime: `${form.date}T${form.startTime}`,
-      EndTime: `${form.date}T${form.endTime}`,
-      CoachID: coachId || "user-coach-001",
-      TeamID: teamId || 1,
+    if (!activeProfile?.TeamID) {
+      alert("Brak drużyny — nie można utworzyć treningu.");
+      return;
+    }
+
+    const payload = {
+      title: form.title,
+      description: form.description,
+      location: form.location,
+      startTime: `${form.date}T${form.startTime}`,
+      endTime: `${form.date}T${form.endTime}`,
+      coachID: activeProfile.playerID, // ⭐ PLAYER ID = COACH ID
+      teamID: activeProfile.TeamID, // ⭐ poprawna nazwa
     };
 
-    dispatch(addTraining(newTraining));
-    onClose();
+    try {
+      await dispatch(createTraining(payload)).unwrap();
+      await dispatch(fetchTrainings());
+      onClose();
+    } catch (err) {
+      alert("Nie udało się utworzyć treningu.");
+    }
   };
 
   return (
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <h2>Dodaj trening</h2>
+
         <form onSubmit={handleSubmit}>
           <input
             name="title"
-            placeholder="Tytuł treningu"
+            placeholder="Tytuł"
             value={form.title}
             onChange={handleChange}
             required
@@ -95,6 +102,13 @@ export default function AddTrainingModal({
             name="description"
             placeholder="Opis treningu"
             value={form.description}
+            onChange={handleChange}
+          />
+
+          <input
+            name="location"
+            placeholder="Lokalizacja (opcjonalne)"
+            value={form.location}
             onChange={handleChange}
           />
 
