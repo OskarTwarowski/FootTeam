@@ -6,7 +6,9 @@ export const getPlayers = async (teamId) => {
 };
 
 export const getPlayerByUser = async (userId) => {
-  return (await API.get(`/players/user/${userId}`)).data;
+  const res = await API.get(`/players/user/${userId}`);
+  const data = res.data;
+  return Array.isArray(data) ? data : data ? [data] : [];
 };
 
 export const createPlayer = async (player) => {

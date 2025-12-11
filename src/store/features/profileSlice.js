@@ -7,6 +7,7 @@ import {
   deletePlayer,
 } from "../../API/players";
 
+// === FETCH PROFILES (wiele!) ===
 export const fetchProfiles = createAsyncThunk(
   "profiles/fetchProfiles",
   async (_, thunkAPI) => {
@@ -16,24 +17,29 @@ export const fetchProfiles = createAsyncThunk(
     try {
       const data = await getPlayerByUser(loggedUser.userId);
 
-      return data ? [data] : [];
+      // BACKEND ZWRACA LISTĘ → ZWRACAMY TABLICĘ
+      return Array.isArray(data) ? data : [];
     } catch (err) {
       return thunkAPI.rejectWithValue("Błąd pobierania profili");
     }
   }
 );
+
+// === ADD PROFILE ===
 export const addProfile = createAsyncThunk(
   "profiles/addProfile",
   async (newProfile, thunkAPI) => {
     try {
       const created = await createPlayer(newProfile);
-      return [created];
+
+      return created; // zwracamy OBIEKT, nie tablicę
     } catch (err) {
       return thunkAPI.rejectWithValue("Błąd tworzenia profilu");
     }
   }
 );
 
+// === UPDATE PROFILE ===
 export const updateProfile = createAsyncThunk(
   "profiles/updateProfile",
   async ({ id, data }, thunkAPI) => {
@@ -46,12 +52,13 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
+// === REMOVE PROFILE ===
 export const removeProfile = createAsyncThunk(
   "profiles/removeProfile",
   async (id, thunkAPI) => {
     try {
       await deletePlayer(id);
-      return []; // brak profilu po usunięciu
+      return id; // zwracamy ID do usunięcia
     } catch (err) {
       return thunkAPI.rejectWithValue("Błąd usuwania profilu");
     }
@@ -78,16 +85,16 @@ const profileSlice = createSlice({
       })
       .addCase(fetchProfiles.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = action.payload;
+        state.list = action.payload; // ZAWSZE TABLICA
       })
       .addCase(fetchProfiles.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })
 
-      /* === ADD === */
+      /* === ADD (DODAJEMY DO LISTY, NIE NADPISUJEMY) === */
       .addCase(addProfile.fulfilled, (state, action) => {
-        state.list = action.payload;
+        state.list.push(action.payload);
       })
 
       /* === UPDATE === */
@@ -99,9 +106,10 @@ const profileSlice = createSlice({
         if (idx !== -1) state.list[idx] = updated;
       })
 
-      /* === REMOVE === */
+      /* === REMOVE (USUWAMY JEDEN PROFIL) === */
       .addCase(removeProfile.fulfilled, (state, action) => {
-        state.list = [];
+        const idToRemove = action.payload;
+        state.list = state.list.filter((p) => p.playerID !== idToRemove);
       });
   },
 });

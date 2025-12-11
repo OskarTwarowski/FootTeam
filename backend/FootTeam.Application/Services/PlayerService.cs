@@ -59,6 +59,15 @@ public sealed class PlayerService(IPlayerRepository repository, ITeamRepository 
     public Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         => _repository.DeleteAsync(id, ct);
 
+    public async Task<IReadOnlyList<Player>> ListByUserIdAsync(int userId, CancellationToken ct = default)
+{
+    var players = await _repository.ListAsync(ct: ct);
+    return players
+        .Where(p => p.UserID == userId)
+        .ToList()
+        .AsReadOnly();
+}
+
     public async Task<Player?> GetByUserIdAsync(int userId, CancellationToken ct = default)
     {
         var players = await _repository.ListAsync(ct: ct);

@@ -74,10 +74,10 @@ public sealed class PlayersController(IPlayerService playerService, ITeamService
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByUserIdAsync(int userId, CancellationToken ct)
     {
-        var player = await _playerService.GetByUserIdAsync(userId, ct);
-        if (player is null) return NotFound();
-        return Ok(PlayerResponse.FromDomain(player));
-    }
+         var players = await _playerService.ListByUserIdAsync(userId, ct);
+         return Ok(players.Select(PlayerResponse.FromDomain));
+}
+    
 [HttpPost]
 [Authorize]
 [ProducesResponseType(typeof(PlayerResponse), StatusCodes.Status201Created)]

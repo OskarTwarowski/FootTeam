@@ -5,6 +5,8 @@ namespace FootTeam.Application.Abstractions;
 public interface IPlayerService
 {
     Task<IReadOnlyList<Player>> ListAsync(int? teamId = null, CancellationToken ct = default);
+    Task<IReadOnlyList<Player>> ListByUserIdAsync(int userId, CancellationToken ct = default);
+
     Task<Player?> GetAsync(int id, CancellationToken ct = default);
     Task<Player?> GetByUserIdAsync(int userId, CancellationToken ct = default);
     Task<Player> CreateAsync(string firstName, string lastName, string? phoneNumber, int? teamId, int? userId, CancellationToken ct = default);
