@@ -14,6 +14,7 @@ import EventModal from "../Calendar/EventModal";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import styles from "./CalendarView.module.css";
+import Loader from "../../../../components/Loader";
 
 const locales = { pl };
 
@@ -81,7 +82,13 @@ function CalendarView() {
     setSelectedEvent(event);
   };
 
-  if (status === "loading") return <p>Ładowanie treningów...</p>;
+  if (status === "loading") {
+    return (
+      <div className={styles.loaderWrapper}>
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>

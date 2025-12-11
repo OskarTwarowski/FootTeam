@@ -7,10 +7,12 @@ import { fetchTeams } from "../../../store/features/teamSlice";
 import { updateProfile as updateProfileThunk } from "../../../store/features/profileSlice";
 
 import API from "../../../API/axios";
+import Loader from "../../../components/Loader";
 
 function TeamView() {
   const dispatch = useDispatch();
-
+  const { loading, list } = useSelector((state) => state.teams);
+  const [playersLoading, setPlayersLoading] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const activeProfile = useSelector((state) => state.activeProfile.profile);
   const teams = useSelector((state) => state.teams.list);
@@ -18,12 +20,10 @@ function TeamView() {
   const [teamPlayers, setTeamPlayers] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  // === LOAD TEAMS ===
   useEffect(() => {
     dispatch(fetchTeams());
   }, [dispatch]);
 
-  // === LOAD PLAYERS OF CURRENT TEAM ===
   useEffect(() => {
     if (!activeProfile?.teamID) {
       setTeamPlayers([]);
@@ -32,17 +32,19 @@ function TeamView() {
 
     const loadPlayers = async () => {
       try {
+        setPlayersLoading(true);
         const res = await API.get(`/teams/players/${activeProfile.teamID}`);
         setTeamPlayers(res.data);
       } catch (err) {
         console.error("Błąd pobierania zawodników:", err);
+      } finally {
+        setPlayersLoading(false);
       }
     };
 
     loadPlayers();
   }, [activeProfile]);
 
-  // === DELETE PLAYER FROM TEAM === (Coach only)
   const handleDeleteFromTeam = async (player) => {
     try {
       await dispatch(
@@ -59,7 +61,7 @@ function TeamView() {
       alert("Nie udało się usunąć zawodnika z drużyny");
     }
   };
-
+  if (loading) return <Loader />;
   // === NO PROFILE CASES ===
   if (!activeProfile) {
     return (
@@ -103,37 +105,47 @@ function TeamView() {
       </header>
 
       <ul className={styles.playerList}>
-        {sortedPlayers.map((player, index) => (
-          <li
-            key={player.playerID}
-            className={`${styles.playerItem} ${
-              index % 2 === 1 ? styles.alternate : ""
-            }`}
-          >
-            <div className={styles.playerInfo}>
-              <span
-                className={`${styles.playerName} ${
-                  player.role === "Coach" ? styles.coach : ""
-                }`}
-              >
-                {player.firstName} {player.lastName}
-              </span>
-            </div>
-
-            <span className={styles.playerPhone}>
-              {isOpen && user?.Role === "Trener" && player.role !== "Coach" && (
+        {playersLoading ? (
+          <div className={styles.loaderWrapper}>
+            <Loader />
+          </div>
+        ) : sortedPlayers.length === 0 ? (
+          <p className={styles.noPlayers}>Brak zawodników w drużynie</p>
+        ) : (
+          sortedPlayers.map((player, index) => (
+            <li
+              key={player.playerID}
+              className={`${styles.playerItem} ${
+                index % 2 === 1 ? styles.alternate : ""
+              }`}
+            >
+              <div className={styles.playerInfo}>
                 <span
-                  className={styles.playerRemove}
-                  onClick={() => handleDeleteFromTeam(player)}
+                  className={`${styles.playerName} ${
+                    player.role === "Coach" ? styles.coach : ""
+                  }`}
                 >
-                  ✖
+                  {player.firstName} {player.lastName}
                 </span>
-              )}
-              <Phone className={styles.phonesvg} />
-              {player.phoneNumber}
-            </span>
-          </li>
-        ))}
+              </div>
+
+              <span className={styles.playerPhone}>
+                {isOpen &&
+                  user?.Role === "Trener" &&
+                  player.role !== "Coach" && (
+                    <span
+                      className={styles.playerRemove}
+                      onClick={() => handleDeleteFromTeam(player)}
+                    >
+                      ✖
+                    </span>
+                  )}
+                <Phone className={styles.phonesvg} />
+                {player.phoneNumber}
+              </span>
+            </li>
+          ))
+        )}
       </ul>
 
       {user?.Role === "Trener" && (

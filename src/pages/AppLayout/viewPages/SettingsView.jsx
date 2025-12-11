@@ -3,7 +3,7 @@ import styles from "./SettingsView.module.css";
 import { toggleLightMode } from "../../../store/features/settingsSlice";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../store/features/authSlice";
-// dodaj jakieś stockowe zdjęcie
+import { clearProfiles } from "../../../store/features/profileSlice";
 
 function SettingsView() {
   const dispatch = useDispatch();
@@ -14,6 +14,7 @@ function SettingsView() {
     dispatch(toggleLightMode());
   };
   const handleLogOut = () => {
+    dispatch(clearProfiles());
     dispatch(logout());
     navigate("/", { replace: true });
   };

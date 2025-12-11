@@ -82,17 +82,19 @@ function NotificationView() {
 
       <ul className={styles.list}>
         {notifications.map((n) => (
-          <li key={n.notificationID} className={styles.item}>
-            <h3 className={styles.title}>{n.title}</h3>
-            <p className={styles.description}>{n.description}</p>
+          <li key={n.NotificationID} className={styles.item}>
+            <h3 className={styles.title}>{n.Title}</h3>
+            <p className={styles.description}>{n.Description}</p>
+
             <span className={styles.date}>
-              {n.startTime
-                ? new Date(n.startTime).toLocaleString()
+              {n.StartTime
+                ? new Date(n.StartTime).toLocaleString()
                 : "Brak daty"}
             </span>
-            {n.teamName && (
+
+            {n.TeamName && (
               <span className={styles.team}>
-                Drużyna: {n.teamName ?? "Globalne"}
+                Drużyna: {n.TeamName ?? "Globalne"}
               </span>
             )}
           </li>
