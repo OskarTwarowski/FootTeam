@@ -8,6 +8,7 @@ using FootTeam.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FootTeam.Api.Controllers;
 
@@ -66,7 +67,67 @@ public sealed class AuthController(IUserService users, IUserRepository userRepo,
         Role = user.Role
     });
     }
+    [HttpPut("change-email")]
+[Authorize]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+public async Task<IActionResult> ChangeEmailAsync([FromBody] ChangeEmailRequest req, CancellationToken ct)
+{
+    if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
+    var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (!int.TryParse(sub, out var userId)) return Unauthorized();
+
+    // sprawdź czy email istnieje
+    var existing = await _userRepo.GetByEmailAsync(req.NewEmail, ct);
+    if (existing is not null)
+        return BadRequest("Email jest już zajęty.");
+
+    // wczytaj użytkownika
+    var user = await _userRepo.GetAsync(userId, ct);
+    if (user is null) return NotFound();
+
+    user.Email = req.NewEmail.Trim();
+    await _userRepo.UpdateAsync(user, ct);
+
+    // wygeneruj nowy token
+    var token = GenerateJwt(user.UserID.ToString(), user.Email, user.Email, user.Role);
+
+    return Ok(new
+    {
+        Message = "Email został zmieniony.",
+        Token = token,
+        Email = user.Email
+    });
+}
+[HttpPut("change-password")]
+[Authorize]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordRequest req, CancellationToken ct)
+{
+    if (!ModelState.IsValid) return ValidationProblem(ModelState);
+
+    var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (!int.TryParse(sub, out var userId)) return Unauthorized();
+
+    var user = await _userRepo.GetAsync(userId, ct);
+    if (user is null) return NotFound();
+
+    // sprawdzamy stare hasło
+    var ok = BCrypt.Net.BCrypt.Verify(req.OldPassword, user.PasswordHash);
+    if (!ok) return BadRequest("Stare hasło jest nieprawidłowe.");
+
+    // ustawiamy nowe
+    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.NewPassword);
+    await _userRepo.UpdateAsync(user, ct);
+
+    return Ok(new { Message = "Hasło zostało zmienione." });
+}
+
+
+    
+    
     private string GenerateJwt(string sub, string username, string email, string role)
     {
         var key = _config["Jwt:Key"] ?? throw new InvalidOperationException("Missing Jwt:Key");
@@ -136,4 +197,20 @@ public sealed class AuthUserResponse
     public int UserID { get; set; }
     public string Email { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
+}
+public sealed class ChangeEmailRequest
+{
+    [Required]
+    [EmailAddress]
+    public string NewEmail { get; set; } = string.Empty;
+}
+
+public sealed class ChangePasswordRequest
+{
+    [Required]
+    public string OldPassword { get; set; } = string.Empty;
+
+    [Required]
+    [MinLength(6)]
+    public string NewPassword { get; set; } = string.Empty;
 }
