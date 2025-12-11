@@ -240,25 +240,44 @@ private async Task<IActionResult> UpdateAsAdmin(int id, UpdatePlayerRequest requ
         return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
     }
 
-    [HttpDelete("{id:int}")]
-    [Authorize(Roles = "Coach,Admin")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteAsync(int id, CancellationToken ct)
+[HttpDelete("{id:int}")]
+[Authorize] 
+[ProducesResponseType(StatusCodes.Status204NoContent)]
+public async Task<IActionResult> DeleteAsync(int id, CancellationToken ct)
+{
+    var existing = await _playerService.GetAsync(id, ct);
+    if (existing is null)
+        return NoContent();
+
+    var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (!int.TryParse(sub, out var currentUserId))
+        return Forbid();
+
+    if (User.IsInRole("Admin"))
     {
-        if (!User.IsInRole("Admin"))
-        {
-            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
-            if (!int.TryParse(sub, out var currentUserId)) return Forbid();
-            var teams = await _teamService.GetTeamsAsync(ct);
-            var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
-            if (coachTeam is null) return Forbid();
-            var existing = await _playerService.GetAsync(id, ct);
-            if (existing is null) return NoContent();
-            if (existing.TeamID.HasValue && existing.TeamID != coachTeam.TeamID) return Forbid();
-        }
         await _playerService.DeleteAsync(id, ct);
         return NoContent();
     }
+
+    if (User.IsInRole("Coach"))
+    {
+        var teams = await _teamService.GetTeamsAsync(ct);
+        var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
+
+        if (coachTeam is null || existing.TeamID != coachTeam.TeamID)
+            return Forbid();
+
+        await _playerService.DeleteAsync(id, ct);
+        return NoContent();
+    }
+
+    if (existing.UserID != currentUserId)
+        return Forbid();
+
+    await _playerService.DeleteAsync(id, ct);
+    return NoContent();
+}
+
 
     [HttpDelete("user/{userId}")]
     [Authorize(Roles = "Coach,Admin")]

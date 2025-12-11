@@ -6,6 +6,7 @@ import registerReducers from "../store/features/RegisterSlice";
 import trainingReducer from "../store/features/trainingSlice";
 import authReducer from "../store/features/authSlice";
 import teamReducer from "../store/features/teamSlice";
+import notificationReducer from "../store/features/notificationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
     register: registerReducers,
     training: trainingReducer,
     auth: authReducer,
+    notifications: notificationReducer,
   },
 });

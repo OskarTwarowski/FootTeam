@@ -12,9 +12,16 @@ function NotificationModal({ title, onClose, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.title.trim() && formData.description.trim()) {
-      onSubmit(formData);
-    }
+
+    const trimmed = {
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+    };
+
+    if (!trimmed.title || !trimmed.description) return;
+
+    onSubmit(trimmed); // wykonanie akcji
+    onClose(); // ✨ zamknij modal po zapisie
   };
 
   return (
@@ -31,6 +38,7 @@ function NotificationModal({ title, onClose, onSubmit }) {
               required
             />
           </label>
+
           <label>
             Opis
             <textarea
@@ -40,10 +48,12 @@ function NotificationModal({ title, onClose, onSubmit }) {
               required
             />
           </label>
+
           <div className={styles.actions}>
             <Button type="secondary" onClick={onClose}>
               Anuluj
             </Button>
+
             <Button type="primary" submit>
               Zapisz
             </Button>
