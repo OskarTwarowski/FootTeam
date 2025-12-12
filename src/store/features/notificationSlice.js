@@ -6,6 +6,11 @@ import {
   deleteNotification,
 } from "../../API/notifications";
 
+export const initialState = {
+  list: [],
+  status: "idle",
+  error: null,
+};
 // === GET notifications ===
 export const fetchNotifications = createAsyncThunk(
   "notifications/fetchNotifications",
@@ -45,11 +50,7 @@ export const removeNotification = createAsyncThunk(
 
 const notificationSlice = createSlice({
   name: "notifications",
-  initialState: {
-    list: [],
-    status: "idle",
-    error: null,
-  },
+  initialState,
 
   reducers: {},
 

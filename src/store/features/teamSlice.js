@@ -1,6 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../API/axios";
 
+export const initialState = {
+  list: [],
+  loading: false,
+  error: null,
+};
 // === GET all teams ===
 export const fetchTeams = createAsyncThunk(
   "teams/fetchTeams",
@@ -51,11 +56,7 @@ export const deleteTeam = createAsyncThunk(
 
 const teamSlice = createSlice({
   name: "teams",
-  initialState: {
-    list: [],
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder

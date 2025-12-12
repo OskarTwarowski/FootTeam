@@ -20,7 +20,7 @@ function SettingsView() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
-  const { lightMode } = useSelector((state) => state.settings);
+  const lightMode = useSelector((state) => state?.settings?.lightMode ?? false);
 
   // === ZMIANA EMAIL ===
   const handleEmailSubmit = async (newEmail) => {
@@ -42,6 +42,7 @@ function SettingsView() {
 
   const handleLogOut = () => {
     dispatch(logout());
+    setTimeout(() => navigate("/", { replace: true }), 2000);
     navigate("/", { replace: true });
   };
 

@@ -7,7 +7,7 @@ import ContactSection from "./AppLayout/components/ContactSection";
 import Footer from "./AppLayout/components/Footer";
 
 function Homepage() {
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state?.auth?.user ?? null);
 
   return (
     <main className={styles.homepage}>

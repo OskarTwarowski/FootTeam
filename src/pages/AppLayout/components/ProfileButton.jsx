@@ -2,7 +2,7 @@ import styles from "./ProfileButton.module.css";
 import { useSelector } from "react-redux";
 
 function ProfileButton() {
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state?.auth?.user);
 
   const roleMap = {
     Parent: "Rodzic",

@@ -7,6 +7,11 @@ import {
   deletePlayer,
 } from "../../API/players";
 
+export const initialState = {
+  list: [],
+  status: "idle",
+  error: null,
+};
 // === FETCH PROFILES (wiele!) ===
 export const fetchProfiles = createAsyncThunk(
   "profiles/fetchProfiles",
@@ -67,11 +72,7 @@ export const removeProfile = createAsyncThunk(
 
 const profileSlice = createSlice({
   name: "profiles",
-  initialState: {
-    list: [],
-    status: "idle",
-    error: null,
-  },
+  initialState,
   reducers: {
     clearProfiles(state) {
       state.list = [];

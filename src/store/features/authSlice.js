@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../API/axios";
 
+export const initialState = {
+  user: JSON.parse(localStorage.getItem("loggedUser")) || null,
+  token: localStorage.getItem("token") || null,
+  status: "idle",
+  error: null,
+};
 // LOGIN
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -42,13 +48,6 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
-
-const initialState = {
-  user: JSON.parse(localStorage.getItem("loggedUser")) || null,
-  token: localStorage.getItem("token") || null,
-  status: "idle",
-  error: null,
-};
 
 const authSlice = createSlice({
   name: "auth",

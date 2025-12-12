@@ -46,7 +46,7 @@ function NotificationView() {
       StartTime: new Date().toISOString(),
       EndTime: null,
       CreatedBy: user?.userId, // wymagane przez backend
-      TeamId: isGlobal ? null : activeProfile?.TeamID,
+      TeamID: isGlobal ? null : activeProfile?.teamID ?? activeProfile?.TeamID,
     };
 
     await dispatch(addNotificationThunk(payload));

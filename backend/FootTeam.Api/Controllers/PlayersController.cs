@@ -87,7 +87,6 @@ public async Task<IActionResult> CreateAsync([FromBody] CreatePlayerRequest requ
     if (!ModelState.IsValid)
         return ValidationProblem(ModelState);
 
-   
     var teams = await _teamService.GetTeamsAsync(ct);
     var targetTeam = teams.FirstOrDefault(t =>
         string.Equals(t.TeamCode, request.TeamCode, StringComparison.OrdinalIgnoreCase));
@@ -95,14 +94,22 @@ public async Task<IActionResult> CreateAsync([FromBody] CreatePlayerRequest requ
     if (targetTeam is null)
         return BadRequest("Podany kod drużyny nie istnieje.");
 
- 
     var sub = User.FindFirstValue(ClaimTypes.NameIdentifier)
               ?? User.FindFirstValue(ClaimTypes.Name);
 
     if (!int.TryParse(sub, out var currentUserId))
         return Forbid();
 
- 
+    // --- COACH AUTOMATYCZNIE ZOSTAJE TRENEREM DRUŻYNY ---
+    if (User.IsInRole("Coach"))
+    {
+        targetTeam.CoachID = currentUserId;
+        await _teamService.UpdateTeamAsync(targetTeam, ct);
+
+        // ważne! pobierz zaktualizowaną drużynę
+        targetTeam = await _teamService.GetTeamByIdAsync(targetTeam.TeamID, ct);
+    }
+
     if (!User.IsInRole("Admin"))
     {
         if (request.UserID != currentUserId)
@@ -119,6 +126,7 @@ public async Task<IActionResult> CreateAsync([FromBody] CreatePlayerRequest requ
 
     return Created($"/api/players/{player.PlayerID}", PlayerResponse.FromDomain(player));
 }
+
 
    [HttpPut("{id:int}")]
 [Authorize]

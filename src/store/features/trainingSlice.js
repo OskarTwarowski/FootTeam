@@ -1,6 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import API from "../../API/axios";
 
+export const initialState = {
+  list: [],
+  status: "idle",
+  error: null,
+};
+
 // === GET ALL trainings ===
 export const fetchTrainings = createAsyncThunk(
   "trainings/fetchTrainings",
@@ -55,11 +61,7 @@ export const deleteTraining = createAsyncThunk(
 
 const trainingSlice = createSlice({
   name: "trainings",
-  initialState: {
-    list: [],
-    status: "idle",
-    error: null,
-  },
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
