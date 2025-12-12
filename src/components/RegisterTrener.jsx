@@ -11,13 +11,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { getUsers, saveUsers } from "../services/AuthService";
-import PageNav from "./PageNav";
+import { register as apiRegister } from "../API/auth";
 
 export default function RegisterForm() {
-  // do usuniecia
-  const generateUserId = () =>
-    Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36);
   const navigate = useNavigate();
 
   const {
@@ -29,41 +25,29 @@ export default function RegisterForm() {
     resolver: yupResolver(registerSchema),
     mode: "onChange",
   });
-  // tutaj trzeba dodanie do backednu zrobić
-  const onSubmit = (data) => {
-    const users = getUsers();
-    const userExists = users.some((u) => u.Email === data.email);
-    if (userExists) {
-      alert("Użytkownik o tym adresie e-mail już istnieje.");
-      return;
+
+  const onSubmit = async (data) => {
+    try {
+      const role = "Coach"; // 👈 TWOJA WYMAGANA ROLA
+
+      await apiRegister(data.email, data.password, role);
+
+      alert("Konto trenera zostało utworzone!");
+      navigate("/logowanie", { replace: true });
+    } catch (err) {
+      alert("Rejestracja nie powiodła się. Spróbuj ponownie.");
     }
-    const newUser = {
-      Email: data.email,
-      PasswordHash: data.password,
-      Role: "Trener",
-      CreatedAt: new Date().toISOString(),
-      UserID: generateUserId(),
-    };
-    const updatedUsers = [...users, newUser];
-    saveUsers(updatedUsers);
-
-    localStorage.setItem("loggedUser", JSON.stringify(newUser));
-
-    const profiles = JSON.parse(localStorage.getItem("Profiles")) || [];
-    localStorage.setItem("Profiles", JSON.stringify(profiles));
-    navigate("/app/profil", { replace: true });
   };
 
   return (
     <div className={styles.register}>
-      <PageNav />
       <form
         className={`${styles.form} ${styles.box}`}
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1>Zarejestruj się jako Trener</h1>
 
-        {/* EMAIL uzytkownika */}
+        {/* EMAIL */}
         <div className={styles.row}>
           <label htmlFor="email">
             Adres e-mail:
@@ -82,7 +66,6 @@ export default function RegisterForm() {
             type="email"
             id="email"
             placeholder="example@email.com"
-            autoComplete="off"
             {...register("email")}
           />
 
@@ -93,7 +76,7 @@ export default function RegisterForm() {
           )}
         </div>
 
-        {/*  hasło */}
+        {/* PASSWORD */}
         <div className={styles.row}>
           <label htmlFor="password">
             Hasło:
@@ -127,7 +110,7 @@ export default function RegisterForm() {
           )}
         </div>
 
-        {/*  confirm hasło  */}
+        {/* CONFIRM PASSWORD */}
         <div className={styles.row}>
           <label htmlFor="confirmPassword">
             Powtórz hasło:
@@ -156,7 +139,8 @@ export default function RegisterForm() {
             </p>
           )}
         </div>
-        {/* TOS CHECKBOX */}
+
+        {/* TERMS */}
         <div className={styles.checkboxRow}>
           <label htmlFor="terms" className={styles.checkboxLabel}>
             <input type="checkbox" id="terms" {...register("terms")} />
@@ -179,14 +163,13 @@ export default function RegisterForm() {
           )}
         </div>
 
-        {/* handle submit button */}
+        {/* SUBMIT */}
         <div className={styles.middle}>
           <Button type="primary" disabled={!isValid}>
             Zarejestruj się
           </Button>
         </div>
 
-        {/* przekierowanie do logowania */}
         <p className={styles.alrRegistered}>
           Posiadasz już konto? <br />
           <Link to="/logowanie" className={styles.backLogin}>

@@ -11,7 +11,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { register as apiRegister } from "../API/auth";
-import { getUsers, saveUsers } from "../services/AuthService";
 
 export default function RegisterForm() {
   // do usuniecia

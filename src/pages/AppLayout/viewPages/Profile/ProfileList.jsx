@@ -53,7 +53,7 @@ function ProfileList() {
   if (!profiles || profiles.length === 0) {
     return <p className={styles.noProfile}>Brak zapisanych profili.</p>;
   }
-
+  console.log(profiles);
   return (
     <div className={styles.container}>
       <div className={styles.tableHeader}>
