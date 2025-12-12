@@ -15,14 +15,16 @@ builder.Services.AddControllers();
 // Configure CORS
 builder.Services.AddCors(options =>
 {
+    var origins = (builder.Configuration["Cors:Origin"] ?? "")
+        .Split(";", StringSplitOptions.RemoveEmptyEntries);
+
     options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins(
-                builder.Configuration["Cors:Origin"] ?? "http://localhost:5173"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
+        policy.WithOrigins(origins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
 });
+
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
