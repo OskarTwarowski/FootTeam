@@ -4,10 +4,9 @@ import Button from "../../../../components/Button";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CreateProfileSchema } from "../../../../Hooks/validators";
 import { Modal } from "react-bootstrap";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { updateProfile } from "../../../../store/features/profileSlice";
-import { findTeamByCode } from "../../../../services/TeamService";
 
 function ProfileEditForm({ show, onClose }) {
   const dispatch = useDispatch();
@@ -16,74 +15,86 @@ function ProfileEditForm({ show, onClose }) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
     reset,
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(CreateProfileSchema),
     mode: "onChange",
-    defaultValues: activeProfile || {},
   });
 
+  // 🔥 USTAWIAMY DANE W INPUTACH
   useEffect(() => {
     if (activeProfile) {
-      reset(activeProfile);
+      reset({
+        FirstName: activeProfile.firstName,
+        LastName: activeProfile.lastName,
+        Phone: activeProfile.phoneNumber || "",
+        TeamCode: activeProfile.teamCode || "",
+      });
     }
   }, [activeProfile, reset]);
 
   const onSubmit = (data) => {
-    if (!activeProfile) return alert("Brak aktywnego profilu");
-    const team = findTeamByCode(data.TeamCode);
-    const editedProfile = {
-      ...activeProfile,
-      ...data,
-      TeamID: team.TeamID,
-    };
-    dispatch(updateProfile(editedProfile));
-    onClose();
+    dispatch(
+      updateProfile({
+        id: activeProfile.playerID,
+        data: {
+          firstName: data.FirstName,
+          lastName: data.LastName,
+          phoneNumber: data.Phone,
+          teamCode: data.TeamCode,
+        },
+      })
+    )
+      .unwrap()
+      .then(onClose)
+      .catch(() => alert("Nie udało się zaktualizować profilu"));
   };
+
+  if (!show) return null;
 
   return (
     <Modal show={show} onHide={onClose} centered>
       <Modal.Header>
-        <Modal.Title>Edytuj Profil Zawodnika</Modal.Title>
+        <Modal.Title>Edytuj Profil</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           <div className={styles.row}>
-            <label htmlFor="FirstName">Imię</label>
-            <input id="FirstName" {...register("FirstName")} />
+            <label>Imię:</label>
+            <input {...register("FirstName")} />
             {errors.FirstName && (
               <p className={styles.error}>{errors.FirstName.message}</p>
             )}
           </div>
 
           <div className={styles.row}>
-            <label htmlFor="LastName">Nazwisko</label>
-            <input id="LastName" {...register("LastName")} />
+            <label>Nazwisko:</label>
+            <input {...register("LastName")} />
             {errors.LastName && (
               <p className={styles.error}>{errors.LastName.message}</p>
             )}
           </div>
 
           <div className={styles.row}>
-            <label htmlFor="Phone">Numer telefonu:</label>
-            <input id="Phone" {...register("Phone")} />
+            <label>Telefon:</label>
+            <input {...register("Phone")} />
             {errors.Phone && (
               <p className={styles.error}>{errors.Phone.message}</p>
             )}
           </div>
 
           <div className={styles.row}>
-            <label htmlFor="TeamCode">Kod drużyny:</label>
-            <input id="TeamCode" {...register("TeamCode")} />
+            <label>Kod drużyny:</label>
+            <input {...register("TeamCode")} />
             {errors.TeamCode && (
               <p className={styles.error}>{errors.TeamCode.message}</p>
             )}
           </div>
 
           <Button type="primary" disabled={!isValid}>
-            Zapisz
+            Zapisz zmiany
           </Button>
         </form>
       </Modal.Body>

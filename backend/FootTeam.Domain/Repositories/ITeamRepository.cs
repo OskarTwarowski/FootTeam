@@ -12,4 +12,5 @@ public interface ITeamRepository
     Task<Team?> UpdateAsync(Team team, CancellationToken ct = default);
     Task<bool> DeleteAsync(int id, CancellationToken ct = default);
     Task<IReadOnlyList<Player>> GetPlayersByTeamIdAsync(int teamId, CancellationToken ct = default);
+    Task<bool> TeamCodeExistsAsync(string teamCode, CancellationToken ct = default);
 }

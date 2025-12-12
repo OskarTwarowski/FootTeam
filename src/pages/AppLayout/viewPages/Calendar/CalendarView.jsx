@@ -1,54 +1,37 @@
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { fetchTrainings } from "../../../../store/features/trainingSlice";
+
 import format from "date-fns/format";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
 import pl from "date-fns/locale/pl";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import styles from "./CalendarView.module.css";
-import { useState, useEffect, useMemo } from "react";
+
 import AddTrainingModal from "../Calendar/AddTrainingModal";
 import EventModal from "../Calendar/EventModal";
 
-const locales = { pl: pl };
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import styles from "./CalendarView.module.css";
+import Loader from "../../../../components/Loader";
 
-const customPl = {
-  ...pl,
-  localize: {
-    ...pl.localize,
-    month: (n) =>
-      [
-        "Styczeń",
-        "Luty",
-        "Marzec",
-        "Kwiecień",
-        "Maj",
-        "Czerwiec",
-        "Lipiec",
-        "Sierpień",
-        "Wrzesień",
-        "Październik",
-        "Listopad",
-        "Grudzień",
-      ][n],
-  },
-};
+const locales = { pl };
 
 const localizer = dateFnsLocalizer({
-  format: (date, formatStr, options) =>
-    format(date, formatStr, { ...options, locale: customPl }),
+  format,
   parse,
-  startOfWeek,
+  startOfWeek: () => startOfWeek(new Date(), { locale: pl }),
   getDay,
   locales,
 });
 
 function CalendarView() {
   const dispatch = useDispatch();
+
   const { list: trainings, status } = useSelector((state) => state.training);
   const activeProfile = useSelector((state) => state.activeProfile.profile);
+
   const [date, setDate] = useState(new Date());
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -56,25 +39,28 @@ function CalendarView() {
 
   const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
+  // ---- Pobranie treningów ----
   useEffect(() => {
     dispatch(fetchTrainings());
   }, [dispatch, activeProfile]);
 
+  // ---- Filtrowanie po drużynie ----
   const filteredTrainings = useMemo(() => {
     if (!activeProfile || !activeProfile.TeamID) return [];
-    return trainings.filter(
-      (t) => (t.TeamID || t.teamID) === activeProfile.TeamID
-    );
+    return trainings.filter((t) => t.teamID === activeProfile.TeamID);
   }, [trainings, activeProfile]);
 
+  // ---- Format na eventy do kalendarza ----
   const events = filteredTrainings.map((t) => ({
-    title: t.Title || "Bez nazwy",
-    start: new Date(t.StartTime),
-    end: new Date(t.EndTime),
-    Description: t.Description,
+    TrainingID: t.trainingID,
+    title: t.title || "Bez nazwy",
+    start: new Date(t.startTime),
+    end: new Date(t.endTime),
+    Description: t.description,
     color: t.color || "#007bff",
   }));
 
+  // ---- Customowy nagłówek ----
   const CustomHeader = ({ label, onNavigate }) => (
     <div className={styles.header}>
       <button onClick={() => onNavigate("PREV")}>Poprzedni</button>
@@ -83,18 +69,27 @@ function CalendarView() {
     </div>
   );
 
-  // 👇 Kliknięcie w pustą datę
+  // ---- Klik na pusty slot → dodanie treningu ----
   const handleSelectSlot = (slotInfo) => {
-    if (loggedUser?.Role === "Trener" || loggedUser?.Role === "Admin") {
-      setSelectedDate(slotInfo.start); // zapisujemy klikniętą datę
+    if (loggedUser?.Role === "Coach" || loggedUser?.Role === "Admin") {
+      setSelectedDate(slotInfo.start);
       setShowAddModal(true);
     }
   };
 
-  if (status === "loading") return <p>Ładowanie treningów...</p>;
+  // ---- Kliknięcie na istniejący trening ----
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
   };
+
+  if (status === "loading") {
+    return (
+      <div className={styles.loaderWrapper}>
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <Calendar
@@ -107,18 +102,13 @@ function CalendarView() {
         defaultView="month"
         className={styles.calendarContainer}
         eventPropGetter={(event) => ({
-          style: {
-            backgroundColor: event.color,
-            color: "#ececec",
-          },
+          style: { backgroundColor: event.color, color: "#ececec" },
         })}
         date={date}
         onNavigate={(newDate) => setDate(newDate)}
-        components={{
-          toolbar: CustomHeader,
-        }}
+        components={{ toolbar: CustomHeader }}
         onSelectSlot={
-          activeProfile?.Role === "Trener" || activeProfile?.Role === "Admin"
+          loggedUser?.Role === "Coach" || loggedUser?.Role === "Admin"
             ? handleSelectSlot
             : undefined
         }
@@ -130,7 +120,11 @@ function CalendarView() {
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
         preselectedDate={selectedDate}
+        teamId={activeProfile?.TeamID}
+        coachId={loggedUser?.Role === "Coach" ? activeProfile?.PlayerID : null}
       />
+
+      {/* Modal szczegółów treningu */}
       {selectedEvent && (
         <EventModal
           event={selectedEvent}

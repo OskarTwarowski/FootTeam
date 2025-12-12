@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchTeams,
-  addTeam,
+  createTeam,
   deleteTeam,
 } from "../../../../store/features/teamSlice";
 import styles from "./TeamAdminView.module.css";
@@ -10,46 +10,48 @@ import styles from "./TeamAdminView.module.css";
 export default function TeamAdminView() {
   const dispatch = useDispatch();
   const { list: teams, loading } = useSelector((state) => state.teams);
+  const loggedUser = useSelector((state) => state.auth.user);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filtered, setFiltered] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
-  const [recentTeam, setRecentTeam] = useState(null);
 
   useEffect(() => {
     dispatch(fetchTeams());
   }, [dispatch]);
 
+  // FILTROWANIE
   useEffect(() => {
     if (searchTerm.length >= 3) {
       const lower = searchTerm.toLowerCase();
-      setFiltered(teams.filter((t) => t.Name.toLowerCase().includes(lower)));
-    } else if (recentTeam) {
-      setFiltered([recentTeam]);
+      setFiltered(teams.filter((t) => t.name.toLowerCase().includes(lower)));
     } else {
       setFiltered([]);
     }
-  }, [searchTerm, teams, recentTeam]);
+  }, [searchTerm, teams]);
 
+  // TWORZENIE DRUŻYNY
   const handleCreateTeam = (e) => {
     e.preventDefault();
+
     if (!newTeamName.trim()) return;
 
-    dispatch(addTeam({ Name: newTeamName.trim() }))
-      .unwrap()
-      .then((createdTeam) => {
-        setRecentTeam(createdTeam);
-      });
+    dispatch(
+      createTeam({
+        name: newTeamName.trim(),
+        coachId: loggedUser?.userId, // wymagane przez backend
+      })
+    );
 
-    setIsCreating(false);
     setNewTeamName("");
+    setIsCreating(false);
   };
 
-  const handleDeleteTeam = (teamID) => {
+  // USUWANIE
+  const handleDeleteTeam = (teamId) => {
     if (window.confirm("Czy na pewno chcesz usunąć tę drużynę?")) {
-      dispatch(deleteTeam(teamID));
-      if (recentTeam?.TeamID === teamID) setRecentTeam(null);
+      dispatch(deleteTeam(teamId));
     }
   };
 
@@ -70,14 +72,12 @@ export default function TeamAdminView() {
       {filtered.length > 0 && (
         <ul className={styles.teamList}>
           {filtered.map((team) => (
-            <li key={team.TeamID} className={styles.teamItem}>
-              <div>
-                <strong>{team.Name}</strong>
-                <span>Kod: {team.TeamCode}</span>
-              </div>
+            <li key={team.teamID} className={styles.teamItem}>
+              <strong>{team.name}</strong>
+
               <button
                 className={styles.deleteButton}
-                onClick={() => handleDeleteTeam(team.TeamID)}
+                onClick={() => handleDeleteTeam(team.teamID)}
               >
                 🗑 Usuń
               </button>
@@ -106,6 +106,7 @@ export default function TeamAdminView() {
             onChange={(e) => setNewTeamName(e.target.value)}
             required
           />
+
           <div className={styles.formButtons}>
             <button type="submit">Zapisz</button>
             <button type="button" onClick={() => setIsCreating(false)}>

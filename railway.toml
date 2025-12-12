@@ -1,0 +1,9 @@
+[build]
+builder = "dockerfile"
+
+[deploy]
+start = "dotnet FootTeam.Api.dll"
+
+[env]
+PORT = "8080"
+ASPNETCORE_URLS = "http://0.0.0.0:8080"

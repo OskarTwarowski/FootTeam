@@ -5,6 +5,7 @@ public class Team
     public int TeamID { get; set; }
     public string Name { get; set; } = string.Empty;
     public int? CoachID { get; set; }
+    public string TeamCode { get; set; } = string.Empty;
     
     
     public virtual User? Coach { get; set; }

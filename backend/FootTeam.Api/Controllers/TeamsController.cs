@@ -31,11 +31,27 @@ public sealed class TeamsController : ControllerBase
         if (!int.TryParse(sub, out var currentUserId)) return Forbid();
 
         if (User.IsInRole("Coach"))
-        {
-            var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
-            if (coachTeam is null) return Ok(Enumerable.Empty<TeamResponse>());
-            return Ok(new[] { TeamResponse.FromDomain(coachTeam) });
-        }
+{
+    // pobierz profil użytkownika
+    var playerService = HttpContext.RequestServices.GetService(typeof(IPlayerService)) as IPlayerService;
+    var profile = await playerService.GetByUserIdAsync(currentUserId, ct);
+
+    // drużyna przypisana do profilu coacha
+    if (profile?.TeamID != null)
+    {
+        var team = teams.FirstOrDefault(t => t.TeamID == profile.TeamID);
+        if (team != null)
+            return Ok(new[] { TeamResponse.FromDomain(team) });
+    }
+
+    // fallback → jeśli jest CoachID w tabeli Teams
+    var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
+    if (coachTeam != null)
+        return Ok(new[] { TeamResponse.FromDomain(coachTeam) });
+
+    // nic nie znaleziono
+    return Ok(Enumerable.Empty<TeamResponse>());
+}
         else
         {
             // Regular user: return only their team if exists
@@ -85,7 +101,8 @@ public sealed class TeamsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
+    [Authorize]
     [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAsync([FromBody] CreateTeamRequest request, CancellationToken ct)
@@ -161,6 +178,7 @@ public sealed class TeamResponse
     public int? CoachId { get; set; }
     public string? CoachName { get; set; }
     public int PlayerCount { get; set; }
+    public string TeamCode { get; set; } = string.Empty;
 
     public static TeamResponse FromDomain(Team team)
     {
@@ -170,7 +188,8 @@ public sealed class TeamResponse
             Name = team.Name,
             CoachId = team.CoachID,
             CoachName = team.Coach?.Email,
-            PlayerCount = team.Players?.Count ?? 0
+            PlayerCount = team.Players?.Count ?? 0,
+            TeamCode = team.TeamCode
         };
     }
 }

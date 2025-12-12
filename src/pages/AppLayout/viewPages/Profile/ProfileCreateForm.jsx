@@ -5,13 +5,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CreateProfileSchema } from "../../../../Hooks/validators";
 import { Modal } from "react-bootstrap";
 
-//
+import { useDispatch, useSelector } from "react-redux";
 import { addProfile } from "../../../../store/features/profileSlice";
-import { fetchProfiles } from "../../../../store/features/profileSlice";
-import { useDispatch } from "react-redux";
-import { findTeamByCode } from "../../../../services/TeamService";
 
 function ProfileCreateForm({ show, onClose }) {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+
   const {
     register,
     handleSubmit,
@@ -20,30 +20,23 @@ function ProfileCreateForm({ show, onClose }) {
     resolver: yupResolver(CreateProfileSchema),
     mode: "onChange",
   });
-  const generatePlayerId = () =>
-    Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36);
 
-  const dispatch = useDispatch();
   const onSubmit = (data) => {
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-    if (!loggedUser) return alert("Musisz być zalogowany");
-    const team = findTeamByCode(data.TeamCode);
-    if (!team) {
-      alert("nie znaleziono drużyny o takim kodzie");
-      return;
-    }
+    if (!user) return alert("Musisz być zalogowany!");
 
-    const newProfile = {
-      UserID: loggedUser.UserID,
-      PlayerID: generatePlayerId(),
-      TeamID: team.TeamID,
-      ...data,
+    const payload = {
+      FirstName: data.FirstName,
+      LastName: data.LastName,
+      PhoneNumber: data.Phone || null,
+      TeamCode: data.TeamCode,
+      UserID: user.userId,
     };
 
-    dispatch(addProfile(newProfile))
+    dispatch(addProfile(payload))
       .unwrap()
-      .then(() => dispatch(fetchProfiles())); //
-    onClose();
+      .then(() => onClose())
+      .catch(() => alert("Nie udało się stworzyć profilu"));
+    console.log("USER FROM REDUX:", user);
   };
 
   return (
@@ -54,6 +47,7 @@ function ProfileCreateForm({ show, onClose }) {
 
       <Modal.Body>
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+          {/* Imię */}
           <div className={styles.row}>
             <label htmlFor="FirstName">Imię:</label>
             <input
@@ -66,6 +60,7 @@ function ProfileCreateForm({ show, onClose }) {
             )}
           </div>
 
+          {/* Nazwisko */}
           <div className={styles.row}>
             <label htmlFor="LastName">Nazwisko:</label>
             <input
@@ -78,6 +73,7 @@ function ProfileCreateForm({ show, onClose }) {
             )}
           </div>
 
+          {/* Numer telefonu */}
           <div className={styles.row}>
             <label htmlFor="Phone">Numer telefonu:</label>
             <input id="Phone" {...register("Phone")} placeholder="123456789" />
@@ -86,6 +82,7 @@ function ProfileCreateForm({ show, onClose }) {
             )}
           </div>
 
+          {/* Kod drużyny */}
           <div className={styles.row}>
             <label htmlFor="TeamCode">Kod drużyny:</label>
             <input

@@ -1,83 +1,110 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import {
-  getTrainings,
-  addTraining as addTrainingService,
-  updateTraining as updateTrainingService,
-  removeTraining as removeTrainingService,
-} from "../../services/TrainingService";
+import API from "../../API/axios";
 
-// --- THUNKI --- //
+export const initialState = {
+  list: [],
+  status: "idle",
+  error: null,
+};
+
+// === GET ALL trainings ===
 export const fetchTrainings = createAsyncThunk(
   "trainings/fetchTrainings",
-  async () => await getTrainings()
+  async (_, thunkAPI) => {
+    try {
+      const res = await API.get("/trainings");
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Błąd pobierania treningów");
+    }
+  }
 );
 
-export const addTraining = createAsyncThunk(
-  "trainings/addTraining",
-  async (newTraining) => await addTrainingService(newTraining)
+// === CREATE training ===
+export const createTraining = createAsyncThunk(
+  "trainings/createTraining",
+  async (trainingData, thunkAPI) => {
+    try {
+      const res = await API.post("/trainings", trainingData);
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Błąd tworzenia treningu");
+    }
+  }
 );
 
+// === UPDATE training ===
 export const updateTraining = createAsyncThunk(
   "trainings/updateTraining",
-  async (updatedTraining) => await updateTrainingService(updatedTraining)
+  async ({ id, data }, thunkAPI) => {
+    try {
+      const res = await API.put(`/trainings/${id}`, data);
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Błąd aktualizacji treningu");
+    }
+  }
 );
 
-export const removeTraining = createAsyncThunk(
-  "trainings/removeTraining",
-  async (training) => await removeTrainingService(training)
+// === DELETE training ===
+export const deleteTraining = createAsyncThunk(
+  "trainings/deleteTraining",
+  async (id, thunkAPI) => {
+    try {
+      await API.delete(`/trainings/${id}`);
+      return id;
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Błąd usuwania treningu");
+    }
+  }
 );
 
-// --- SLICE --- //
 const trainingSlice = createSlice({
   name: "trainings",
-  initialState: {
-    list: [],
-    status: "idle",
-    error: null,
-  },
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Pobieranie
+
+      // === FETCH ===
       .addCase(fetchTrainings.pending, (state) => {
         state.status = "loading";
       })
       .addCase(fetchTrainings.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = Array.isArray(action.payload)
-          ? action.payload
-          : [action.payload];
+        state.list = action.payload; // array of TrainingResponse
       })
       .addCase(fetchTrainings.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message;
+        state.error = action.payload;
       })
 
-      // Dodawanie
-      .addCase(addTraining.fulfilled, (state, action) => {
+      // === CREATE ===
+      .addCase(createTraining.fulfilled, (state, action) => {
         state.list.push(action.payload);
       })
 
-      // Aktualizacja
+      // === UPDATE ===
       .addCase(updateTraining.fulfilled, (state, action) => {
         const updated = action.payload;
+
         const index = state.list.findIndex(
           (t) =>
             t.TrainingID === updated.TrainingID ||
-            t.trainingID === updated.trainingID
+            t.trainingID === updated.TrainingID
         );
+
         if (index !== -1) {
           state.list[index] = updated;
         }
       })
 
-      // Usuwanie
-      .addCase(removeTraining.fulfilled, (state, action) => {
-        const removed = action.payload;
+      // === DELETE ===
+      .addCase(deleteTraining.fulfilled, (state, action) => {
+        const id = action.payload;
+
         state.list = state.list.filter(
-          (t) =>
-            t.TrainingID !== removed.TrainingID &&
-            t.trainingID !== removed.trainingID
+          (t) => t.TrainingID !== id && t.trainingID !== id
         );
       });
   },

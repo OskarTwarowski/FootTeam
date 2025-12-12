@@ -3,6 +3,9 @@ using FootTeam.Application;
 using FootTeam.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,13 +15,16 @@ builder.Services.AddControllers();
 // Configure CORS
 builder.Services.AddCors(options =>
 {
+    var origins = (builder.Configuration["Cors:Origin"] ?? "")
+        .Split(";", StringSplitOptions.RemoveEmptyEntries);
+
     options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins(
-                builder.Configuration["Cors:Origin"] ?? "http://localhost:5173"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+        policy.WithOrigins(origins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
 });
+
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -39,10 +45,17 @@ builder.Services.AddAuthentication(x =>
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = true,
         ValidateAudience = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
         ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"]
+        ValidAudience = jwtSettings["Audience"],
+        
+        // ↓↓↓ DODAJ TO ↓↓↓
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = JwtRegisteredClaimNames.Sub
     };
 });
+
 
 // Add application services
 builder.Services.AddApplication();

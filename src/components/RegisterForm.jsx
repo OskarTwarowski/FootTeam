@@ -10,13 +10,12 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { getUsers, saveUsers } from "../services/AuthService";
+import { register as apiRegister } from "../API/auth";
 
 export default function RegisterForm() {
   // do usuniecia
-  const generateUserId = () =>
-    Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36);
+  // const generateUserId = () =>
+  //   Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36);
   const navigate = useNavigate();
 
   const {
@@ -29,28 +28,17 @@ export default function RegisterForm() {
     mode: "onChange",
   });
   // tutaj trzeba dodanie do backednu zrobić
-  const onSubmit = (data) => {
-    const users = getUsers();
-    const userExists = users.some((u) => u.Email === data.email);
-    if (userExists) {
-      alert("Użytkownik o tym adresie e-mail już istnieje.");
-      return;
+  const onSubmit = async (data) => {
+    try {
+      const role = "Parent"; // tymczasowo, aż zrobimy UI wyboru
+
+      await apiRegister(data.email, data.password, role);
+
+      // Sukces – przenosimy usera na logowanie
+      navigate("/logowanie", { replace: true });
+    } catch (err) {
+      alert("Rejestracja nie powiodła się. Spróbuj ponownie.");
     }
-    const newUser = {
-      Email: data.email,
-      PasswordHash: data.password,
-      Role: "Rodzic",
-      CreatedAt: new Date().toISOString(),
-      UserID: generateUserId(),
-    };
-    const updatedUsers = [...users, newUser];
-    saveUsers(updatedUsers);
-
-    localStorage.setItem("loggedUser", JSON.stringify(newUser));
-
-    const profiles = JSON.parse(localStorage.getItem("Profiles")) || [];
-    localStorage.setItem("Profiles", JSON.stringify(profiles));
-    navigate("/app/profil", { replace: true });
   };
 
   return (

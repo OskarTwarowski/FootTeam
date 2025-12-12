@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
-  const userRole = useSelector((state) => state.auth.user?.Role);
+  const userRole = useSelector((state) => state?.auth?.user?.Role ?? null);
 
   return (
     <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : ""}`}>

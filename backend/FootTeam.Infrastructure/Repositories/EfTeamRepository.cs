@@ -68,7 +68,13 @@ public sealed class EfTeamRepository(AppDbContext db) : ITeamRepository
     {
         return await _db.Players
             .Where(p => p.TeamID == teamId)
+            .Include(p => p.Team)
             .AsNoTracking()
             .ToListAsync(ct);
+    }
+
+    public async Task<bool> TeamCodeExistsAsync(string teamCode, CancellationToken ct = default)
+    {
+        return await _db.Teams.AsNoTracking().AnyAsync(t => t.TeamCode == teamCode, ct);
     }
 }

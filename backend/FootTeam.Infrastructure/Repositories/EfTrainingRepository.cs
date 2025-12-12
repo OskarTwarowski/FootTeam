@@ -32,6 +32,7 @@ public sealed class EfTrainingRepository(AppDbContext db) : ITrainingRepository
         existing.StartTime = training.StartTime;
         existing.EndTime = training.EndTime;
         existing.CoachID = training.CoachID;
+        existing.TeamID = training.TeamID;
         await _db.SaveChangesAsync(ct);
         return existing;
     }

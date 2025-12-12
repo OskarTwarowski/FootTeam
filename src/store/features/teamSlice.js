@@ -1,67 +1,69 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getTeams, initializeTeams } from "../../services/TeamService";
+import API from "../../API/axios";
 
-// Inicjalizacja lokalnego storage
-initializeTeams();
+export const initialState = {
+  list: [],
+  loading: false,
+  error: null,
+};
+// === GET all teams ===
+export const fetchTeams = createAsyncThunk(
+  "teams/fetchTeams",
+  async (_, thunkAPI) => {
+    const state = thunkAPI.getState();
+    const token = state.auth.token;
 
-// --- Fetch Teams ---
-export const fetchTeams = createAsyncThunk("teams/fetchTeams", async () => {
-  const teams = getTeams();
-  return teams;
-});
+    if (!token) return thunkAPI.rejectWithValue("Not authenticated");
 
-// --- Add Team ---
-export const addTeam = createAsyncThunk("teams/addTeam", async ({ Name }) => {
-  const newTeam = {
-    TeamID: Date.now(),
-    Name,
-    TeamCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
-  };
-
-  const teams = getTeams();
-  const updated = [...teams, newTeam];
-  localStorage.setItem("Teams", JSON.stringify(updated));
-
-  return newTeam;
-});
-
-// --- Update Team ---
-export const updateTeam = createAsyncThunk(
-  "teams/updateTeam",
-  async (updatedTeam) => {
-    const teams = getTeams();
-    const index = teams.findIndex((t) => t.TeamID === updatedTeam.TeamID);
-    if (index !== -1) {
-      teams[index] = { ...teams[index], ...updatedTeam };
-      localStorage.setItem("Teams", JSON.stringify(teams));
+    try {
+      const res = await API.get("/teams");
+      return res.data;
+    } catch (err) {
+      if (err.response?.status === 403) {
+        return state.teams.list;
+      }
+      return thunkAPI.rejectWithValue("Failed to load teams");
     }
-    return updatedTeam;
   }
 );
 
-// --- Delete Team ---
+// === CREATE team ===
+export const createTeam = createAsyncThunk(
+  "teams/createTeam",
+  async ({ name, coachId }) => {
+    const res = await API.post("/teams", { name, coachId });
+    return res.data;
+  }
+);
+
+// === UPDATE team ===
+export const updateTeam = createAsyncThunk(
+  "teams/updateTeam",
+  async ({ teamID, name }) => {
+    const res = await API.put(`/teams/${teamID}`, { name });
+    return res.data;
+  }
+);
+
+// === DELETE team ===
 export const deleteTeam = createAsyncThunk(
   "teams/deleteTeam",
   async (teamID) => {
-    const teams = getTeams().filter((t) => t.TeamID !== teamID);
-    localStorage.setItem("Teams", JSON.stringify(teams));
+    await API.delete(`/teams/${teamID}`);
     return teamID;
   }
 );
 
 const teamSlice = createSlice({
   name: "teams",
-  initialState: {
-    list: [],
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // FETCH
+      // === FETCH ===
       .addCase(fetchTeams.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchTeams.fulfilled, (state, action) => {
         state.loading = false;
@@ -72,22 +74,21 @@ const teamSlice = createSlice({
         state.error = action.error.message;
       })
 
-      // ADD
-      .addCase(addTeam.fulfilled, (state, action) => {
+      // === CREATE ===
+      .addCase(createTeam.fulfilled, (state, action) => {
         state.list.push(action.payload);
       })
 
-      // UPDATE
+      // === UPDATE ===
       .addCase(updateTeam.fulfilled, (state, action) => {
-        const index = state.list.findIndex(
-          (t) => t.TeamID === action.payload.TeamID
-        );
-        if (index !== -1) state.list[index] = action.payload;
+        const updated = action.payload;
+        const index = state.list.findIndex((t) => t.teamID === updated.teamID);
+        if (index !== -1) state.list[index] = updated;
       })
 
-      // DELETE
+      // === DELETE ===
       .addCase(deleteTeam.fulfilled, (state, action) => {
-        state.list = state.list.filter((t) => t.TeamID !== action.payload);
+        state.list = state.list.filter((t) => t.teamID !== action.payload);
       });
   },
 });

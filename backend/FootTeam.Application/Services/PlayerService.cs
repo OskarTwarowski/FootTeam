@@ -26,25 +26,27 @@ public sealed class PlayerService(IPlayerRepository repository, ITeamRepository 
     public Task<Player?> GetAsync(int id, CancellationToken ct = default)
         => _repository.GetAsync(id, ct);
 
-    public async Task<Player> CreateAsync(string firstName, string lastName, int? teamId, int? userId, CancellationToken ct = default)
+    public async Task<Player> CreateAsync(string firstName, string lastName, string? phoneNumber, int? teamId, int? userId, CancellationToken ct = default)
     {
         var player = new Player
         {
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
+            PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim(),
             TeamID = teamId,
             UserID = userId
         };
         return await _repository.CreateAsync(player, ct);
     }
 
-    public async Task<Player?> UpdateAsync(int id, string? firstName, string? lastName, int? teamId, CancellationToken ct = default)
+    public async Task<Player?> UpdateAsync(int id, string? firstName, string? lastName, string? phoneNumber, int? teamId, CancellationToken ct = default)
     {
         var existing = await _repository.GetAsync(id, ct);
         if (existing is null) return null;
         
         if (!string.IsNullOrWhiteSpace(firstName)) existing.FirstName = firstName.Trim();
         if (!string.IsNullOrWhiteSpace(lastName)) existing.LastName = lastName.Trim();
+        if (phoneNumber is not null) existing.PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim();
         
         if (teamId.HasValue)
         {
@@ -57,13 +59,22 @@ public sealed class PlayerService(IPlayerRepository repository, ITeamRepository 
     public Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         => _repository.DeleteAsync(id, ct);
 
+    public async Task<IReadOnlyList<Player>> ListByUserIdAsync(int userId, CancellationToken ct = default)
+{
+    var players = await _repository.ListAsync(ct: ct);
+    return players
+        .Where(p => p.UserID == userId)
+        .ToList()
+        .AsReadOnly();
+}
+
     public async Task<Player?> GetByUserIdAsync(int userId, CancellationToken ct = default)
     {
         var players = await _repository.ListAsync(ct: ct);
         return players.FirstOrDefault(p => p.UserID == userId);
     }
 
-    public async Task<Player?> UpdateByUserIdAsync(int userId, string? firstName, string? lastName, int? teamId, CancellationToken ct = default)
+    public async Task<Player?> UpdateByUserIdAsync(int userId, string? firstName, string? lastName, string? phoneNumber, int? teamId, CancellationToken ct = default)
     {
         var players = await _repository.ListAsync(ct: ct);
         var player = players.FirstOrDefault(p => p.UserID == userId);
@@ -71,6 +82,7 @@ public sealed class PlayerService(IPlayerRepository repository, ITeamRepository 
 
         if (!string.IsNullOrWhiteSpace(firstName)) player.FirstName = firstName.Trim();
         if (!string.IsNullOrWhiteSpace(lastName)) player.LastName = lastName.Trim();
+        if (phoneNumber is not null) player.PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim();
         
         if (teamId.HasValue)
         {

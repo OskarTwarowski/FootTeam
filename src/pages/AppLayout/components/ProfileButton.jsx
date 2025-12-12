@@ -1,17 +1,22 @@
 import styles from "./ProfileButton.module.css";
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 function ProfileButton() {
-  const [user] = useState(() => {
-    const raw = localStorage.getItem("loggedUser");
-    return raw ? JSON.parse(raw) : null;
-  });
-  console.log(user);
+  const user = useSelector((state) => state?.auth?.user);
+
+  const roleMap = {
+    Parent: "Rodzic",
+    Coach: "Trener",
+    Admin: "Administrator",
+  };
+
   return (
     <div className={styles.profile}>
-      {!user && <p>Brak danych Profilu.</p>}
-      <h2 className={styles.username}>{user?.Email ?? "—"}</h2>
-      <p className={styles.role}>{user?.Role ?? "—"}</p>
+      {!user && <p>Brak danych użytkownika.</p>}
+
+      <h2 className={styles.username}>{user?.email ?? "—"}</h2>
+
+      <p className={styles.role}>{roleMap[user?.role] ?? "—"}</p>
     </div>
   );
 }

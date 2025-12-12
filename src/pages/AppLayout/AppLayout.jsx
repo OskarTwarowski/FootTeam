@@ -7,7 +7,8 @@ import { useState } from "react";
 import { Menu } from "lucide-react";
 
 function AppLayout() {
-  const lightMode = useSelector((state) => state.settings.lightMode);
+  const lightMode = useSelector((state) => state?.settings?.lightMode ?? false);
+
   const location = useLocation();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);

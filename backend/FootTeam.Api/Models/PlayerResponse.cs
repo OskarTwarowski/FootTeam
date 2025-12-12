@@ -9,6 +9,7 @@ public sealed class PlayerResponse
     public string? Position { get; set; }
     public int? TeamID { get; set; }
     public int? UserID { get; set; }
+    public string? TeamCode { get; set; }
     
     public static PlayerResponse FromDomain(Domain.Entities.Player player)
     {
@@ -20,7 +21,8 @@ public sealed class PlayerResponse
             BirthDate = player.BirthDate,
             Position = player.Position,
             TeamID = player.TeamID,
-            UserID = player.UserID
+            UserID = player.UserID,
+            TeamCode = player.Team?.TeamCode
         };
     }
 }
