@@ -20,12 +20,17 @@ const appReducer = combineReducers({
 
 const rootReducer = (state, action) => {
   if (action.type === "auth/logout") {
-    state = undefined;
+    return undefined;
   }
-
   return appReducer(state, action);
 };
-
+const logoutMiddleware = () => (next) => (action) => {
+  if (action.type === "auth/logout") {
+    localStorage.clear();
+  }
+  return next(action);
+};
 export const store = configureStore({
   reducer: rootReducer,
+  middleware: (getDefault) => getDefault().concat(logoutMiddleware),
 });

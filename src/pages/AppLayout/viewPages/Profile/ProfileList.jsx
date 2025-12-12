@@ -27,11 +27,12 @@ function ProfileList() {
 
   // === POBIERANIE PROFILI UŻYTKOWNIKA ===
   useEffect(() => {
-    if (loggedUser?.userId) {
-      dispatch(fetchProfiles());
-      dispatch(fetchTeams());
-    }
-  }, [dispatch, loggedUser]);
+    if (!loggedUser) return;
+    if (!loggedUser.userId) return;
+
+    dispatch(fetchProfiles());
+    dispatch(fetchTeams());
+  }, [loggedUser?.userId]);
 
   // === MODAL USUWANIA ===
   const handleDeleteClick = (profile, e) => {
@@ -65,8 +66,9 @@ function ProfileList() {
 
       <ul className={styles.list}>
         {profiles.map((profile) => {
-          // 🟢 ZNAJDŹ DRUŻYNĘ PO teamID
           const team = teams.find((t) => t.teamID === profile.teamID);
+          console.log("teams from store:", teams);
+          console.log("profile.teamID:", profile.teamID);
 
           return (
             <li key={profile.playerID} className={styles.item}>

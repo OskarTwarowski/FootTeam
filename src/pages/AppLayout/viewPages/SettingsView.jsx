@@ -41,7 +41,6 @@ function SettingsView() {
   };
 
   const handleLogOut = () => {
-    dispatch(clearProfiles());
     dispatch(logout());
     navigate("/", { replace: true });
   };

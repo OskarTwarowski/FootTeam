@@ -17,8 +17,8 @@ export const fetchProfiles = createAsyncThunk(
     try {
       const data = await getPlayerByUser(loggedUser.userId);
 
-      // BACKEND ZWRACA LISTĘ → ZWRACAMY TABLICĘ
-      return Array.isArray(data) ? data : [];
+      if (Array.isArray(data)) return data;
+      return data ? [data] : [];
     } catch (err) {
       return thunkAPI.rejectWithValue("Błąd pobierania profili");
     }

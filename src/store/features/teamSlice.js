@@ -2,10 +2,25 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../API/axios";
 
 // === GET all teams ===
-export const fetchTeams = createAsyncThunk("teams/fetchTeams", async () => {
-  const res = await API.get("/teams");
-  return res.data;
-});
+export const fetchTeams = createAsyncThunk(
+  "teams/fetchTeams",
+  async (_, thunkAPI) => {
+    const state = thunkAPI.getState();
+    const token = state.auth.token;
+
+    if (!token) return thunkAPI.rejectWithValue("Not authenticated");
+
+    try {
+      const res = await API.get("/teams");
+      return res.data;
+    } catch (err) {
+      if (err.response?.status === 403) {
+        return state.teams.list;
+      }
+      return thunkAPI.rejectWithValue("Failed to load teams");
+    }
+  }
+);
 
 // === CREATE team ===
 export const createTeam = createAsyncThunk(
