@@ -18,13 +18,18 @@ builder.Services.AddCors(options =>
     var origins = (builder.Configuration["Cors:Origin"] ?? "")
         .Split(";", StringSplitOptions.RemoveEmptyEntries);
 
+    Console.WriteLine("Loaded CORS origins:");
+    foreach (var o in origins)
+    {
+        Console.WriteLine(" - " + o);
+    }
+
     options.AddPolicy("Frontend", policy =>
         policy.WithOrigins(origins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
 });
-
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
