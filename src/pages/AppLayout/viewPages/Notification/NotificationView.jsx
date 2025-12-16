@@ -29,14 +29,14 @@ function NotificationView() {
     if (!user) return;
 
     if (isAdmin) {
-      dispatch(fetchNotifications(null)); // wszystkie
+      dispatch(fetchNotifications(null));
       return;
     }
 
     if (activeProfile?.teamID) {
       dispatch(fetchNotifications(activeProfile.teamID));
     }
-  }, [dispatch, user, activeProfile, isAdmin]);
+  }, [dispatch, user?.userId, isAdmin, activeProfile?.teamID]);
 
   // ---- DODAWANIE POWIADOMIENIA ----
   const handleAddNotification = async (data, isGlobal = false) => {
