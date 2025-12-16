@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import {
   fetchNotifications,
-  addNotification as addNotificationThunk,
+  addNotification,
 } from "../../../../store/features/notificationSlice";
 
 import styles from "./NotificationView.module.css";
@@ -13,17 +12,16 @@ import NotificationModal from "../Notification/NotificationModal";
 function NotificationView() {
   const dispatch = useDispatch();
 
-  const activeProfile = useSelector((state) => state.activeProfile.profile);
-  const user = useSelector((state) => state.auth.user);
-  const notifications = useSelector((state) => state.notifications.list);
+  const activeProfile = useSelector((s) => s.activeProfile.profile);
+  const user = useSelector((s) => s.auth.user);
+  const notifications = useSelector((s) => s.notifications.list);
 
-  // ===== ROLE =====
-  const isAdmin = user?.Role === "Admin"; // z USERA
-  const isCoach = activeProfile?.role === "Coach"; // z PLAYERA
+  // 🔐 ROLE
+  const isAdmin = user?.Role === "Admin"; // Z USERA
+  const isCoach = activeProfile?.role === "Coach"; // Z PLAYERA
 
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showGlobalModal, setShowGlobalModal] = useState(false);
-  console.log("🔥 NotificationView render");
 
   // ===== FETCH =====
   useEffect(() => {
@@ -36,33 +34,25 @@ function NotificationView() {
     }
   }, [dispatch, user, isAdmin, activeProfile?.teamID]);
 
-  // ===== FILTR ŚMIECI Z BACKENDU =====
+  // ===== USUWAMY ŚMIECI Z BACKENDU =====
   const visibleNotifications = notifications.filter(
     (n) => n.Title?.trim() || n.Description?.trim()
   );
 
-  console.log("ACTIVE PROFILE:", activeProfile);
-  console.log("FETCH TEAM ID:", activeProfile?.teamID);
   // ===== ADD =====
-  const handleAddNotification = async (data, isGlobal = false) => {
+  const handleAddNotification = async (data, isGlobal) => {
     const payload = {
-      Title: data.title,
-      Description: data.description,
+      Title: data.title.trim(),
+      Description: data.description.trim(),
       StartTime: new Date().toISOString(),
       EndTime: null,
       CreatedBy: user.userId,
-      TeamID: isGlobal ? null : activeProfile.teamID,
+      TeamID: isGlobal ? null : activeProfile.teamID, // 🔥 KLUCZ
     };
 
-    try {
-      await dispatch(addNotificationThunk(payload)).unwrap();
+    await dispatch(addNotification(payload)).unwrap();
 
-      await dispatch(
-        fetchNotifications(isGlobal ? null : activeProfile.teamID)
-      );
-    } catch (err) {
-      console.error("Błąd dodawania powiadomienia:", err);
-    }
+    dispatch(fetchNotifications(isGlobal ? null : activeProfile.teamID));
   };
 
   return (
@@ -70,13 +60,12 @@ function NotificationView() {
       {/* ===== PRZYCISKI ===== */}
       <div className={styles.buttonContainer}>
         {isCoach && (
-          <Button type="primary" onClick={() => setShowTeamModal(true)}>
+          <Button onClick={() => setShowTeamModal(true)}>
             Dodaj powiadomienie drużyny
           </Button>
         )}
-
         {isAdmin && (
-          <Button type="primary" onClick={() => setShowGlobalModal(true)}>
+          <Button onClick={() => setShowGlobalModal(true)}>
             Dodaj globalne powiadomienie
           </Button>
         )}
@@ -89,20 +78,11 @@ function NotificationView() {
         <ul className={styles.list}>
           {visibleNotifications.map((n) => (
             <li key={n.NotificationID} className={styles.item}>
-              <h3 className={styles.title}>{n.Title}</h3>
-
-              {n.Description && (
-                <p className={styles.description}>{n.Description}</p>
-              )}
-
+              <h3>{n.Title}</h3>
+              {n.Description && <p>{n.Description}</p>}
               <div className={styles.meta}>
-                <span className={styles.date}>
-                  {n.StartTime
-                    ? new Date(n.StartTime).toLocaleString("pl-PL")
-                    : "Brak daty"}
-                </span>
-
-                <span className={styles.team}>
+                <span>{new Date(n.StartTime).toLocaleString("pl-PL")}</span>
+                <span>
                   {n.TeamName ? `Drużyna: ${n.TeamName}` : "Globalne"}
                 </span>
               </div>
@@ -111,7 +91,7 @@ function NotificationView() {
         </ul>
       )}
 
-      {/* ===== MODAL DRUŻYNOWY ===== */}
+      {/* ===== MODALE ===== */}
       {showTeamModal && (
         <NotificationModal
           title="Nowe powiadomienie drużyny"
@@ -123,7 +103,6 @@ function NotificationView() {
         />
       )}
 
-      {/* ===== MODAL GLOBALNY ===== */}
       {showGlobalModal && (
         <NotificationModal
           title="Nowe globalne powiadomienie"
