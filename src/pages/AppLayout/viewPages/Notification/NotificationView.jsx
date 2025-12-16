@@ -1,94 +1,136 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   fetchNotifications,
-  addNotification,
+  addNotification as addNotificationThunk,
 } from "../../../../store/features/notificationSlice";
 
 import styles from "./NotificationView.module.css";
 import Button from "../../../../components/Button";
-import NotificationModal from "./NotificationModal";
+import NotificationModal from "../Notification/NotificationModal";
 
 function NotificationView() {
   const dispatch = useDispatch();
 
-  const notifications = useSelector((state) => state.notifications.list);
   const activeProfile = useSelector((state) => state.activeProfile.profile);
   const user = useSelector((state) => state.auth.user);
+  const notifications = useSelector((state) => state.notifications.list);
 
-  const isAdmin = user?.Role === "Admin";
-  const isCoach = activeProfile?.role === "Coach";
+  // ===== ROLE =====
+  const isAdmin = user?.Role === "Admin"; // z USERA
+  const isCoach = activeProfile?.role === "Coach"; // z PLAYERA
 
-  const [modalType, setModalType] = useState(null);
-  // null | "TEAM" | "GLOBAL"
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [showGlobalModal, setShowGlobalModal] = useState(false);
 
+  // ===== FETCH =====
   useEffect(() => {
+    if (!user) return;
+
     if (isAdmin) {
       dispatch(fetchNotifications(null));
     } else if (activeProfile?.teamID) {
       dispatch(fetchNotifications(activeProfile.teamID));
     }
-  }, [dispatch, isAdmin, activeProfile]);
+  }, [dispatch, user, isAdmin, activeProfile?.teamID]);
 
-  const handleSubmit = async (data) => {
+  // ===== FILTR ŚMIECI Z BACKENDU =====
+  const visibleNotifications = notifications.filter(
+    (n) => n.Title?.trim() || n.Description?.trim()
+  );
+
+  console.log("ACTIVE PROFILE:", activeProfile);
+  console.log("FETCH TEAM ID:", activeProfile?.teamID);
+  // ===== ADD =====
+  const handleAddNotification = async (data, isGlobal = false) => {
     const payload = {
       Title: data.title,
       Description: data.description,
       StartTime: new Date().toISOString(),
       EndTime: null,
       CreatedBy: user.userId,
-      TeamID: modalType === "GLOBAL" ? null : activeProfile.teamID,
+      TeamID: isGlobal ? null : activeProfile.teamID,
     };
 
-    await dispatch(addNotification(payload));
-    setModalType(null);
+    try {
+      await dispatch(addNotificationThunk(payload)).unwrap();
 
-    dispatch(
-      fetchNotifications(modalType === "GLOBAL" ? null : activeProfile.teamID)
-    );
+      await dispatch(
+        fetchNotifications(isGlobal ? null : activeProfile.teamID)
+      );
+    } catch (err) {
+      console.error("Błąd dodawania powiadomienia:", err);
+    }
   };
 
   return (
     <div className={styles.container}>
-      {/* ===== HEADER ===== */}
-      <div className={styles.header}>
+      {/* ===== PRZYCISKI ===== */}
+      <div className={styles.buttonContainer}>
         {isCoach && (
-          <Button onClick={() => setModalType("TEAM")}>
+          <Button type="primary" onClick={() => setShowTeamModal(true)}>
             Dodaj powiadomienie drużyny
           </Button>
         )}
+
         {isAdmin && (
-          <Button onClick={() => setModalType("GLOBAL")}>
+          <Button type="primary" onClick={() => setShowGlobalModal(true)}>
             Dodaj globalne powiadomienie
           </Button>
         )}
       </div>
 
       {/* ===== LISTA ===== */}
-      {notifications.length === 0 ? (
+      {visibleNotifications.length === 0 ? (
         <p className={styles.empty}>Brak powiadomień</p>
       ) : (
         <ul className={styles.list}>
-          {notifications.map((n) => (
+          {visibleNotifications.map((n) => (
             <li key={n.NotificationID} className={styles.item}>
-              <h3>{n.Title}</h3>
-              <p>{n.Description}</p>
-              <span>{n.TeamName ? `Drużyna: ${n.TeamName}` : "Globalne"}</span>
+              <h3 className={styles.title}>{n.Title}</h3>
+
+              {n.Description && (
+                <p className={styles.description}>{n.Description}</p>
+              )}
+
+              <div className={styles.meta}>
+                <span className={styles.date}>
+                  {n.StartTime
+                    ? new Date(n.StartTime).toLocaleString("pl-PL")
+                    : "Brak daty"}
+                </span>
+
+                <span className={styles.team}>
+                  {n.TeamName ? `Drużyna: ${n.TeamName}` : "Globalne"}
+                </span>
+              </div>
             </li>
           ))}
         </ul>
       )}
 
-      {/* ===== MODAL (POZA FLOW) ===== */}
-      {modalType && (
+      {/* ===== MODAL DRUŻYNOWY ===== */}
+      {showTeamModal && (
         <NotificationModal
-          title={
-            modalType === "GLOBAL"
-              ? "Nowe powiadomienie globalne"
-              : "Nowe powiadomienie drużyny"
-          }
-          onClose={() => setModalType(null)}
-          onSubmit={handleSubmit}
+          title="Nowe powiadomienie drużyny"
+          onClose={() => setShowTeamModal(false)}
+          onSubmit={(data) => {
+            handleAddNotification(data, false);
+            setShowTeamModal(false);
+          }}
+        />
+      )}
+
+      {/* ===== MODAL GLOBALNY ===== */}
+      {showGlobalModal && (
+        <NotificationModal
+          title="Nowe globalne powiadomienie"
+          onClose={() => setShowGlobalModal(false)}
+          onSubmit={(data) => {
+            handleAddNotification(data, true);
+            setShowGlobalModal(false);
+          }}
         />
       )}
     </div>

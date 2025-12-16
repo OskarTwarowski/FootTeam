@@ -18,7 +18,6 @@ function ProfileList() {
   const dispatch = useDispatch();
 
   const profiles = useSelector((state) => state.profiles.list);
-  console.log(profiles);
   const teams = useSelector((state) => state.teams.list);
   const activeProfile = useSelector((state) => state.activeProfile.profile);
   const loggedUser = useSelector((state) => state.auth.user);
