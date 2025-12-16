@@ -39,8 +39,8 @@ function CalendarView() {
 
   // ✅ helper – czy aktualny profil ma prawo edycji
   const canManageTrainings =
-    activeProfile?.Role === "Coach" || activeProfile?.Role === "Admin";
-
+    activeProfile?.role === "Coach" || activeProfile?.role === "Admin";
+  console.log(activeProfile.role);
   // ---- Pobranie treningów ----
   useEffect(() => {
     if (activeProfile) {

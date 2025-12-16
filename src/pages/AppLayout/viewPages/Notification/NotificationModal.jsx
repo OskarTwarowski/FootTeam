@@ -20,8 +20,8 @@ function NotificationView() {
   const [showGlobalModal, setShowGlobalModal] = useState(false);
 
   // ✅ helpery ról
-  const isCoach = activeProfile?.Role === "Coach";
-  const isAdmin = activeProfile?.Role === "Admin";
+  const isCoach = activeProfile?.role === "Coach";
+  const isAdmin = activeProfile?.role === "Admin";
 
   // ---- Pobieranie powiadomień ----
   useEffect(() => {
