@@ -1,27 +1,21 @@
-import styles from "./NotificationModal.module.css";
+import { createPortal } from "react-dom";
 import { useState } from "react";
+import styles from "./NotificationModal.module.css";
 
 function NotificationModal({ title, onClose, onSubmit }) {
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-  });
+  const [form, setForm] = useState({ title: "", description: "" });
 
-  const handleChange = (e) => {
-    setForm((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(form);
   };
 
-  return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
+  return createPortal(
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <h2>{title}</h2>
 
         <form onSubmit={handleSubmit}>
@@ -35,7 +29,7 @@ function NotificationModal({ title, onClose, onSubmit }) {
 
           <textarea
             name="description"
-            placeholder="Treść powiadomienia"
+            placeholder="Treść"
             value={form.description}
             onChange={handleChange}
             required
@@ -49,7 +43,8 @@ function NotificationModal({ title, onClose, onSubmit }) {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
