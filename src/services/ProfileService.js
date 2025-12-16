@@ -1,51 +1,43 @@
-import { FAKE_PROFILES } from "../mockData";
+import API from "./axios";
 
-if (!localStorage.getItem("Profiles")) {
-  localStorage.setItem("Profiles", JSON.stringify(FAKE_PROFILES));
-}
+/**
+ * Pobiera graczy (opcjonalnie po teamId)
+ */
+export const getPlayers = async (teamId) => {
+  const url = teamId ? `/players?teamId=${teamId}` : "/players";
+  const res = await API.get(url);
+  return res.data;
+};
 
-export function getProfiles() {
-  const stored = JSON.parse(localStorage.getItem("Profiles")) || [];
-  // usuwa zagnieżdżenia, jeśli jeszcze jakieś są
-  return stored.flatMap((p) => (Array.isArray(p) ? p : [p]));
-}
+/**
+ * Pobiera profile gracza po userId
+ * (na razie zostawiamy, żeby nic nie zepsuć)
+ */
+export const getPlayerByUser = async (userId) => {
+  const res = await API.get(`/players/user/${userId}`);
+  const data = res.data;
+  return Array.isArray(data) ? data : data ? [data] : [];
+};
 
-export function saveProfiles(profiles) {
-  localStorage.setItem("Profiles", JSON.stringify(profiles));
-  window.dispatchEvent(new Event("storage"));
-}
+/**
+ * Tworzy nowy profil gracza
+ */
+export const createPlayer = async (player) => {
+  const res = await API.post("/players", player);
+  return res.data;
+};
 
-export function addProfile(profile) {
-  const profiles = getProfiles();
-  profiles.push(profile);
-  saveProfiles(profiles);
-  // powiadom inne komponent, że localStorage się zmienił
-  window.dispatchEvent(new Event("storage"));
-}
-export function updateProfile(updatedProfile) {
-  const profiles = getProfiles();
-  const index = profiles.findIndex(
-    (p) => p.PlayerID === updatedProfile.PlayerID
-  );
+/**
+ * Aktualizuje profil gracza
+ */
+export const updatePlayer = async (id, player) => {
+  const res = await API.put(`/players/${id}`, player);
+  return res.data;
+};
 
-  if (index === -1) return null;
-
-  profiles[index] = updatedProfile;
-  saveProfiles(profiles);
-  window.dispatchEvent(new Event("storage"));
-  return updatedProfile;
-}
-
-export function removeProfile(profileToRemove) {
-  const profiles = getProfiles();
-  const updated = profiles.filter(
-    (p) => p.PlayerID !== profileToRemove.PlayerID
-  );
-  localStorage.setItem("Profiles", JSON.stringify(updated));
-  window.dispatchEvent(new Event("storage"));
-}
-export function removePlayerFromTeam(profile) {
-  if (!profile) return;
-  const updatedProfile = { ...profile, TeamID: null, TeamCode: null };
-  updateProfile(updatedProfile);
-}
+/**
+ * Usuwa profil gracza
+ */
+export const deletePlayer = async (id) => {
+  await API.delete(`/players/${id}`);
+};
