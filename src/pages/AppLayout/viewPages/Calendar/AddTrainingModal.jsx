@@ -34,7 +34,7 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!activeProfile?.TeamID) {
+    if (!activeProfile?.teamID) {
       alert("Brak drużyny — nie można utworzyć treningu.");
       return;
     }
@@ -46,7 +46,7 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
       startTime: `${form.date}T${form.startTime}`,
       endTime: `${form.date}T${form.endTime}`,
       coachID: activeProfile.playerID, // ⭐ PLAYER ID = COACH ID
-      teamID: activeProfile.TeamID, // ⭐ poprawna nazwa
+      teamID: activeProfile.teamID, // ⭐ poprawna nazwa
     };
 
     try {

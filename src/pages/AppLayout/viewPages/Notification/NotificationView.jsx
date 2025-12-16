@@ -38,8 +38,8 @@ function NotificationView() {
     }
 
     // COACH / PLAYER → tylko drużynowe
-    if (activeProfile?.TeamID) {
-      dispatch(fetchNotifications(activeProfile.TeamID));
+    if (activeProfile?.teamID) {
+      dispatch(fetchNotifications(activeProfile.teamID));
     }
   }, [dispatch, activeProfile, userRole, isAdmin]);
 
@@ -53,12 +53,12 @@ function NotificationView() {
       StartTime: new Date().toISOString(),
       EndTime: null,
       CreatedBy: user?.userId,
-      TeamID: isGlobal ? null : activeProfile?.TeamID,
+      TeamID: isGlobal ? null : activeProfile?.teamID,
     };
 
     await dispatch(addNotificationThunk(payload));
 
-    dispatch(fetchNotifications(isGlobal ? null : activeProfile?.TeamID));
+    dispatch(fetchNotifications(isGlobal ? null : activeProfile?.teamID));
   };
 
   return (

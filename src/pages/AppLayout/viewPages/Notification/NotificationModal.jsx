@@ -33,8 +33,8 @@ function NotificationView() {
     }
 
     // Coach / Player → tylko drużyna
-    if (activeProfile.TeamID) {
-      dispatch(fetchNotifications(activeProfile.TeamID));
+    if (activeProfile.teamID) {
+      dispatch(fetchNotifications(activeProfile.teamID));
     }
   }, [dispatch, activeProfile, isAdmin]);
 
