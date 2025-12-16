@@ -34,7 +34,8 @@ public sealed class PlayerService(IPlayerRepository repository, ITeamRepository 
             LastName = lastName.Trim(),
             PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim(),
             TeamID = teamId,
-            UserID = userId
+            UserID = userId,
+            Role = PlayerRole.Player
         };
         return await _repository.CreateAsync(player, ct);
     }
