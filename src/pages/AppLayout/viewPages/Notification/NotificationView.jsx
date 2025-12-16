@@ -23,6 +23,7 @@ function NotificationView() {
 
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showGlobalModal, setShowGlobalModal] = useState(false);
+  console.log("🔥 NotificationView render");
 
   // ===== FETCH =====
   useEffect(() => {
