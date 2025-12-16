@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+Console.WriteLine(">>> FOOTTEAM BACKEND STARTED <<<");
 
 // Configure CORS
 // builder.Services.AddCors(options =>
