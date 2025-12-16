@@ -112,6 +112,20 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "FootTeam API v1");
     });
 }
+// do usuniecia
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("🔥 UNHANDLED EXCEPTION:");
+        Console.WriteLine(ex.ToString());
+        throw;
+    }
+});
 
 app.UseCors("Frontend");
 
