@@ -31,37 +31,27 @@ function CalendarView() {
 
   const { list: trainings, status } = useSelector((state) => state.training);
   const activeProfile = useSelector((state) => state.activeProfile.profile);
-  const user = useSelector((state) => state.auth.user);
+  const userRole = useSelector((state) => state.auth.user?.Role); // ADMIN
+
+  const playerRole = activeProfile?.role; // Coach / Player
+  const canManageTrainings = userRole === "Admin" || playerRole === "Coach";
 
   const [date, setDate] = useState(new Date());
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // ===== ROLE LOGIC =====
-  const userRole = user?.Role; // ADMIN
-  const playerRole = activeProfile?.role; // COACH / PLAYER
-
-  const isAdmin = userRole === "Admin";
-  const isCoach = playerRole === "Coach";
-
-  const canManageTrainings = isAdmin || isCoach;
-
-  // ===== FETCH TRAININGS =====
   useEffect(() => {
-    if (activeProfile?.TeamID || isAdmin) {
+    if (activeProfile) {
       dispatch(fetchTrainings());
     }
-  }, [dispatch, activeProfile?.TeamID, isAdmin]);
+  }, [dispatch, activeProfile]);
 
-  // ===== FILTER BY TEAM =====
   const filteredTrainings = useMemo(() => {
-    if (isAdmin) return trainings;
-    if (!activeProfile?.TeamID) return [];
-    return trainings.filter((t) => t.teamID === activeProfile.TeamID);
-  }, [trainings, activeProfile?.TeamID, isAdmin]);
+    if (!activeProfile?.teamID) return [];
+    return trainings.filter((t) => t.teamID === activeProfile.teamID);
+  }, [trainings, activeProfile]);
 
-  // ===== MAP TO CALENDAR EVENTS =====
   const events = filteredTrainings.map((t) => ({
     TrainingID: t.trainingID,
     title: t.title || "Bez nazwy",
@@ -71,7 +61,6 @@ function CalendarView() {
     color: t.color || "#007bff",
   }));
 
-  // ===== CUSTOM HEADER =====
   const CustomHeader = ({ label, onNavigate }) => (
     <div className={styles.header}>
       <button onClick={() => onNavigate("PREV")}>Poprzedni</button>
@@ -80,15 +69,10 @@ function CalendarView() {
     </div>
   );
 
-  // ===== HANDLERS =====
   const handleSelectSlot = (slotInfo) => {
     if (!canManageTrainings) return;
     setSelectedDate(slotInfo.start);
     setShowAddModal(true);
-  };
-
-  const handleSelectEvent = (event) => {
-    setSelectedEvent(event);
   };
 
   if (status === "loading") {
@@ -117,21 +101,17 @@ function CalendarView() {
         onNavigate={(newDate) => setDate(newDate)}
         components={{ toolbar: CustomHeader }}
         onSelectSlot={canManageTrainings ? handleSelectSlot : undefined}
-        onSelectEvent={handleSelectEvent}
+        onSelectEvent={setSelectedEvent}
       />
 
-      {/* ===== ADD TRAINING ===== */}
       {canManageTrainings && (
         <AddTrainingModal
           show={showAddModal}
           onClose={() => setShowAddModal(false)}
           preselectedDate={selectedDate}
-          teamId={activeProfile?.TeamID}
-          coachId={isCoach ? activeProfile?.playerID : null}
         />
       )}
 
-      {/* ===== EVENT DETAILS ===== */}
       {selectedEvent && (
         <EventModal
           event={selectedEvent}

@@ -34,8 +34,8 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!activeProfile?.teamID) {
-      alert("Brak drużyny — nie można utworzyć treningu.");
+    if (!activeProfile?.teamID || !activeProfile?.playerID) {
+      alert("Brak drużyny lub profilu.");
       return;
     }
 
@@ -45,8 +45,8 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
       location: form.location,
       startTime: `${form.date}T${form.startTime}`,
       endTime: `${form.date}T${form.endTime}`,
-      coachID: activeProfile.playerID, // ⭐ PLAYER ID = COACH ID
-      teamID: activeProfile.teamID, // ⭐ poprawna nazwa
+      coachID: activeProfile.playerID,
+      teamID: activeProfile.teamID,
     };
 
     try {
@@ -54,6 +54,7 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
       await dispatch(fetchTrainings());
       onClose();
     } catch (err) {
+      console.error(err);
       alert("Nie udało się utworzyć treningu.");
     }
   };
@@ -67,11 +68,9 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
           <input
             name="title"
             placeholder="Tytuł"
-            value={form.title}
             onChange={handleChange}
             required
           />
-
           <input
             type="date"
             name="date"
@@ -84,7 +83,6 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
             <input
               type="time"
               name="startTime"
-              value={form.startTime}
               onChange={handleChange}
               required
             />
@@ -92,7 +90,6 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
             <input
               type="time"
               name="endTime"
-              value={form.endTime}
               onChange={handleChange}
               required
             />
@@ -100,26 +97,19 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
 
           <textarea
             name="description"
-            placeholder="Opis treningu"
-            value={form.description}
+            placeholder="Opis"
             onChange={handleChange}
           />
-
           <input
             name="location"
-            placeholder="Lokalizacja (opcjonalne)"
-            value={form.location}
+            placeholder="Lokalizacja"
             onChange={handleChange}
           />
 
-          <button type="submit" className={styles.submitBtn}>
-            Zapisz
-          </button>
+          <button type="submit">Zapisz</button>
         </form>
 
-        <button onClick={onClose} className={styles.closeBtn}>
-          Zamknij
-        </button>
+        <button onClick={onClose}>Zamknij</button>
       </div>
     </div>
   );
