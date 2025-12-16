@@ -18,6 +18,7 @@ function ProfileList() {
   const dispatch = useDispatch();
 
   const profiles = useSelector((state) => state.profiles.list);
+  console.log(profiles);
   const teams = useSelector((state) => state.teams.list);
   const activeProfile = useSelector((state) => state.activeProfile.profile);
   const loggedUser = useSelector((state) => state.auth.user);
@@ -67,8 +68,6 @@ function ProfileList() {
       <ul className={styles.list}>
         {profiles.map((profile) => {
           const team = teams.find((t) => t.teamID === profile.teamID);
-          console.log("teams from store:", teams);
-          console.log("profile.teamID:", profile.teamID);
 
           return (
             <li key={profile.playerID} className={styles.item}>

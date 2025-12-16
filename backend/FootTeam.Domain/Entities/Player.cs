@@ -1,5 +1,12 @@
 namespace FootTeam.Domain.Entities;
 
+public enum PlayerRole
+{
+    Player = 0,
+    Coach = 1,
+    Parent = 2
+}
+
 public class Player
 {
     public int PlayerID { get; set; }
@@ -13,4 +20,6 @@ public class Player
     
     public virtual User? User { get; set; }
     public virtual Team? Team { get; set; }
+    public PlayerRole Role { get; set; } = PlayerRole.Player;
+
 }

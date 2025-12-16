@@ -120,7 +120,7 @@ public async Task<IActionResult> CreateAsync([FromBody] CreatePlayerRequest requ
         request.FirstName,
         request.LastName,
         request.PhoneNumber,
-        targetTeam.TeamID,
+        targetTeam!.TeamID,
         request.UserID,
         ct);
 
@@ -350,6 +350,8 @@ public sealed class PlayerResponse
     public string? TeamName { get; set; }
     public int? UserID { get; set; }
     public string? TeamCode { get; set; }
+    public string Role { get; set; } = string.Empty;
+
 
     public static PlayerResponse FromDomain(Player p) => new()
     {
@@ -360,6 +362,7 @@ public sealed class PlayerResponse
         TeamID = p.TeamID,
         TeamName = p.Team?.Name,
         UserID = p.UserID,
-        TeamCode = p.Team?.TeamCode
+        TeamCode = p.Team?.TeamCode,
+        Role = p.Role.ToString()
     };
 }
