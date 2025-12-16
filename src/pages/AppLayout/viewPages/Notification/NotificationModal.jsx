@@ -45,7 +45,7 @@ function NotificationView() {
       Description: data.description,
       StartTime: new Date().toISOString(),
       EndTime: null,
-      CreatedBy: activeProfile?.UserID,
+      CreatedBy: activeProfile?.userID,
       TeamID: isGlobal ? null : activeProfile?.TeamID,
     };
 

@@ -45,7 +45,7 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
       location: form.location,
       startTime: `${form.date}T${form.startTime}`,
       endTime: `${form.date}T${form.endTime}`,
-      coachID: activeProfile.playerID,
+      coachID: activeProfile.userID,
       teamID: activeProfile.teamID,
     };
 
