@@ -1,6 +1,5 @@
-import { useState } from "react";
 import styles from "./NotificationModal.module.css";
-import Button from "../../../../components/Button";
+import { useState } from "react";
 
 function NotificationModal({ title, onClose, onSubmit }) {
   const [form, setForm] = useState({
@@ -17,53 +16,36 @@ function NotificationModal({ title, onClose, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!form.title.trim()) {
-      alert("Tytuł jest wymagany");
-      return;
-    }
-
     onSubmit(form);
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <h3 className={styles.heading}>{title}</h3>
+    <div className={styles.overlay}>
+      <div className={styles.modal}>
+        <h2>{title}</h2>
 
-        <p className={styles.subtitle}>Uzupełnij treść powiadomienia</p>
+        <form onSubmit={handleSubmit}>
+          <input
+            name="title"
+            placeholder="Tytuł"
+            value={form.title}
+            onChange={handleChange}
+            required
+          />
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <label>
-            Tytuł
-            <input
-              type="text"
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              placeholder="Np. Zmiana godziny treningu"
-              required
-            />
-          </label>
-
-          <label>
-            Treść
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              placeholder="Wpisz treść powiadomienia..."
-              rows={4}
-            />
-          </label>
+          <textarea
+            name="description"
+            placeholder="Treść powiadomienia"
+            value={form.description}
+            onChange={handleChange}
+            required
+          />
 
           <div className={styles.actions}>
-            <Button type="secondary" onClick={onClose}>
+            <button type="submit">Zapisz</button>
+            <button type="button" onClick={onClose}>
               Anuluj
-            </Button>
-            <Button type="primary" submit>
-              Zapisz
-            </Button>
+            </button>
           </div>
         </form>
       </div>
