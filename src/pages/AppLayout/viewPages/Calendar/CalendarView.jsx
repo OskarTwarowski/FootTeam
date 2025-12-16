@@ -37,20 +37,24 @@ function CalendarView() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+  // ✅ helper – czy aktualny profil ma prawo edycji
+  const canManageTrainings =
+    activeProfile?.Role === "Coach" || activeProfile?.Role === "Admin";
 
   // ---- Pobranie treningów ----
   useEffect(() => {
-    dispatch(fetchTrainings());
+    if (activeProfile) {
+      dispatch(fetchTrainings());
+    }
   }, [dispatch, activeProfile]);
 
   // ---- Filtrowanie po drużynie ----
   const filteredTrainings = useMemo(() => {
-    if (!activeProfile || !activeProfile.TeamID) return [];
+    if (!activeProfile?.TeamID) return [];
     return trainings.filter((t) => t.teamID === activeProfile.TeamID);
   }, [trainings, activeProfile]);
 
-  // ---- Format na eventy do kalendarza ----
+  // ---- Mapowanie na eventy kalendarza ----
   const events = filteredTrainings.map((t) => ({
     TrainingID: t.trainingID,
     title: t.title || "Bez nazwy",
@@ -60,7 +64,7 @@ function CalendarView() {
     color: t.color || "#007bff",
   }));
 
-  // ---- Customowy nagłówek ----
+  // ---- Custom header ----
   const CustomHeader = ({ label, onNavigate }) => (
     <div className={styles.header}>
       <button onClick={() => onNavigate("PREV")}>Poprzedni</button>
@@ -69,15 +73,14 @@ function CalendarView() {
     </div>
   );
 
-  // ---- Klik na pusty slot → dodanie treningu ----
+  // ---- Klik w pusty slot ----
   const handleSelectSlot = (slotInfo) => {
-    if (loggedUser?.Role === "Coach" || loggedUser?.Role === "Admin") {
-      setSelectedDate(slotInfo.start);
-      setShowAddModal(true);
-    }
+    if (!canManageTrainings) return;
+    setSelectedDate(slotInfo.start);
+    setShowAddModal(true);
   };
 
-  // ---- Kliknięcie na istniejący trening ----
+  // ---- Klik w event ----
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
   };
@@ -93,7 +96,7 @@ function CalendarView() {
   return (
     <div className={styles.container}>
       <Calendar
-        selectable
+        selectable={canManageTrainings}
         localizer={localizer}
         events={events}
         startAccessor="start"
@@ -107,24 +110,24 @@ function CalendarView() {
         date={date}
         onNavigate={(newDate) => setDate(newDate)}
         components={{ toolbar: CustomHeader }}
-        onSelectSlot={
-          loggedUser?.Role === "Coach" || loggedUser?.Role === "Admin"
-            ? handleSelectSlot
-            : undefined
-        }
+        onSelectSlot={canManageTrainings ? handleSelectSlot : undefined}
         onSelectEvent={handleSelectEvent}
       />
 
       {/* Modal dodawania treningu */}
-      <AddTrainingModal
-        show={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        preselectedDate={selectedDate}
-        teamId={activeProfile?.TeamID}
-        coachId={loggedUser?.Role === "Coach" ? activeProfile?.PlayerID : null}
-      />
+      {canManageTrainings && (
+        <AddTrainingModal
+          show={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          preselectedDate={selectedDate}
+          teamId={activeProfile?.TeamID}
+          coachId={
+            activeProfile?.Role === "Coach" ? activeProfile.PlayerID : null
+          }
+        />
+      )}
 
-      {/* Modal szczegółów treningu */}
+      {/* Modal szczegółów */}
       {selectedEvent && (
         <EventModal
           event={selectedEvent}
