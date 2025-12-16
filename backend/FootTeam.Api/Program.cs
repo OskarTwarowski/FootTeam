@@ -13,24 +13,32 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Configure CORS
+// builder.Services.AddCors(options =>
+// {
+//     var origins = (builder.Configuration["Cors:Origin"] ?? "")
+//         .Split(";", StringSplitOptions.RemoveEmptyEntries);
+
+//     Console.WriteLine("Loaded CORS origins:");
+//     foreach (var o in origins)
+//     {
+//         Console.WriteLine(" - " + o);
+//     }
+
+//     options.AddPolicy("Frontend", policy =>
+//         policy.WithOrigins(origins)
+//               .AllowAnyHeader()
+//               .AllowAnyMethod()
+//               .AllowCredentials());
+// });
 builder.Services.AddCors(options =>
 {
-    var origins = (builder.Configuration["Cors:Origin"] ?? "")
-        .Split(";", StringSplitOptions.RemoveEmptyEntries);
-
-    Console.WriteLine("Loaded CORS origins:");
-    foreach (var o in origins)
-    {
-        Console.WriteLine(" - " + o);
-    }
-
     options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins(origins)
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials());
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+    );
 });
-
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
