@@ -31,30 +31,37 @@ function CalendarView() {
 
   const { list: trainings, status } = useSelector((state) => state.training);
   const activeProfile = useSelector((state) => state.activeProfile.profile);
+  const user = useSelector((state) => state.auth.user);
 
   const [date, setDate] = useState(new Date());
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // ✅ helper – czy aktualny profil ma prawo edycji
-  const canManageTrainings =
-    activeProfile?.role === "Coach" || activeProfile?.role === "Admin";
-  console.log(activeProfile.role);
-  // ---- Pobranie treningów ----
+  // ===== ROLE LOGIC =====
+  const userRole = user?.Role; // ADMIN
+  const playerRole = activeProfile?.role; // COACH / PLAYER
+
+  const isAdmin = userRole === "Admin";
+  const isCoach = playerRole === "Coach";
+
+  const canManageTrainings = isAdmin || isCoach;
+
+  // ===== FETCH TRAININGS =====
   useEffect(() => {
-    if (activeProfile) {
+    if (activeProfile?.TeamID || isAdmin) {
       dispatch(fetchTrainings());
     }
-  }, [dispatch, activeProfile]);
+  }, [dispatch, activeProfile?.TeamID, isAdmin]);
 
-  // ---- Filtrowanie po drużynie ----
+  // ===== FILTER BY TEAM =====
   const filteredTrainings = useMemo(() => {
+    if (isAdmin) return trainings;
     if (!activeProfile?.TeamID) return [];
     return trainings.filter((t) => t.teamID === activeProfile.TeamID);
-  }, [trainings, activeProfile]);
+  }, [trainings, activeProfile?.TeamID, isAdmin]);
 
-  // ---- Mapowanie na eventy kalendarza ----
+  // ===== MAP TO CALENDAR EVENTS =====
   const events = filteredTrainings.map((t) => ({
     TrainingID: t.trainingID,
     title: t.title || "Bez nazwy",
@@ -64,7 +71,7 @@ function CalendarView() {
     color: t.color || "#007bff",
   }));
 
-  // ---- Custom header ----
+  // ===== CUSTOM HEADER =====
   const CustomHeader = ({ label, onNavigate }) => (
     <div className={styles.header}>
       <button onClick={() => onNavigate("PREV")}>Poprzedni</button>
@@ -73,14 +80,13 @@ function CalendarView() {
     </div>
   );
 
-  // ---- Klik w pusty slot ----
+  // ===== HANDLERS =====
   const handleSelectSlot = (slotInfo) => {
     if (!canManageTrainings) return;
     setSelectedDate(slotInfo.start);
     setShowAddModal(true);
   };
 
-  // ---- Klik w event ----
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
   };
@@ -114,20 +120,18 @@ function CalendarView() {
         onSelectEvent={handleSelectEvent}
       />
 
-      {/* Modal dodawania treningu */}
+      {/* ===== ADD TRAINING ===== */}
       {canManageTrainings && (
         <AddTrainingModal
           show={showAddModal}
           onClose={() => setShowAddModal(false)}
           preselectedDate={selectedDate}
           teamId={activeProfile?.TeamID}
-          coachId={
-            activeProfile?.Role === "Coach" ? activeProfile.PlayerID : null
-          }
+          coachId={isCoach ? activeProfile?.playerID : null}
         />
       )}
 
-      {/* Modal szczegółów */}
+      {/* ===== EVENT DETAILS ===== */}
       {selectedEvent && (
         <EventModal
           event={selectedEvent}

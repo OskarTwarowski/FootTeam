@@ -15,93 +15,96 @@ function NotificationView() {
 
   const activeProfile = useSelector((state) => state.activeProfile.profile);
   const user = useSelector((state) => state.auth.user);
-  const userRole = user?.Role;
-
   const notifications = useSelector((state) => state.notifications.list);
+
+  // 🔑 ROLE
+  const userRole = user?.Role; // ADMIN
+  const playerRole = activeProfile?.role; // COACH / PLAYER / PARENT
+
+  const isAdmin = userRole === "Admin";
+  const isCoach = playerRole === "Coach";
 
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showGlobalModal, setShowGlobalModal] = useState(false);
 
-  // ---- Pobieranie powiadomień ----
+  // ---- POBIERANIE POWIADOMIEŃ ----
   useEffect(() => {
-    if (!user) return;
+    if (!userRole) return;
 
-    // ADMIN → pobiera bez teamID (backend zwraca wszystko)
-    if (userRole === "Admin") {
+    // ADMIN → wszystkie
+    if (isAdmin) {
       dispatch(fetchNotifications(null));
       return;
     }
 
-    // Coach / User → musi mieć aktywną drużynę
+    // COACH / PLAYER → tylko drużynowe
     if (activeProfile?.TeamID) {
       dispatch(fetchNotifications(activeProfile.TeamID));
     }
-  }, [dispatch, activeProfile, userRole, user]);
+  }, [dispatch, activeProfile, userRole, isAdmin]);
 
-  // ---- Dodawanie powiadomienia ----
+  // ---- DODAWANIE POWIADOMIENIA ----
   const handleAddNotification = async (data, isGlobal = false) => {
+    if (!activeProfile && !isAdmin) return;
+
     const payload = {
       Title: data.title,
       Description: data.description,
       StartTime: new Date().toISOString(),
       EndTime: null,
-      CreatedBy: user?.userId, // wymagane przez backend
-      TeamID: isGlobal ? null : activeProfile?.teamID ?? activeProfile?.TeamID,
+      CreatedBy: user?.userId,
+      TeamID: isGlobal ? null : activeProfile?.TeamID,
     };
 
     await dispatch(addNotificationThunk(payload));
 
-    // odśwież listę powiadomień
-    dispatch(
-      fetchNotifications(isGlobal ? null : activeProfile?.TeamID ?? null)
-    );
+    dispatch(fetchNotifications(isGlobal ? null : activeProfile?.TeamID));
   };
-
-  // ---- Gdy brak powiadomień ----
-  if (!notifications.length) {
-    return <p className={styles.empty}>Brak powiadomień</p>;
-  }
 
   return (
     <div className={styles.container}>
+      {/* === PRZYCISKI === */}
       <div className={styles.buttonContainer}>
-        {/* Trener → może tworzyć powiadomienia drużynowe */}
-        {userRole === "Coach" && (
+        {/* COACH → drużynowe */}
+        {isCoach && (
           <Button type="primary" onClick={() => setShowTeamModal(true)}>
-            Dodaj Powiadomienie Drużyny
+            Dodaj powiadomienie drużyny
           </Button>
         )}
 
-        {/* Admin → może tworzyć globalne */}
-        {userRole === "Admin" && (
+        {/* ADMIN → globalne */}
+        {isAdmin && (
           <Button type="primary" onClick={() => setShowGlobalModal(true)}>
-            Dodaj Globalne Powiadomienie
+            Dodaj globalne powiadomienie
           </Button>
         )}
       </div>
 
-      <ul className={styles.list}>
-        {notifications.map((n) => (
-          <li key={n.NotificationID} className={styles.item}>
-            <h3 className={styles.title}>{n.Title}</h3>
-            <p className={styles.description}>{n.Description}</p>
+      {/* === LISTA === */}
+      {notifications.length === 0 ? (
+        <p className={styles.empty}>Brak powiadomień</p>
+      ) : (
+        <ul className={styles.list}>
+          {notifications.map((n) => (
+            <li key={n.NotificationID} className={styles.item}>
+              <h3 className={styles.title}>{n.Title}</h3>
+              <p className={styles.description}>{n.Description}</p>
 
-            <span className={styles.date}>
-              {n.StartTime
-                ? new Date(n.StartTime).toLocaleString()
-                : "Brak daty"}
-            </span>
-
-            {n.TeamName && (
-              <span className={styles.team}>
-                Drużyna: {n.TeamName ?? "Globalne"}
+              <span className={styles.date}>
+                {n.StartTime
+                  ? new Date(n.StartTime).toLocaleString("pl-PL")
+                  : "Brak daty"}
               </span>
-            )}
-          </li>
-        ))}
-      </ul>
 
-      {/* ---- Modal drużynowy ---- */}
+              {n.TeamName && (
+                <span className={styles.team}>Drużyna: {n.TeamName}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* === MODAL DRUŻYNOWY === */}
       {showTeamModal && (
         <NotificationModal
           title="Dodaj powiadomienie drużyny"
@@ -113,7 +116,7 @@ function NotificationView() {
         />
       )}
 
-      {/* ---- Modal globalny ---- */}
+      {/* === MODAL GLOBALNY === */}
       {showGlobalModal && (
         <NotificationModal
           title="Dodaj globalne powiadomienie"
