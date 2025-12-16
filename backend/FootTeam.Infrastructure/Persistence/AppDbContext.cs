@@ -22,6 +22,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.Property(e => e.PlayerID).HasColumnName("PlayerID");
             entity.Property(e => e.FirstName).HasMaxLength(50);
             entity.Property(e => e.LastName).HasMaxLength(50);
+            entity.Property(e => e.Role)
+      .HasConversion<string>();
+
             // Columns BirthDate and Position do not exist in current MySQL schema
             entity.Ignore(e => e.BirthDate);
             entity.Ignore(e => e.Position);
