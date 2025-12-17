@@ -22,7 +22,7 @@ function PlayersAdminView() {
   const filteredPlayers =
     search.length >= 3
       ? players.filter((p) =>
-          `${p.firstName} ${p.lastName}`
+          `${p.FirstName ?? ""} ${p.LastName ?? ""}`
             .toLowerCase()
             .includes(search.toLowerCase())
         )
