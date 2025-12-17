@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
-  const userRole = useSelector((state) => state?.auth?.user?.Role ?? null);
+  // ✅ JEDYNA POPRAWNA WERSJA
+  const userRole = useSelector((state) => state?.auth?.user?.role ?? null);
 
   return (
     <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : ""}`}>
@@ -97,6 +98,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
             </NavLink>
           </li>
 
+          {/* ✅ ADMIN */}
           {userRole === "Admin" && (
             <li>
               <NavLink
