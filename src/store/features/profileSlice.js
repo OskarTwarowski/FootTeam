@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getPlayerByUser,
+  getPlayers,
   createPlayer,
   updatePlayer,
   deletePlayer,
