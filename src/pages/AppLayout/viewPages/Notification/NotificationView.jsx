@@ -22,6 +22,11 @@ function NotificationView() {
 
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showGlobalModal, setShowGlobalModal] = useState(false);
+  console.log("RENDER NotificationView", {
+    activeProfile,
+    user,
+    notifications,
+  });
 
   // ===== FETCH =====
   useEffect(() => {
@@ -81,9 +86,13 @@ function NotificationView() {
               <h3>{n.Title}</h3>
               {n.Description && <p>{n.Description}</p>}
               <div className={styles.meta}>
-                <span>{new Date(n.StartTime).toLocaleString("pl-PL")}</span>
                 <span>
-                  {n.TeamName ? `Drużyna: ${n.TeamName}` : "Globalne"}
+                  {n.StartTime
+                    ? new Date(n.StartTime).toLocaleString("pl-PL")
+                    : "Brak daty"}
+                </span>
+                <span className={styles.team}>
+                  {n.TeamID ? `Drużyna` : "Globalne"}
                 </span>
               </div>
             </li>

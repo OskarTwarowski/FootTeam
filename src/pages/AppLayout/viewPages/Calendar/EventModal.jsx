@@ -7,11 +7,16 @@ import {
 
 function EventModal({ event, onClose }) {
   const dispatch = useDispatch();
-  const userRole = useSelector((state) => state.auth.user?.Role);
+
+  const userRole = useSelector((state) => state.auth.user?.Role); // ADMIN
+  const playerRole = useSelector((state) => state.activeProfile.profile?.role); // COACH / PLAYER
+
+  const canManageTraining = userRole === "Admin" || playerRole === "Coach";
 
   if (!event) return null;
 
   const trainingId = event.TrainingID;
+
   const startDate = new Date(event.start);
   const endDate = new Date(event.end);
 
@@ -37,7 +42,7 @@ function EventModal({ event, onClose }) {
       await dispatch(deleteTraining(trainingId)).unwrap();
       await dispatch(fetchTrainings());
       onClose();
-    } catch (err) {
+    } catch {
       alert("Nie udało się usunąć treningu.");
     }
   };
@@ -58,7 +63,7 @@ function EventModal({ event, onClose }) {
             : "Brak opisu treningu."}
         </p>
 
-        {(userRole === "Coach" || userRole === "Admin") && (
+        {canManageTraining && (
           <div className={styles.actions}>
             <button className={styles.deleteBtn} onClick={handleDelete}>
               Usuń trening
@@ -66,7 +71,7 @@ function EventModal({ event, onClose }) {
 
             <button
               className={styles.editBtn}
-              onClick={() => alert("Tu dodamy modal edycji!")}
+              onClick={() => alert("Tu dodamy modal edycji")}
             >
               Edytuj trening
             </button>

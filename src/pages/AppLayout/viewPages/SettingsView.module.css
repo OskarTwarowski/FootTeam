@@ -99,7 +99,7 @@
   margin-bottom: 0.5rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .contactInfo {
     position: static;
     margin-top: 2rem;
