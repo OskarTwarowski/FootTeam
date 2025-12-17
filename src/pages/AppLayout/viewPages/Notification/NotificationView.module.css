@@ -6,6 +6,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .item {
@@ -38,11 +41,35 @@
 .team {
   font-weight: 500;
 }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
+.deleteBtn {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  color: #e74c3c;
+}
+
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
 .empty {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #ffffff;
   text-align: center;
-  color: #6c757d;
-  margin-top: 40px;
+  margin-top: 3rem;
 }
 
 .buttonContainer {
