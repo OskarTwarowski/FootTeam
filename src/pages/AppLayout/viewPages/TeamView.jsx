@@ -131,7 +131,7 @@ function TeamView() {
 
               <span className={styles.playerPhone}>
                 {isOpen &&
-                  user?.Role === "Trener" &&
+                  user?.Role === "Coach" &&
                   player.role !== "Coach" && (
                     <span
                       className={styles.playerRemove}
