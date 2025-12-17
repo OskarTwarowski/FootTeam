@@ -16,32 +16,44 @@ public sealed class PlayersController(IPlayerService playerService, ITeamService
     private readonly ITeamService _teamService = teamService;
 
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<PlayerResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListAsync([FromQuery] int? teamId, CancellationToken ct)
+[ProducesResponseType(typeof(IReadOnlyList<PlayerResponse>), StatusCodes.Status200OK)]
+public async Task<IActionResult> ListAsync([FromQuery] int? teamId, CancellationToken ct)
+{
+    if (User.IsInRole("Admin"))
     {
-        var isAdmin = User.IsInRole("Admin");
-        var isCoach = User.IsInRole("Coach");
-        if (!isAdmin)
-        {
-            // Require team filter and check access
-            if (!teamId.HasValue) return Forbid();
-            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(ClaimTypes.Name);
-            if (!int.TryParse(sub, out var currentUserId)) return Forbid();
-            if (isCoach)
-            {
-                var teams = await _teamService.GetTeamsAsync(ct);
-                var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
-                if (coachTeam is null || coachTeam.TeamID != teamId.Value) return Forbid();
-            }
-            else
-            {
-                var me = await _playerService.GetByUserIdAsync(currentUserId, ct);
-                if (me is null || me.TeamID != teamId) return Forbid();
-            }
-        }
-        var players = await _playerService.ListAsync(teamId, ct);
-        return Ok(players.Select(PlayerResponse.FromDomain));
+        var allPlayers = await _playerService.ListAsync(null, ct);
+        return Ok(allPlayers.Select(PlayerResponse.FromDomain));
     }
+    if (!teamId.HasValue)
+        return Forbid();
+
+    var sub = User.FindFirstValue(ClaimTypes.NameIdentifier)
+              ?? User.FindFirstValue(ClaimTypes.Name);
+
+    if (!int.TryParse(sub, out var currentUserId))
+        return Forbid();
+
+    // === COACH ===
+    if (User.IsInRole("Coach"))
+    {
+        var teams = await _teamService.GetTeamsAsync(ct);
+        var coachTeam = teams.FirstOrDefault(t => t.CoachID == currentUserId);
+
+        if (coachTeam is null || coachTeam.TeamID != teamId.Value)
+            return Forbid();
+    }
+    else
+    {
+        // === PLAYER / PARENT ===
+        var me = await _playerService.GetByUserIdAsync(currentUserId, ct);
+        if (me is null || me.TeamID != teamId)
+            return Forbid();
+    }
+
+    var players = await _playerService.ListAsync(teamId, ct);
+    return Ok(players.Select(PlayerResponse.FromDomain));
+}
+
 
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(PlayerResponse), StatusCodes.Status200OK)]
