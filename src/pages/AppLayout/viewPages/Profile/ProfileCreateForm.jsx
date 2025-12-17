@@ -36,7 +36,6 @@ function ProfileCreateForm({ show, onClose }) {
       .unwrap()
       .then(() => onClose())
       .catch(() => alert("Nie udało się stworzyć profilu"));
-    console.log("USER FROM REDUX:", user);
   };
 
   return (

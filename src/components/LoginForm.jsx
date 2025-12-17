@@ -30,7 +30,6 @@ export default function LoginForm() {
     dispatch(loginUser({ email: data.email, password: data.password }))
       .unwrap()
       .then((res) => {
-        console.log("LOGIN RESPONSE:", res);
         navigate("/app/profil", { replace: true });
       })
       .catch(() => {

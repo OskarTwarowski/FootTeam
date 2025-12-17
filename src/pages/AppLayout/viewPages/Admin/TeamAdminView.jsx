@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchTeams,
@@ -6,74 +6,93 @@ import {
   deleteTeam,
 } from "../../../../store/features/teamSlice";
 import styles from "./TeamAdminView.module.css";
+import Loader from "../../../../components/Loader";
 
-export default function TeamAdminView() {
+function TeamAdminView() {
   const dispatch = useDispatch();
+
   const { list: teams, loading } = useSelector((state) => state.teams);
-  const loggedUser = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [filtered, setFiltered] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
 
+  // ===== FETCH TEAMS =====
   useEffect(() => {
     dispatch(fetchTeams());
   }, [dispatch]);
 
-  // FILTROWANIE
-  useEffect(() => {
-    if (searchTerm.length >= 3) {
-      const lower = searchTerm.toLowerCase();
-      setFiltered(teams.filter((t) => t.name.toLowerCase().includes(lower)));
-    } else {
-      setFiltered([]);
-    }
-  }, [searchTerm, teams]);
+  // ===== FILTERED TEAMS =====
+  const filteredTeams = useMemo(() => {
+    if (searchTerm.length < 3) return [];
+    const lower = searchTerm.toLowerCase();
+    return teams.filter((t) => t.name.toLowerCase().includes(lower));
+  }, [teams, searchTerm]);
 
-  // TWORZENIE DRUŻYNY
-  const handleCreateTeam = (e) => {
+  // ===== CREATE TEAM =====
+  const handleCreateTeam = async (e) => {
     e.preventDefault();
 
     if (!newTeamName.trim()) return;
 
-    dispatch(
-      createTeam({
-        name: newTeamName.trim(),
-        coachId: loggedUser?.userId, // wymagane przez backend
-      })
-    );
+    try {
+      await dispatch(
+        createTeam({
+          name: newTeamName.trim(),
+          coachId: null, // ❗ admin tworzy drużynę BEZ coacha
+        })
+      ).unwrap();
 
-    setNewTeamName("");
-    setIsCreating(false);
+      setNewTeamName("");
+      setIsCreating(false);
+      dispatch(fetchTeams());
+    } catch {
+      alert("Nie udało się utworzyć drużyny.");
+    }
   };
 
-  // USUWANIE
-  const handleDeleteTeam = (teamId) => {
-    if (window.confirm("Czy na pewno chcesz usunąć tę drużynę?")) {
-      dispatch(deleteTeam(teamId));
+  // ===== DELETE TEAM =====
+  const handleDeleteTeam = async (teamId) => {
+    if (!window.confirm("Czy na pewno chcesz usunąć tę drużynę?")) return;
+
+    try {
+      await dispatch(deleteTeam(teamId)).unwrap();
+      dispatch(fetchTeams());
+    } catch {
+      alert("Nie udało się usunąć drużyny.");
     }
   };
 
   return (
     <div className={styles.container}>
-      <h1>Lista Drużyn</h1>
+      <h1 className={styles.title}>Zarządzanie drużynami</h1>
 
+      {/* ===== SEARCH ===== */}
       <input
         type="text"
-        placeholder="Wpisz nazwę drużyny (min. 3 litery)"
+        placeholder="Wpisz nazwę drużyny (min. 3 znaki)"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className={styles.searchInput}
       />
 
-      {loading && <p>Wczytywanie drużyn...</p>}
+      {/* ===== LOADING ===== */}
+      {loading && (
+        <div className={styles.loaderWrapper}>
+          <Loader />
+        </div>
+      )}
 
-      {filtered.length > 0 && (
+      {/* ===== LIST ===== */}
+      {filteredTeams.length > 0 && (
         <ul className={styles.teamList}>
-          {filtered.map((team) => (
+          {filteredTeams.map((team) => (
             <li key={team.teamID} className={styles.teamItem}>
-              <strong>{team.name}</strong>
+              <div className={styles.teamInfo}>
+                <strong className={styles.teamName}>{team.name}</strong>
+                <span className={styles.teamCode}>Kod: {team.teamCode}</span>
+              </div>
 
               <button
                 className={styles.deleteButton}
@@ -86,10 +105,11 @@ export default function TeamAdminView() {
         </ul>
       )}
 
-      {searchTerm.length >= 3 && filtered.length === 0 && (
-        <p>Nie znaleziono drużyn.</p>
+      {searchTerm.length >= 3 && filteredTeams.length === 0 && (
+        <p className={styles.noResults}>Nie znaleziono drużyn.</p>
       )}
 
+      {/* ===== CREATE ===== */}
       {!isCreating ? (
         <button
           className={styles.createButton}
@@ -105,11 +125,21 @@ export default function TeamAdminView() {
             value={newTeamName}
             onChange={(e) => setNewTeamName(e.target.value)}
             required
+            className={styles.formInput}
           />
 
           <div className={styles.formButtons}>
-            <button type="submit">Zapisz</button>
-            <button type="button" onClick={() => setIsCreating(false)}>
+            <button type="submit" className={styles.saveButton}>
+              Zapisz
+            </button>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={() => {
+                setIsCreating(false);
+                setNewTeamName("");
+              }}
+            >
               Anuluj
             </button>
           </div>
@@ -118,3 +148,5 @@ export default function TeamAdminView() {
     </div>
   );
 }
+
+export default TeamAdminView;

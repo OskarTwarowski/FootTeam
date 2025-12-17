@@ -31,15 +31,6 @@ export default function PaymentsView() {
     const status = searchParams.get("status");
     const clientRef = searchParams.get("client_reference_id");
     const sessionId = searchParams.get("session_id");
-    console.log("RETURN URL full:", window.location.href);
-    console.log(
-      "status:",
-      status,
-      "client_reference_id:",
-      clientRef,
-      "session_id:",
-      sessionId
-    );
 
     if (!status) return;
 

@@ -1,77 +1,126 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProfile } from "../../../../store/features/profileSlice";
 import styles from "./PlayersAdminView.module.css";
 
 function PlayersAdminView() {
   const dispatch = useDispatch();
-  const profiles = useSelector((state) => state.profiles.list ?? []);
+
+  // === PLAYERS ===
+  const players = useSelector((state) => state.profiles.list ?? []);
+
   const [search, setSearch] = useState("");
-  useEffect(() => {}, [dispatch]);
-  const handleDeleteFromTeam = async (player, e) => {
+
+  // === HANDLERS ===
+  const handleSetCoach = async (player, e) => {
     e.stopPropagation();
-    await dispatch(updateProfile({ ...player, TeamID: null, TeamCode: null }));
+    await dispatch(
+      updateProfile({
+        id: player.playerID,
+        data: { role: "Coach" },
+      })
+    );
   };
-  const handleDeleteRole = async (player, e) => {
+
+  const handleRemoveRole = async (player, e) => {
     e.stopPropagation();
-    await dispatch(updateProfile({ ...player, Role: null }));
+    await dispatch(
+      updateProfile({
+        id: player.playerID,
+        data: { role: "Player" },
+      })
+    );
   };
-  const handleRoleTrener = async (player, e) => {
+
+  const handleRemoveFromTeam = async (player, e) => {
     e.stopPropagation();
-    await dispatch(updateProfile({ ...player, Role: "Coach" }));
+    await dispatch(
+      updateProfile({
+        id: player.playerID,
+        data: { teamID: null, teamCode: null },
+      })
+    );
   };
-  const filteredProfiles =
+
+  // === SEARCH ===
+  const filteredPlayers =
     search.length >= 3
-      ? profiles.filter((p) => {
-          const fullName = `${p.FirstName} ${p.LastName}`.toLowerCase();
-          return fullName.includes(search.toLowerCase());
-        })
+      ? players.filter((p) =>
+          `${p.firstName} ${p.lastName}`
+            .toLowerCase()
+            .includes(search.toLowerCase())
+        )
       : [];
+
   return (
     <div className={styles.container}>
-      <h1>Lista Graczy</h1>
+      <h1 className={styles.title}>Lista zawodników</h1>
+
       <input
-        type="Text"
+        type="text"
         className={styles.searchInput}
-        placeholder="dane zawodnika"
+        placeholder="Wpisz imię lub nazwisko (min. 3 znaki)"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+
       {search.length > 0 && search.length < 3 && (
-        <p className={styles.info}>Wpisz co najmniej 3 litery, aby wyszukać.</p>
+        <p className={styles.info}>Wpisz co najmniej 3 znaki.</p>
       )}
-      {filteredProfiles.length > 0 ? (
+
+      {filteredPlayers.length > 0 ? (
         <ul className={styles.playerList}>
-          {filteredProfiles.map((player) => (
-            <li key={player.PlayerID} className={styles.playerItem}>
-              <span>
-                {player.FirstName} {player.LastName}
-              </span>
-              <span
-                className={styles.playerRemove}
-                onClick={(e) => handleRoleTrener(player, e)}
-              >
-                Przypisz jako Trenera
-              </span>
-              <span
-                className={styles.playerRemove}
-                onClick={(e) => handleDeleteRole(player, e)}
-              >
-                Usuń Role: {player.Role}
-              </span>
-              <span
-                className={styles.playerRemove}
-                onClick={(e) => handleDeleteFromTeam(player, e)}
-              >
-                ✖ Usuń z drużyny : {player.TeamCode || "Brak drużyny"}
-              </span>
+          {filteredPlayers.map((player) => (
+            <li key={player.playerID} className={styles.playerItem}>
+              <div className={styles.playerMain}>
+                <span className={styles.playerName}>
+                  {player.firstName} {player.lastName}
+                </span>
+
+                <span className={styles.playerMeta}>
+                  Rola: {player.role ?? "Brak"}
+                </span>
+
+                <span className={styles.playerMeta}>
+                  Drużyna: {player.teamCode ?? "Brak"}
+                </span>
+              </div>
+
+              <div className={styles.actions}>
+                {player.role !== "Coach" && (
+                  <button
+                    className={styles.actionBtn}
+                    onClick={(e) => handleSetCoach(player, e)}
+                  >
+                    Ustaw jako trenera
+                  </button>
+                )}
+
+                {player.role && (
+                  <button
+                    className={styles.actionBtn}
+                    onClick={(e) => handleRemoveRole(player, e)}
+                  >
+                    Usuń rolę
+                  </button>
+                )}
+
+                {player.teamID && (
+                  <button
+                    className={`${styles.actionBtn} ${styles.danger}`}
+                    onClick={(e) => handleRemoveFromTeam(player, e)}
+                  >
+                    Usuń z drużyny
+                  </button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
       ) : (
         search.length >= 3 && (
           <p className={styles.noResults}>
-            Brak graczy spełniających kryteria.
+            Brak zawodników spełniających kryteria.
           </p>
         )
       )}
