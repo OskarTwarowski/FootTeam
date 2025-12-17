@@ -2,9 +2,11 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 function AdminRoute({ children }) {
-  const userRole = useSelector((state) => state.auth.user?.role);
+  const user = useSelector((state) => state.auth.user);
 
-  if (userRole !== "Admin") {
+  if (!user) return null;
+
+  if (user.role !== "Admin") {
     return <Navigate to="/app/profil" replace />;
   }
 

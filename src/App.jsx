@@ -19,10 +19,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RegisterTrener from "./components/RegisterTrener";
 import AdminView from "./pages/AppLayout/viewPages/Admin/AdminView";
 import AdminRoute from "./components/AdminRoute";
-import { getHealth } from "./API/getHealth";
 
 function App() {
-  getHealth();
   return (
     <BrowserRouter>
       <Routes>
