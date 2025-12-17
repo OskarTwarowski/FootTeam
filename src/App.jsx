@@ -17,12 +17,11 @@ import ProfileEditButton from "./pages/AppLayout/viewPages/Profile/ProfileEditBu
 import Regulamin from "./pages/Regulamin";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RegisterTrener from "./components/RegisterTrener";
-import { getPlayers } from "./API/players";
 import AdminView from "./pages/AppLayout/viewPages/Admin/AdminView";
 import AdminRoute from "./components/AdminRoute";
 import { getHealth } from "./API/getHealth";
+
 function App() {
-  //getPlayers();
   getHealth();
   return (
     <BrowserRouter>
