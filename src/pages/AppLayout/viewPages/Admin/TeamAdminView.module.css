@@ -16,6 +16,7 @@
   width: 100%;
   max-width: 400px;
   transition: border 0.2s;
+  color: #f1f5f9;
 }
 
 .searchInput:focus {
@@ -107,7 +108,11 @@
   justify-content: space-between;
   gap: 1rem;
 }
-
+.searchInput::placeholder,
+.formInput::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
 .formButtons button {
   padding: 0.8rem 1.5rem;
   border: none;

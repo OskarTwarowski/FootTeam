@@ -1,28 +1,38 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchAllPlayers,
-  updateProfile,
-} from "../../../../store/features/profileSlice";
+import { fetchAllPlayers } from "../../../../store/features/profileSlice";
 import styles from "./PlayersAdminView.module.css";
 
 function PlayersAdminView() {
   const dispatch = useDispatch();
 
-  const players = useSelector((state) => state.profiles.list ?? []);
+  const rawPlayers = useSelector((state) => state.profiles.list ?? []);
   const status = useSelector((state) => state.profiles.status);
 
   const [search, setSearch] = useState("");
 
-  // ✅ ADMIN → pobieramy WSZYSTKICH
+  // === FETCH ALL PLAYERS (ADMIN) ===
   useEffect(() => {
     dispatch(fetchAllPlayers());
   }, [dispatch]);
 
+  // === NORMALIZACJA (PascalCase → camelCase) ===
+  const players = useMemo(() => {
+    return rawPlayers.map((p) => ({
+      playerID: p.playerID ?? p.PlayerID,
+      firstName: p.firstName ?? p.FirstName ?? "",
+      lastName: p.lastName ?? p.LastName ?? "",
+      role: p.role ?? p.Role ?? null,
+      teamID: p.teamID ?? p.TeamID ?? null,
+      teamCode: p.teamCode ?? p.TeamCode ?? null,
+    }));
+  }, [rawPlayers]);
+
+  // === SEARCH ===
   const filteredPlayers =
-    search.length >= 3
+    search.trim().length >= 3
       ? players.filter((p) =>
-          `${p.FirstName ?? ""} ${p.LastName ?? ""}`
+          `${p.firstName} ${p.lastName}`
             .toLowerCase()
             .includes(search.toLowerCase())
         )
@@ -34,12 +44,12 @@ function PlayersAdminView() {
 
       <input
         className={styles.searchInput}
-        placeholder="Min. 3 znaki"
+        placeholder="Wpisz min. 3 znaki"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {status === "loading" && <p>Ładowanie...</p>}
+      {status === "loading" && <p>Ładowanie zawodników…</p>}
 
       {filteredPlayers.length > 0 ? (
         <ul className={styles.playerList}>
@@ -48,6 +58,7 @@ function PlayersAdminView() {
               <strong>
                 {p.firstName} {p.lastName}
               </strong>
+
               <span>Rola: {p.role ?? "Brak"}</span>
               <span>Drużyna: {p.teamCode ?? "Brak"}</span>
             </li>
