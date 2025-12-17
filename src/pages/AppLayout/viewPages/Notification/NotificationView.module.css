@@ -1,67 +1,56 @@
 .container {
-  padding: 1.5rem;
-  border-radius: 12px;
-  color: #ececec;
-  max-height: calc(100vh - 180px);
-  width: 90%;
-
-  /*margin-top: 10rem; */
-}
-
-h2 {
-  font-size: 1.6rem;
-  margin-bottom: 1rem;
-  color: #ffffff;
-  text-align: center;
+  padding: 20px;
 }
 
 .list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 12px;
 }
 
 .item {
-  background-color: #2b2b2b;
-  border-left: 4px solid #4caf50;
+  background: #f8f9fa;
+  border-left: 6px solid #198754;
   border-radius: 10px;
-  padding: 1rem 1.2rem;
-  transition: background 0.2s ease;
-}
-
-.item:hover {
-  background-color: #333;
+  padding: 14px 16px;
+  color: #212529;
 }
 
 .title {
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
-  font-size: 1.3rem;
-  margin-bottom: 0.3rem;
-  color: #4caf50;
+  color: #198754;
 }
 
 .description {
-  font-size: 1rem;
-  color: #dcdcdc;
-  margin-bottom: 0.5rem;
+  margin: 6px 0 10px;
+  font-size: 14px;
 }
 
-.date {
-  font-size: 0.85rem;
-  color: #aaa !important;
-  display: block;
-  text-align: right;
-}
-.buttonContainer {
+.meta {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5rem;
-  width: 80%;
+  font-size: 12px;
+  color: #6c757d;
 }
+
+.team {
+  font-weight: 500;
+}
+
+.empty {
+  text-align: center;
+  color: #6c757d;
+  margin-top: 40px;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 @media (max-width: 480px) {
   .container {
     width: 100%;

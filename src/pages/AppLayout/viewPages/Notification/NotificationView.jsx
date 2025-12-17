@@ -94,7 +94,9 @@ function NotificationView() {
                 </span>
 
                 <span className={styles.team}>
-                  {n.teamID ? "Drużynowe" : "Globalne"}
+                  {n.teamID !== null && n.teamID !== undefined
+                    ? "Drużynowe"
+                    : "Globalne"}
                 </span>
               </div>
             </li>
