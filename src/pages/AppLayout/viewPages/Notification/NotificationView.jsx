@@ -29,15 +29,13 @@ function NotificationView() {
   useEffect(() => {
     if (!user) return;
 
-    if (isAdmin) {
-      dispatch(fetchNotifications(null));
-    } else if (activeProfile?.teamID) {
-      dispatch(fetchNotifications(activeProfile.teamID));
-    }
+    dispatch(fetchNotifications(isAdmin ? null : activeProfile?.teamID));
   }, [dispatch, user, isAdmin, activeProfile?.teamID]);
 
   // ===== SORT + CLEAN =====
   const visibleNotifications = useMemo(() => {
+    if (!Array.isArray(notifications)) return [];
+
     return [...notifications]
       .filter((n) => n.title?.trim() || n.description?.trim())
       .sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
@@ -51,11 +49,11 @@ function NotificationView() {
       startTime: new Date().toISOString(),
       endTime: null,
       createdBy: user.userId,
-      teamID: isGlobal ? null : activeProfile.teamID,
+      teamId: isGlobal ? null : activeProfile.teamID,
     };
 
     await dispatch(addNotification(payload)).unwrap();
-    dispatch(fetchNotifications(isGlobal ? null : activeProfile.teamID));
+    dispatch(fetchNotifications(isAdmin ? null : activeProfile.teamID));
   };
 
   // ===== DELETE =====
@@ -63,7 +61,7 @@ function NotificationView() {
     if (!window.confirm("Usunąć to powiadomienie?")) return;
 
     await dispatch(removeNotification(id)).unwrap();
-    dispatch(fetchNotifications(activeProfile.teamID));
+    dispatch(fetchNotifications(isAdmin ? null : activeProfile.teamID));
   };
 
   // ===== LOADING =====
@@ -77,14 +75,12 @@ function NotificationView() {
 
   return (
     <div className={styles.container}>
-      {/* ===== BUTTONS ===== */}
       <div className={styles.buttonContainer}>
         {isCoach && (
           <Button onClick={() => setShowTeamModal(true)}>
             Dodaj powiadomienie drużyny
           </Button>
         )}
-
         {isAdmin && (
           <Button onClick={() => setShowGlobalModal(true)}>
             Dodaj globalne powiadomienie
@@ -92,25 +88,22 @@ function NotificationView() {
         )}
       </div>
 
-      {/* ===== LIST / EMPTY ===== */}
       {visibleNotifications.length === 0 ? (
         <p className={styles.empty}>Brak powiadomień</p>
       ) : (
         <ul className={styles.list}>
           {visibleNotifications.map((n) => {
             const canDelete =
-              isCoach && n.teamID && n.teamID === activeProfile?.teamID;
+              (isCoach && n.teamId === activeProfile?.teamID) || isAdmin;
 
             return (
               <li key={n.notificationID} className={styles.item}>
                 <div className={styles.header}>
                   <h3>{n.title}</h3>
-
                   {canDelete && (
                     <button
                       className={styles.deleteBtn}
                       onClick={() => handleDelete(n.notificationID)}
-                      title="Usuń"
                     >
                       ✕
                     </button>
@@ -128,7 +121,6 @@ function NotificationView() {
         </ul>
       )}
 
-      {/* ===== MODALS ===== */}
       {showTeamModal && (
         <NotificationModal
           title="Nowe powiadomienie drużyny"

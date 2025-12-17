@@ -68,13 +68,6 @@ function EventModal({ event, onClose }) {
             <button className={styles.deleteBtn} onClick={handleDelete}>
               Usuń trening
             </button>
-
-            <button
-              className={styles.editBtn}
-              onClick={() => alert("Tu dodamy modal edycji")}
-            >
-              Edytuj trening
-            </button>
           </div>
         )}
 
