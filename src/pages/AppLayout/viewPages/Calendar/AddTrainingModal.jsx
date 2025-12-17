@@ -1,14 +1,8 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  createTraining,
-  fetchTrainings,
-} from "../../../../store/features/trainingSlice";
-import styles from "./AddTrainingModal.module.css";
-
 export default function AddTrainingModal({ show, onClose, preselectedDate }) {
   const dispatch = useDispatch();
   const activeProfile = useSelector((state) => state.activeProfile.profile);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -33,11 +27,14 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
-    if (!activeProfile?.teamID || !activeProfile?.playerID) {
-      alert("Brak drużyny lub profilu.");
+    if (!activeProfile?.teamID) {
+      alert("Brak drużyny");
       return;
     }
+
+    setIsSubmitting(true);
 
     const payload = {
       title: form.title,
@@ -45,7 +42,7 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
       location: form.location,
       startTime: `${form.date}T${form.startTime}`,
       endTime: `${form.date}T${form.endTime}`,
-      coachID: activeProfile.userID,
+      coachID: activeProfile.playerID,
       teamID: activeProfile.teamID,
     };
 
@@ -53,9 +50,10 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
       await dispatch(createTraining(payload)).unwrap();
       await dispatch(fetchTrainings());
       onClose();
-    } catch (err) {
-      console.error(err);
-      alert("Nie udało się utworzyć treningu.");
+    } catch {
+      alert("Nie udało się utworzyć treningu");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -67,10 +65,12 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
         <form onSubmit={handleSubmit}>
           <input
             name="title"
-            placeholder="Tytuł"
+            placeholder="Tytuł treningu"
+            value={form.title}
             onChange={handleChange}
             required
           />
+
           <input
             type="date"
             name="date"
@@ -83,6 +83,7 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
             <input
               type="time"
               name="startTime"
+              value={form.startTime}
               onChange={handleChange}
               required
             />
@@ -90,6 +91,7 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
             <input
               type="time"
               name="endTime"
+              value={form.endTime}
               onChange={handleChange}
               required
             />
@@ -97,19 +99,30 @@ export default function AddTrainingModal({ show, onClose, preselectedDate }) {
 
           <textarea
             name="description"
-            placeholder="Opis"
+            placeholder="Opis treningu"
+            value={form.description}
             onChange={handleChange}
           />
+
           <input
             name="location"
             placeholder="Lokalizacja"
+            value={form.location}
             onChange={handleChange}
           />
 
-          <button type="submit">Zapisz</button>
+          <button
+            type="submit"
+            className={styles.submitBtn}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Zapisywanie..." : "Zapisz"}
+          </button>
         </form>
 
-        <button onClick={onClose}>Zamknij</button>
+        <button className={styles.closeBtn} onClick={onClose}>
+          Zamknij
+        </button>
       </div>
     </div>
   );
