@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchNotifications,
@@ -12,70 +12,47 @@ import NotificationModal from "../Notification/NotificationModal";
 function NotificationView() {
   const dispatch = useDispatch();
 
-  // ===== STATE =====
   const activeProfile = useSelector((s) => s.activeProfile.profile);
   const user = useSelector((s) => s.auth.user);
-  const notifications = useSelector((s) => s.notifications.list ?? []);
+  const notifications = useSelector((s) => s.notifications.list);
 
-  // ===== ROLE LOGIC (POPRAWNA) =====
-  const isAdmin = user?.Role === "Admin"; // USER
-  const isCoach = activeProfile?.role === "Coach"; // PLAYER
+  // ===== ROLE =====
+  const isAdmin = user?.Role === "Admin";
+  const isCoach = activeProfile?.role === "Coach";
 
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showGlobalModal, setShowGlobalModal] = useState(false);
 
-  // ===== FETCH =====
+  // ===== FETCH POWIADOMIEŃ =====
   useEffect(() => {
     if (!user) return;
 
     if (isAdmin) {
-      dispatch(fetchNotifications(null)); // wszystkie
-      return;
+      dispatch(fetchNotifications(null));
+    } else if (activeProfile?.teamID) {
+      dispatch(fetchNotifications(activeProfile.teamID));
     }
+  }, [dispatch, user, isAdmin, activeProfile?.teamID]);
 
-    if (activeProfile?.teamID) {
-      dispatch(fetchNotifications(activeProfile.teamID)); // drużyna
-    }
-  }, [dispatch, user?.userId, isAdmin, activeProfile?.teamID]);
-
-  // ===== 🔥 NORMALIZACJA DANYCH (KLUCZ DO DZIAŁANIA) =====
-  const visibleNotifications = useMemo(() => {
-    return notifications
-      .map((n) => ({
-        ...n,
-        teamID: n.teamID ?? n.TeamID ?? null,
-        title: n.title ?? n.Title ?? "",
-        description: n.description ?? n.Description ?? "",
-        startTime: n.startTime ?? n.StartTime ?? null,
-      }))
-      .filter(
-        (n) => n.title.trim().length > 0 || n.description.trim().length > 0
-      );
-  }, [notifications]);
+  const visibleNotifications = notifications ?? [];
 
   // ===== ADD =====
   const handleAddNotification = async (data, isGlobal) => {
-    if (!user) return;
-
     const payload = {
-      Title: data.title.trim(),
-      Description: data.description.trim(),
-      StartTime: new Date().toISOString(),
-      EndTime: null,
-      CreatedBy: user.userId,
-      TeamID: isGlobal ? null : activeProfile?.teamID ?? null,
+      title: data.title.trim(),
+      description: data.description.trim(),
+      startTime: new Date().toISOString(),
+      endTime: null,
+      createdBy: user.userId,
+      teamID: isGlobal ? null : activeProfile.teamID,
     };
 
     try {
       await dispatch(addNotification(payload)).unwrap();
 
-      // odśwież listę
-      dispatch(
-        fetchNotifications(isGlobal ? null : activeProfile?.teamID ?? null)
-      );
+      dispatch(fetchNotifications(isGlobal ? null : activeProfile.teamID));
     } catch (err) {
-      console.error("❌ Błąd dodawania powiadomienia:", err);
-      alert("Nie udało się dodać powiadomienia");
+      console.error("Błąd dodawania powiadomienia:", err);
     }
   };
 
@@ -102,7 +79,7 @@ function NotificationView() {
       ) : (
         <ul className={styles.list}>
           {visibleNotifications.map((n) => (
-            <li key={n.NotificationID} className={styles.item}>
+            <li key={n.notificationID} className={styles.item}>
               <h3 className={styles.title}>{n.title}</h3>
 
               {n.description && (
@@ -125,7 +102,7 @@ function NotificationView() {
         </ul>
       )}
 
-      {/* ===== MODALE ===== */}
+      {/* ===== MODAL DRUŻYNOWY ===== */}
       {showTeamModal && (
         <NotificationModal
           title="Nowe powiadomienie drużyny"
@@ -137,6 +114,7 @@ function NotificationView() {
         />
       )}
 
+      {/* ===== MODAL GLOBALNY ===== */}
       {showGlobalModal && (
         <NotificationModal
           title="Nowe globalne powiadomienie"

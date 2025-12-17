@@ -1,3 +1,11 @@
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createTraining,
+  fetchTrainings,
+} from "../../../../store/features/trainingSlice";
+import styles from "./AddTrainingModal.module.css";
+
 export default function AddTrainingModal({ show, onClose, preselectedDate }) {
   const dispatch = useDispatch();
   const activeProfile = useSelector((state) => state.activeProfile.profile);
