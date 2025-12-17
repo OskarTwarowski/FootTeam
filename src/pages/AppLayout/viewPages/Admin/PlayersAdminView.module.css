@@ -42,3 +42,30 @@
   color: #b71c1c;
   transform: scale(1.2);
 }
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.actionBtn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.actionBtn:hover {
+  background: #005fcc;
+}
+
+.warning {
+  background: #dc3545;
+}
+
+.warning:hover {
+  background: #b52a37;
+}
