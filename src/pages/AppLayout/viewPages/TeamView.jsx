@@ -11,19 +11,28 @@ import Loader from "../../../components/Loader";
 
 function TeamView() {
   const dispatch = useDispatch();
-  const { loading, list } = useSelector((state) => state.teams);
-  const [playersLoading, setPlayersLoading] = useState(false);
-  const user = useSelector((state) => state.auth.user);
-  const activeProfile = useSelector((state) => state.activeProfile.profile);
+
+  const { loading } = useSelector((state) => state.teams);
   const teams = useSelector((state) => state.teams.list);
 
-  const [teamPlayers, setTeamPlayers] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const user = useSelector((state) => state.auth.user);
+  const activeProfile = useSelector((state) => state.activeProfile.profile);
 
+  const [teamPlayers, setTeamPlayers] = useState([]);
+  const [playersLoading, setPlayersLoading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+
+  // ===== ROLE LOGIC =====
+  const isAdmin = user?.Role === "Admin";
+  const isCoach = activeProfile?.role === "Coach";
+  const canManageTeam = isAdmin || isCoach;
+
+  // ===== FETCH TEAMS =====
   useEffect(() => {
     dispatch(fetchTeams());
   }, [dispatch]);
 
+  // ===== FETCH PLAYERS =====
   useEffect(() => {
     if (!activeProfile?.teamID) {
       setTeamPlayers([]);
@@ -43,9 +52,12 @@ function TeamView() {
     };
 
     loadPlayers();
-  }, [activeProfile]);
+  }, [activeProfile?.teamID]);
 
+  // ===== REMOVE PLAYER =====
   const handleDeleteFromTeam = async (player) => {
+    if (!window.confirm("Usunąć zawodnika z drużyny?")) return;
+
     try {
       await dispatch(
         updateProfileThunk({
@@ -54,42 +66,32 @@ function TeamView() {
         })
       ).unwrap();
 
-      // odśwież po zmianach
       const res = await API.get(`/teams/players/${activeProfile.teamID}`);
       setTeamPlayers(res.data);
-    } catch (err) {
+    } catch {
       alert("Nie udało się usunąć zawodnika z drużyny");
     }
   };
+
+  // ===== LOADING =====
   if (loading) return <Loader />;
-  // === NO PROFILE CASES ===
+
+  // ===== NO PROFILE =====
   if (!activeProfile) {
     return (
       <div className={styles.emptyProfileBox}>
         <h2>Brak aktywnego profilu</h2>
-        <p>Wybierz profil, aby połączyć się z drużyną.</p>
+        <p>Wybierz profil, aby zobaczyć drużynę.</p>
       </div>
     );
   }
 
-  if (user?.Role === "Trener" && !activeProfile.teamID) {
-    return (
-      <div className={styles.emptyProfileBox}>
-        <h2>Nie masz przypisanej drużyny</h2>
-        <p>
-          Jeśli chcesz stworzyć nową drużynę → skontaktuj się z administracją w
-          zakładce Ustawienia → Kontakt
-        </p>
-      </div>
-    );
-  }
-
-  // === FIND CURRENT TEAM ===
+  // ===== FIND TEAM =====
   const currentTeam = teams.find(
     (team) => team.teamID === activeProfile.teamID
   );
 
-  // === SORT: Coach first ===
+  // ===== SORT PLAYERS (Coach first) =====
   const sortedPlayers = [
     ...teamPlayers.filter((p) => p.role === "Coach"),
     ...teamPlayers.filter((p) => p.role !== "Coach"),
@@ -97,13 +99,15 @@ function TeamView() {
 
   return (
     <div className={styles.container}>
+      {/* ===== HEADER ===== */}
       <header className={styles.header}>
-        <h1>{currentTeam?.name || "Nieznana Drużyna"}</h1>
+        <h1>{currentTeam?.name || "Nieznana drużyna"}</h1>
         <p className={styles.teamCode}>
-          Kod drużyny: {currentTeam?.teamCode || "Brak kodu"}
+          Kod drużyny: {currentTeam?.teamCode || "—"}
         </p>
       </header>
 
+      {/* ===== PLAYERS LIST ===== */}
       <ul className={styles.playerList}>
         {playersLoading ? (
           <div className={styles.loaderWrapper}>
@@ -112,48 +116,53 @@ function TeamView() {
         ) : sortedPlayers.length === 0 ? (
           <p className={styles.noPlayers}>Brak zawodników w drużynie</p>
         ) : (
-          sortedPlayers.map((player, index) => (
-            <li
-              key={player.playerID}
-              className={`${styles.playerItem} ${
-                index % 2 === 1 ? styles.alternate : ""
-              }`}
-            >
-              <div className={styles.playerInfo}>
-                <span
-                  className={`${styles.playerName} ${
-                    player.role === "Coach" ? styles.coach : ""
-                  }`}
-                >
-                  {player.firstName} {player.lastName}
-                </span>
-              </div>
+          sortedPlayers.map((player, index) => {
+            const canRemovePlayer =
+              editMode && canManageTeam && player.role !== "Coach";
 
-              <span className={styles.playerPhone}>
-                {isOpen &&
-                  user?.Role === "Coach" &&
-                  player.role !== "Coach" && (
+            return (
+              <li
+                key={player.playerID}
+                className={`${styles.playerItem} ${
+                  index % 2 === 1 ? styles.alternate : ""
+                }`}
+              >
+                <div className={styles.playerInfo}>
+                  <span
+                    className={`${styles.playerName} ${
+                      player.role === "Coach" ? styles.coach : ""
+                    }`}
+                  >
+                    {player.firstName} {player.lastName}
+                  </span>
+                </div>
+
+                <span className={styles.playerPhone}>
+                  {canRemovePlayer && (
                     <span
                       className={styles.playerRemove}
                       onClick={() => handleDeleteFromTeam(player)}
+                      title="Usuń z drużyny"
                     >
                       ✖
                     </span>
                   )}
-                <Phone className={styles.phonesvg} />
-                {player.phoneNumber}
-              </span>
-            </li>
-          ))
+                  <Phone className={styles.phonesvg} />
+                  {player.phoneNumber}
+                </span>
+              </li>
+            );
+          })
         )}
       </ul>
 
-      {user?.Role === "Trener" && (
+      {/* ===== EDIT BUTTON ===== */}
+      {canManageTeam && (
         <button
-          onClick={() => setIsOpen((prev) => !prev)}
+          onClick={() => setEditMode((prev) => !prev)}
           className={styles.editTeam}
         >
-          Edytuj drużynę
+          {editMode ? "Zakończ edycję" : "Edytuj drużynę"}
         </button>
       )}
     </div>
