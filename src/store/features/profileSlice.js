@@ -29,7 +29,17 @@ export const fetchProfiles = createAsyncThunk(
     }
   }
 );
-
+// === FETCH ALL PLAYERS (ADMIN) ===
+export const fetchAllPlayers = createAsyncThunk(
+  "profiles/fetchAllPlayers",
+  async (_, thunkAPI) => {
+    try {
+      return await getPlayers(); // ⬅️ WSZYSCY
+    } catch {
+      return thunkAPI.rejectWithValue("Błąd pobierania graczy");
+    }
+  }
+);
 // === ADD PROFILE ===
 export const addProfile = createAsyncThunk(
   "profiles/addProfile",
@@ -111,6 +121,17 @@ const profileSlice = createSlice({
       .addCase(removeProfile.fulfilled, (state, action) => {
         const idToRemove = action.payload;
         state.list = state.list.filter((p) => p.playerID !== idToRemove);
+      })
+      .addCase(fetchAllPlayers.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchAllPlayers.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.list = action.payload;
+      })
+      .addCase(fetchAllPlayers.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
