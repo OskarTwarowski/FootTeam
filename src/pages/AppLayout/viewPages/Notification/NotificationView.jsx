@@ -15,7 +15,7 @@ function NotificationView() {
   const dispatch = useDispatch();
 
   const activeProfile = useSelector((s) => s.activeProfile.profile);
-  const user = useSelector((s) => s.auth.user);
+  const user = useSelector((s) => s?.auth?.user);
   const { list: notifications, status } = useSelector((s) => s.notifications);
 
   // ===== ROLE =====
