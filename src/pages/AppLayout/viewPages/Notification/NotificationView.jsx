@@ -19,7 +19,7 @@ function NotificationView() {
   const { list: notifications, status } = useSelector((s) => s.notifications);
 
   // ===== ROLE =====
-  const isAdmin = user?.Role === "Admin";
+  const isAdmin = user?.role === "Admin";
   const isCoach = activeProfile?.role === "Coach";
 
   const [showTeamModal, setShowTeamModal] = useState(false);

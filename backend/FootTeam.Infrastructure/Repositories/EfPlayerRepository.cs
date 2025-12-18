@@ -54,6 +54,7 @@ public sealed class EfPlayerRepository(AppDbContext db) : IPlayerRepository
         existing.PhoneNumber = player.PhoneNumber;
         existing.TeamID = player.TeamID;
         existing.UserID = player.UserID;
+        existing.Role = player.Role;
         await _db.SaveChangesAsync(ct);
         if (existing.TeamID.HasValue)
         {
