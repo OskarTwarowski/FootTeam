@@ -189,7 +189,7 @@ public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdatePlayerRequ
         request.LastName,
         request.PhoneNumber,
         resolvedTeamId,
-        PlayerRole? role,
+        request.Role,
         ct);
 
     return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
