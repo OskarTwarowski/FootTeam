@@ -40,22 +40,39 @@ public sealed class PlayerService(IPlayerRepository repository, ITeamRepository 
         return await _repository.CreateAsync(player, ct);
     }
 
-    public async Task<Player?> UpdateAsync(int id, string? firstName, string? lastName, string? phoneNumber, int? teamId, CancellationToken ct = default)
-    {
-        var existing = await _repository.GetAsync(id, ct);
-        if (existing is null) return null;
-        
-        if (!string.IsNullOrWhiteSpace(firstName)) existing.FirstName = firstName.Trim();
-        if (!string.IsNullOrWhiteSpace(lastName)) existing.LastName = lastName.Trim();
-        if (phoneNumber is not null) existing.PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim();
-        
-        if (teamId.HasValue)
-        {
-            existing.TeamID = teamId;
-        }
-        
-        return await _repository.UpdateAsync(existing, ct);
-    }
+public async Task<Player?> UpdateAsync(
+    int id,
+    string? firstName,
+    string? lastName,
+    string? phoneNumber,
+    int? teamId,
+    PlayerRole? role,
+    CancellationToken ct = default)
+{
+    var existing = await _repository.GetAsync(id, ct);
+    if (existing is null) return null;
+
+    if (!string.IsNullOrWhiteSpace(firstName))
+        existing.FirstName = firstName.Trim();
+
+    if (!string.IsNullOrWhiteSpace(lastName))
+        existing.LastName = lastName.Trim();
+
+    if (phoneNumber is not null)
+        existing.PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber)
+            ? null
+            : phoneNumber.Trim();
+
+    if (teamId.HasValue)
+        existing.TeamID = teamId;
+
+    // 🔥 JEDYNA NOWA LINIA
+    if (role.HasValue)
+        existing.Role = role.Value;
+
+    return await _repository.UpdateAsync(existing, ct);
+}
+
 
     public Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         => _repository.DeleteAsync(id, ct);

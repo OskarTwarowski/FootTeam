@@ -189,6 +189,7 @@ public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdatePlayerRequ
         request.LastName,
         request.PhoneNumber,
         resolvedTeamId,
+        PlayerRole? role,
         ct);
 
     return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
@@ -210,12 +211,14 @@ private async Task<IActionResult> UpdateAsAdmin(int id, UpdatePlayerRequest requ
         resolvedTeamId = targetTeam.TeamID;
     }
 
+
     var updated = await _playerService.UpdateAsync(
         id,
         request.FirstName,
         request.LastName,
         request.PhoneNumber,
         resolvedTeamId,
+        request.Role,
         ct);
 
     return updated is null ? NotFound() : Ok(PlayerResponse.FromDomain(updated));
@@ -350,6 +353,7 @@ public sealed class UpdatePlayerRequest
     public int? UserID { get; set; }
     [StringLength(20, MinimumLength = 4)]
     public string? TeamCode { get; set; }
+    public PlayerRole? Role { get; set; }
 }
 
 public sealed class PlayerResponse
