@@ -5,61 +5,82 @@
 
 .searchInput {
   width: 100%;
-  padding: 0.6rem;
-  border-radius: 6px;
+  padding: 0.7rem 0.8rem;
+  border-radius: 8px;
   border: none;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  font-size: 0.95rem;
+  background: #1e1e1e;
+  color: white;
 }
+
+.searchInput::placeholder {
+  color: #aaa;
+}
+
+/* === LISTA === */
 
 .playerList {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
+/* === ITEM === */
 .playerItem {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background-color: var(--color-dark--3);
-  padding: 0.5rem 0.5rem;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+  gap: 1rem;
 }
 
-.info,
-.noResults {
-  color: gray;
-  font-size: 0.9rem;
-}
-.playerRemove {
-  cursor: pointer;
-  color: #e53935;
-  font-weight: bold;
-  margin-right: 2rem;
-  transition: transform 0.15s ease, color 0.15s ease;
+/* === LEWA STRONA === */
+.playerMain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
 }
 
-.playerRemove:hover {
-  color: #b71c1c;
-  transform: scale(1.2);
+.playerName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
 }
+
+.playerMeta {
+  font-size: 0.85rem;
+  color: #bdbdbd;
+}
+
+/* === PRAWA STRONA (AKCJE) === */
 .actions {
   display: flex;
+  flex-shrink: 0;
   gap: 0.5rem;
-  margin-top: 0.5rem;
 }
 
+/* === BUTTONS === */
 .actionBtn {
   background: #007bff;
   color: #fff;
   border: none;
-  padding: 0.35rem 0.8rem;
-  border-radius: 6px;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
 .actionBtn:hover {
   background: #005fcc;
+  transform: translateY(-1px);
 }
 
 .warning {
@@ -68,4 +89,12 @@
 
 .warning:hover {
   background: #b52a37;
+}
+
+/* === INFO === */
+.noResults,
+.info {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }

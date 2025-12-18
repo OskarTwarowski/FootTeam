@@ -4,7 +4,6 @@ public enum PlayerRole
 {
     Player = 0,
     Coach = 1,
-    Parent = 2
 }
 
 public class Player
