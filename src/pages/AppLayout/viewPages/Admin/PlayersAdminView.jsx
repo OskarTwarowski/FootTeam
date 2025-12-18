@@ -47,7 +47,7 @@ function PlayersAdminView() {
       await dispatch(
         updateProfile({
           id: playerID,
-          data: { role: "Coach" },
+          data: { role: 1 },
         })
       ).unwrap();
 
@@ -63,7 +63,7 @@ function PlayersAdminView() {
       await dispatch(
         updateProfile({
           id: playerID,
-          data: { role: "Player" },
+          data: { role: 0 },
         })
       ).unwrap();
 
